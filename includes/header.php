@@ -8,6 +8,29 @@ $isBlog     = (strpos($uri, '/blog')       !== false) ? 'current-menu-ancestor c
 $isServices = (strpos($uri, '/services')   !== false) ? 'current-menu-ancestor current-menu-parent' : '';
 $isQuote    = (strpos($uri, '/quote')      !== false) ? 'current-menu-ancestor current-menu-parent' : '';
 ?>
+    <style>
+        .tpv-header-logo img.ata-site-logo-img {
+            width: 112px !important;
+            height: auto !important;
+            max-width: 112px !important;
+        }
+
+        .tpv-header-cta.elementor-button {
+            min-height: 52px;
+            padding: 0 26px !important;
+            border-radius: 18px !important;
+            font-size: 16px !important;
+            line-height: 1.2 !important;
+            display: inline-flex !important;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+        }
+
+        .tpv-header-cta .elementor-button-text {
+            white-space: nowrap;
+        }
+    </style>
 	<div class="ekit-template-content-markup ekit-template-content-header ekit-template-content-theme-support">
 		<div data-elementor-type="wp-post" data-elementor-id="225" class="elementor elementor-225">
 			<div class="elementor-element elementor-element-3c0e001 e-con-full e-flex e-con e-parent" data-id="3c0e001"
@@ -16,7 +39,7 @@ $isQuote    = (strpos($uri, '/quote')      !== false) ? 'current-menu-ancestor c
 					data-id="159e7cf" data-element_type="container" data-e-type="container">
 					<div class="elementor-element elementor-element-08aa86c e-con-full e-flex e-con e-child"
 						data-id="08aa86c" data-element_type="container" data-e-type="container">
-						<div class="elementor-element elementor-element-d7183c8 elementor-widget elementor-widget-TPV Construction Services-site-logo"
+						<div class="elementor-element elementor-element-d7183c8 tpv-header-logo elementor-widget elementor-widget-TPV Construction Services-site-logo"
 							data-id="d7183c8" data-element_type="widget" data-e-type="widget"
 							data-settings="{&quot;align&quot;:&quot;left&quot;,&quot;width&quot;:{&quot;unit&quot;:&quot;%&quot;,&quot;size&quot;:&quot;&quot;,&quot;sizes&quot;:[]},&quot;width_tablet&quot;:{&quot;unit&quot;:&quot;%&quot;,&quot;size&quot;:&quot;&quot;,&quot;sizes&quot;:[]},&quot;width_mobile&quot;:{&quot;unit&quot;:&quot;%&quot;,&quot;size&quot;:&quot;&quot;,&quot;sizes&quot;:[]},&quot;space&quot;:{&quot;unit&quot;:&quot;%&quot;,&quot;size&quot;:&quot;&quot;,&quot;sizes&quot;:[]},&quot;space_tablet&quot;:{&quot;unit&quot;:&quot;%&quot;,&quot;size&quot;:&quot;&quot;,&quot;sizes&quot;:[]},&quot;space_mobile&quot;:{&quot;unit&quot;:&quot;%&quot;,&quot;size&quot;:&quot;&quot;,&quot;sizes&quot;:[]},&quot;image_border_radius&quot;:{&quot;unit&quot;:&quot;px&quot;,&quot;top&quot;:&quot;&quot;,&quot;right&quot;:&quot;&quot;,&quot;bottom&quot;:&quot;&quot;,&quot;left&quot;:&quot;&quot;,&quot;isLinked&quot;:true},&quot;image_border_radius_tablet&quot;:{&quot;unit&quot;:&quot;px&quot;,&quot;top&quot;:&quot;&quot;,&quot;right&quot;:&quot;&quot;,&quot;bottom&quot;:&quot;&quot;,&quot;left&quot;:&quot;&quot;,&quot;isLinked&quot;:true},&quot;image_border_radius_mobile&quot;:{&quot;unit&quot;:&quot;px&quot;,&quot;top&quot;:&quot;&quot;,&quot;right&quot;:&quot;&quot;,&quot;bottom&quot;:&quot;&quot;,&quot;left&quot;:&quot;&quot;,&quot;isLinked&quot;:true},&quot;caption_padding&quot;:{&quot;unit&quot;:&quot;px&quot;,&quot;top&quot;:&quot;&quot;,&quot;right&quot;:&quot;&quot;,&quot;bottom&quot;:&quot;&quot;,&quot;left&quot;:&quot;&quot;,&quot;isLinked&quot;:true},&quot;caption_padding_tablet&quot;:{&quot;unit&quot;:&quot;px&quot;,&quot;top&quot;:&quot;&quot;,&quot;right&quot;:&quot;&quot;,&quot;bottom&quot;:&quot;&quot;,&quot;left&quot;:&quot;&quot;,&quot;isLinked&quot;:true},&quot;caption_padding_mobile&quot;:{&quot;unit&quot;:&quot;px&quot;,&quot;top&quot;:&quot;&quot;,&quot;right&quot;:&quot;&quot;,&quot;bottom&quot;:&quot;&quot;,&quot;left&quot;:&quot;&quot;,&quot;isLinked&quot;:true},&quot;caption_space&quot;:{&quot;unit&quot;:&quot;px&quot;,&quot;size&quot;:0,&quot;sizes&quot;:[]},&quot;caption_space_tablet&quot;:{&quot;unit&quot;:&quot;px&quot;,&quot;size&quot;:&quot;&quot;,&quot;sizes&quot;:[]},&quot;caption_space_mobile&quot;:{&quot;unit&quot;:&quot;px&quot;,&quot;size&quot;:&quot;&quot;,&quot;sizes&quot;:[]},&quot;ekit_we_effect_on&quot;:&quot;none&quot;}"
 							data-widget_type="TPV Construction Services-site-logo.default">
@@ -27,7 +50,7 @@ $isQuote    = (strpos($uri, '/quote')      !== false) ? 'current-menu-ancestor c
 										<div class="ata-site-logo-set">
 											<div class="ata-site-logo-container">
 												<img class="ata-site-logo-img elementor-animation-"
-													src="<?php echo htmlspecialchars($siteLogoUrl); ?>" alt="default-logo" width="150" height="50" />
+													src="<?php echo htmlspecialchars($siteLogoUrl); ?>" alt="default-logo" width="112" height="38" />
 											</div>
 										</div>
 									</a>
@@ -136,7 +159,7 @@ $isQuote    = (strpos($uri, '/quote')      !== false) ? 'current-menu-ancestor c
 							data-widget_type="button.default">
 							<div class="elementor-widget-container">
 								<div class="elementor-button-wrapper">
-									<a class="elementor-button elementor-button-link elementor-size-sm<?php echo $isQuote ? ' tpv-quote-btn-active' : ''; ?>"
+									<a class="elementor-button elementor-button-link elementor-size-sm tpv-header-cta<?php echo $isQuote ? ' tpv-quote-btn-active' : ''; ?>"
 										href="../quote/">
 										<span class="elementor-button-content-wrapper">
 											<span class="elementor-button-text">Get Free Quote</span>
