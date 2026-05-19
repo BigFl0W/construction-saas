@@ -565,8 +565,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['quote_submit'])) {
 </head>
 
 <body class="wp-singular page-template page-template-elementor_header_footer page wp-custom-logo tt-magic-cursor elementor-default elementor-template-full-width">
-    <div class="preloader"><div class="loading-container"><div class="loading"></div><div id="loading-icon"><img src="../wp-content/themes/tpv/assets/images/loader.png" alt=""></div></div></div>
-    <div id="magic-cursor"><div id="ball"></div></div>
+    </div>
     <a class="skip-link screen-reader-text" href="#content">Skip to content</a>
 
     <?php include('../includes/quote_header.php'); ?>

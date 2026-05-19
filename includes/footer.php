@@ -1,4 +1,8 @@
 <?php
+if (!function_exists('tpv_setting_asset_url')) {
+    require_once dirname(__DIR__) . '/config/config.php';
+}
+
 require_once dirname(__DIR__) . '/classes/Settings.php';
 
 $footerSettings = new Settings();

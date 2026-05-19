@@ -261,13 +261,7 @@ if (!$cover) $cover = $items[0];
 <body class="wp-theme-TPV Construction Services elementor-default elementor-kit-7">
 
 <!-- Preloader -->
-<div class="preloader">
-    <div class="loading-container">
-        <div class="loading"></div>
-        <div id="loading-icon"><img src="../wp-content/themes/tpv/assets/images/loader.png" alt=""></div>
-    </div>
 </div>
-<div id="magic-cursor"><div id="ball"></div></div>
 
 <!-- Site Header (same as projects/index.php) -->
 <div class="ekit-template-content-markup ekit-template-content-header ekit-template-content-theme-support">

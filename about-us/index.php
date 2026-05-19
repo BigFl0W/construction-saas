@@ -1,4 +1,25 @@
-﻿<!DOCTYPE html>
+<?php
+require_once '../config/config.php';
+$pageSettings = new Settings();
+$supportPhone = trim((string) $pageSettings->get('company_phone', '+234 701 234 5678'));
+$supportPhoneHref = 'tel:' . preg_replace('/[^0-9+]/', '', $supportPhone);
+$aboutIntroEyebrow = trim((string) $pageSettings->get('about_intro_eyebrow', 'Welcome to TPV'));
+$aboutIntroTitle = (string) $pageSettings->get('about_intro_title', 'TPV Construction and Services LTD<br>Company');
+$aboutIntroBody = trim((string) $pageSettings->get('about_intro_body', "Serving Nigeria's construction needs since 2008 with excellence and innovation. TPV Construction and Services LTD has established itself as a trusted name in Nigeria's construction industry, delivering exceptional projects across residential, commercial, and industrial sectors. Our commitment to quality, safety, and sustainable building practices has made us the preferred choice for discerning clients throughout Nigeria."));
+$aboutFeatureOne = trim((string) $pageSettings->get('about_feature_1', 'Comprehensive Services'));
+$aboutFeatureTwo = trim((string) $pageSettings->get('about_feature_2', 'Advanced Technology'));
+$aboutFeatureThree = trim((string) $pageSettings->get('about_feature_3', 'Transparent Communication'));
+$aboutQuoteButton = trim((string) $pageSettings->get('about_quote_button_text', 'Get Free Quote'));
+$aboutSupportLabel = trim((string) $pageSettings->get('about_support_label', 'call support center 24X7'));
+$aboutStoryTitle = trim((string) $pageSettings->get('about_story_title', 'TPV Construction and Services LTD'));
+$aboutStoryBody = trim((string) $pageSettings->get('about_story_body', 'With over 15 years of experience and hundreds of successful projects across Nigeria, TPV Construction and Services LTD has established itself as a trusted name in the construction industry.'));
+$aboutBottomCtaBody = trim((string) $pageSettings->get('about_bottom_cta_body', "From residential homes in Lagos to commercial complexes in Abuja, TPV Construction and Services LTD delivers excellence across Nigeria. Let's bring your vision to life with quality craftsmanship and professional service."));
+$aboutIntroImage = trim((string) $pageSettings->get('about_intro_image', 'wp-content/uploads/2024/06/about-us-img.png'));
+$aboutHistoryImage = trim((string) $pageSettings->get('about_history_image', 'wp-content/uploads/2024/06/company-history-img.jpg'));
+$aboutVideoBackgroundImage = trim((string) $pageSettings->get('about_video_bg_image', 'wp-content/uploads/2024/06/video-bg.jpg'));
+$aboutCtaImage = trim((string) $pageSettings->get('about_cta_image', 'wp-content/uploads/2024/06/cta-box-img.png'));
+?>
+<!DOCTYPE html>
 <html lang="en-US">
 
 <head>
@@ -485,14 +506,7 @@
 <body
 	class="wp-singular page-template page-template-elementor_header_footer page page-id-723 wp-custom-logo wp-theme-TPV Construction Services tt-magic-cursor elementor-default elementor-template-full-width elementor-kit-7 elementor-page elementor-page-723">
 
-	<div class="preloader">
-		<div class="loading-container">
-			<div class="loading"></div>
-			<div id="loading-icon"><img src="../wp-content/themes/tpv/assets/images/loader.png" alt=""></div>
-		</div>
-	</div>
-	<div id="magic-cursor">
-		<div id="ball"></div>
+	
 	</div>
 
 	<a class="skip-link screen-reader-text" href="#content">
@@ -559,7 +573,7 @@
 						data-widget_type="image.default">
 						<div class="elementor-widget-container">
 							<img fetchpriority="high" decoding="async" width="574" height="659"
-								src="../wp-content/uploads/2024/06/about-us-img.png"
+								src="<?php echo htmlspecialchars(tpv_asset_url($aboutIntroImage)); ?>"
 								class="attachment-full size-full wp-image-872" alt="">
 						</div>
 					</div>
@@ -573,7 +587,7 @@
 						data-settings="{&quot;_animation&quot;:&quot;fadeInUp&quot;,&quot;ekit_we_effect_on&quot;:&quot;none&quot;}"
 						data-widget_type="heading.default">
 						<div class="elementor-widget-container">
-							<h3 class="elementor-heading-title elementor-size-default">Welcome to TPV</h3>
+							<h3 class="elementor-heading-title elementor-size-default"><?php echo htmlspecialchars($aboutIntroEyebrow); ?></h3>
 						</div>
 					</div>
 
@@ -583,7 +597,7 @@
 						data-settings="{&quot;ekit_we_effect_on&quot;:&quot;none&quot;}"
 						data-widget_type="heading.default">
 						<div class="elementor-widget-container">
-							<h2 class="elementor-heading-title elementor-size-default">TPV Construction and Services LTD<br>Company</h2>
+							<h2 class="elementor-heading-title elementor-size-default"><?php echo $aboutIntroTitle; ?></h2>
 						</div>
 					</div>
 
@@ -593,7 +607,7 @@
 						data-settings="{&quot;_animation&quot;:&quot;fadeInUp&quot;,&quot;_animation_delay&quot;:100,&quot;ekit_we_effect_on&quot;:&quot;none&quot;}"
 						data-widget_type="text-editor.default">
 						<div class="elementor-widget-container">
-							<p>Serving Nigeria's construction needs since 2008 with excellence and innovation. TPV Construction and Services LTD has established itself as a trusted name in Nigeria's construction industry, delivering exceptional projects across residential, commercial, and industrial sectors. Our commitment to quality, safety, and sustainable building practices has made us the preferred choice for discerning clients throughout Nigeria.</p>
+							<p><?php echo nl2br(htmlspecialchars($aboutIntroBody)); ?></p>
 						</div>
 					</div>
 
@@ -616,7 +630,7 @@
 												</path>
 											</svg>
 										</span>
-										<span class="elementor-icon-list-text">Comprehensive Services</span>
+										<span class="elementor-icon-list-text"><?php echo htmlspecialchars($aboutFeatureOne); ?></span>
 									</li>
 									<li class="elementor-icon-list-item">
 										<span class="elementor-icon-list-icon">
@@ -627,7 +641,7 @@
 												</path>
 											</svg>
 										</span>
-										<span class="elementor-icon-list-text">Advanced Technology</span>
+										<span class="elementor-icon-list-text"><?php echo htmlspecialchars($aboutFeatureTwo); ?></span>
 									</li>
 									<li class="elementor-icon-list-item">
 										<span class="elementor-icon-list-icon">
@@ -638,7 +652,7 @@
 												</path>
 											</svg>
 										</span>
-										<span class="elementor-icon-list-text">Transparent Communication</span>
+										<span class="elementor-icon-list-text"><?php echo htmlspecialchars($aboutFeatureThree); ?></span>
 									</li>
 								</ul>
 							</div>
@@ -669,7 +683,7 @@
 														stroke-linejoin="round"></path>
 												</svg>
 											</span>
-											<span class="elementor-button-text">Get Free Quote</span>
+											<span class="elementor-button-text"><?php echo htmlspecialchars($aboutQuoteButton); ?></span>
 										</span>
 									</a>
 								</div>
@@ -704,7 +718,7 @@
 									<div class="elementor-icon-box-content">
 										<h3 class="elementor-icon-box-title">
 											<a href="<?php echo htmlspecialchars($supportPhoneHref); ?>">
-												call support center 24X7
+												<?php echo htmlspecialchars($aboutSupportLabel); ?>
 											</a>
 										</h3>
 										<p class="elementor-icon-box-description">
@@ -734,7 +748,7 @@
 						data-widget_type="image.default">
 						<div class="elementor-widget-container">
 							<img decoding="async" width="555" height="468"
-								src="../wp-content/uploads/2024/06/company-history-img.jpg"
+								src="<?php echo htmlspecialchars(tpv_asset_url($aboutHistoryImage)); ?>"
 								class="attachment-full size-full wp-image-1116" alt="">
 						</div>
 					</div>
@@ -776,7 +790,7 @@
 						data-settings="{&quot;ekit_we_effect_on&quot;:&quot;none&quot;}"
 						data-widget_type="heading.default">
 						<div class="elementor-widget-container">
-							<h2 class="elementor-heading-title elementor-size-default">TPV Construction and Services LTD</h2>
+							<h2 class="elementor-heading-title elementor-size-default"><?php echo htmlspecialchars($aboutStoryTitle); ?></h2>
 						</div>
 					</div>
 
@@ -787,7 +801,7 @@
 						data-widget_type="text-editor.default">
 						<div class="elementor-widget-container">
 							<p class="wow fadeInUp" data-wow-delay="0.25s"><strong>Nigeria's Premier Construction Partner</strong></p>
-							<p class="wow fadeInUp" data-wow-delay="0.5s">With over 15 years of experience and hundreds of successful projects across Nigeria, TPV Construction and Services LTD has established itself as a trusted name in the construction industry.</p>
+							<p class="wow fadeInUp" data-wow-delay="0.5s"><?php echo nl2br(htmlspecialchars($aboutStoryBody)); ?></p>
 							<p class="wow fadeInUp" data-wow-delay="0.75s">Our commitment to excellence, safety, and innovation has made us the preferred choice for residential, commercial, and industrial construction projects. From Lagos to Abuja, Port Harcourt to Kano, we deliver quality that stands the test of time.</p>
 						</div>
 					</div>
@@ -916,7 +930,7 @@
 				data-id="4c21876" data-element_type="widget" data-e-type="widget"
 				data-settings="{&quot;ekit_we_effect_on&quot;:&quot;none&quot;}" data-widget_type="image.default">
 				<div class="elementor-widget-container">
-					<img decoding="async" width="1920" height="768" src="../wp-content/uploads/2024/06/video-bg.jpg"
+					<img decoding="async" width="1920" height="768" src="<?php echo htmlspecialchars(tpv_asset_url($aboutVideoBackgroundImage)); ?>"
 						class="attachment-full size-full wp-image-1650" alt="">
 				</div>
 			</div>
@@ -1098,7 +1112,7 @@
 						data-settings="{&quot;_animation&quot;:&quot;fadeInUp&quot;,&quot;ekit_we_effect_on&quot;:&quot;none&quot;}"
 						data-widget_type="text-editor.default">
 						<div class="elementor-widget-container">
-							<p>From residential homes in Lagos to commercial complexes in Abuja, TPV Construction and Services LTD delivers excellence across Nigeria. Let's bring your vision to life with quality craftsmanship and professional service.</p>
+							<p><?php echo nl2br(htmlspecialchars($aboutBottomCtaBody)); ?></p>
 						</div>
 					</div>
 
@@ -1138,7 +1152,7 @@
 						data-widget_type="image.default">
 						<div class="elementor-widget-container">
 							<img loading="lazy" decoding="async" width="483" height="455"
-								src="../wp-content/uploads/2024/06/cta-box-img.png"
+								src="<?php echo htmlspecialchars(tpv_asset_url($aboutCtaImage)); ?>"
 								class="attachment-large size-large wp-image-1251"
 								alt="TPV Construction and Services LTD - Building Dreams Across Nigeria">
 						</div>
@@ -2153,9 +2167,3 @@
 </body>
 
 </html>
-<?php
-require_once '../config/config.php';
-$pageSettings = new Settings();
-$supportPhone = trim((string) $pageSettings->get('company_phone', '+234 701 234 5678'));
-$supportPhoneHref = 'tel:' . preg_replace('/[^0-9+]/', '', $supportPhone);
-?>

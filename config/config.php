@@ -13,10 +13,12 @@ if ($_SERVER['SERVER_NAME'] === 'localhost' || $_SERVER['REMOTE_ADDR'] === '127.
 }
 
 // Session configuration
-ini_set('session.cookie_httponly', 1);
-ini_set('session.use_strict_mode', 1);
-ini_set('session.cookie_secure', isset($_SERVER['HTTPS']) ? 1 : 0);
-ini_set('session.cookie_samesite', 'Strict');
+if (!headers_sent()) {
+    ini_set('session.cookie_httponly', 1);
+    ini_set('session.use_strict_mode', 1);
+    ini_set('session.cookie_secure', isset($_SERVER['HTTPS']) ? 1 : 0);
+    ini_set('session.cookie_samesite', 'Strict');
+}
 
 // Constants
 define('SITE_NAME', 'TPV Construction and Services LTD');

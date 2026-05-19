@@ -199,8 +199,7 @@
     <meta name="msapplication-TileImage" content="https://tpvconstrcution.com.ng/wp-content/uploads/2024/06/favicon.png">
 </head>
 <body class="wp-singular page-template page-template-elementor_header_footer page page-id-3084 wp-custom-logo wp-theme-TPV Construction Services tt-magic-cursor elementor-default elementor-template-full-width elementor-kit-7 elementor-page elementor-page-3084">
-    <div class="preloader"><div class="loading-container"><div class="loading"></div><div id="loading-icon"><img src="../wp-content/themes/tpv/assets/images/loader.png" alt=""></div></div></div>
-    <div id="magic-cursor"><div id="ball"></div></div>
+    </div>
     <a class="skip-link screen-reader-text" href="#content">Skip to content</a>
 
     <!-- header would be injected via PHP -->

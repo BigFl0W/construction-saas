@@ -1,4 +1,8 @@
 <?php
+if (!function_exists('tpv_setting_asset_url')) {
+    require_once dirname(__DIR__) . '/config/config.php';
+}
+
 $siteLogoUrl = tpv_setting_asset_url('site_logo', 'wp-content/uploads/2024/06/logo.png');
 $uri = $_SERVER['REQUEST_URI'] ?? '';
 $isHome     = (preg_match('/^\/(tpv-new-website\/)?(index\.php)?$/', $uri)) ? 'current-menu-ancestor current-menu-parent' : '';

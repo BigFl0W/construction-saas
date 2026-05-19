@@ -30,6 +30,21 @@ $companyEmail = $settings->get('company_email', 'info@tpvconstruction.com.ng');
 $companyPhone = $settings->get('company_phone', '+234 701 234 5678');
 $companyAddress = $settings->get('company_address', '2nd Floor, Right Wing, APDC Building, Area 11, Abuja, Nigeria');
 $timezoneSetting = $settings->get('timezone', 'Africa/Lagos');
+$aboutIntroEyebrow = $settings->get('about_intro_eyebrow', 'Welcome to TPV');
+$aboutIntroTitle = $settings->get('about_intro_title', 'TPV Construction and Services LTD<br>Company');
+$aboutIntroBody = $settings->get('about_intro_body', "Serving Nigeria's construction needs since 2008 with excellence and innovation. TPV Construction and Services LTD has established itself as a trusted name in Nigeria's construction industry, delivering exceptional projects across residential, commercial, and industrial sectors. Our commitment to quality, safety, and sustainable building practices has made us the preferred choice for discerning clients throughout Nigeria.");
+$aboutFeatureOne = $settings->get('about_feature_1', 'Comprehensive Services');
+$aboutFeatureTwo = $settings->get('about_feature_2', 'Advanced Technology');
+$aboutFeatureThree = $settings->get('about_feature_3', 'Transparent Communication');
+$aboutQuoteButton = $settings->get('about_quote_button_text', 'Get Free Quote');
+$aboutSupportLabel = $settings->get('about_support_label', 'call support center 24X7');
+$aboutStoryTitle = $settings->get('about_story_title', 'TPV Construction and Services LTD');
+$aboutStoryBody = $settings->get('about_story_body', 'With over 15 years of experience and hundreds of successful projects across Nigeria, TPV Construction and Services LTD has established itself as a trusted name in the construction industry.');
+$aboutBottomCtaBody = $settings->get('about_bottom_cta_body', "From residential homes in Lagos to commercial complexes in Abuja, TPV Construction and Services LTD delivers excellence across Nigeria. Let's bring your vision to life with quality craftsmanship and professional service.");
+$aboutIntroImage = $settings->get('about_intro_image', 'wp-content/uploads/2024/06/about-us-img.png');
+$aboutHistoryImage = $settings->get('about_history_image', 'wp-content/uploads/2024/06/company-history-img.jpg');
+$aboutVideoBackgroundImage = $settings->get('about_video_bg_image', 'wp-content/uploads/2024/06/video-bg.jpg');
+$aboutCtaImage = $settings->get('about_cta_image', 'wp-content/uploads/2024/06/cta-box-img.png');
 
 $normalizationMap = [
     'company_name' => ['current' => $companyName, 'replacement' => 'TPV Construction and Services LTD'],
@@ -77,7 +92,7 @@ $companyPhone = $settings->get('company_phone', '+234 701 234 5678');
 $companyAddress = $settings->get('company_address', '2nd Floor, Right Wing, APDC Building, Area 11, Abuja, Nigeria');
 $timezoneSetting = $settings->get('timezone', 'Africa/Lagos');
 
-function handleBrandingUpload($fileKey, $targetName) {
+function handleAssetUpload($fileKey, $targetName, $subDirectory = 'branding') {
     if (!isset($_FILES[$fileKey]) || !is_array($_FILES[$fileKey]) || ($_FILES[$fileKey]['error'] ?? UPLOAD_ERR_NO_FILE) === UPLOAD_ERR_NO_FILE) {
         return null;
     }
@@ -88,24 +103,24 @@ function handleBrandingUpload($fileKey, $targetName) {
     }
 
     if (($file['size'] ?? 0) > MAX_FILE_SIZE) {
-        throw new Exception('Uploaded logo exceeds the 5MB size limit.');
+        throw new Exception('Uploaded file exceeds the 5MB size limit.');
     }
 
     $extension = strtolower(pathinfo($file['name'] ?? '', PATHINFO_EXTENSION));
     $allowed = ['png', 'jpg', 'jpeg', 'svg', 'webp'];
     if (!in_array($extension, $allowed, true)) {
-        throw new Exception('Only PNG, JPG, JPEG, SVG, and WEBP logos are allowed.');
+        throw new Exception('Only PNG, JPG, JPEG, SVG, and WEBP files are allowed.');
     }
 
-    $brandingDir = UPLOAD_PATH . 'branding/';
-    if (!is_dir($brandingDir)) {
-        mkdir($brandingDir, 0755, true);
+    $assetDir = rtrim(UPLOAD_PATH, '/\\') . '/' . trim($subDirectory, '/\\') . '/';
+    if (!is_dir($assetDir)) {
+        mkdir($assetDir, 0755, true);
     }
 
-    $relativePath = 'uploads/branding/' . $targetName . '.' . $extension;
+    $relativePath = 'uploads/' . trim($subDirectory, '/\\') . '/' . $targetName . '.' . $extension;
     $absolutePath = dirname(__DIR__) . '/' . $relativePath;
 
-    foreach (glob($brandingDir . $targetName . '.*') ?: [] as $existingFile) {
+    foreach (glob($assetDir . $targetName . '.*') ?: [] as $existingFile) {
         if (is_file($existingFile)) {
             @unlink($existingFile);
         }
@@ -128,14 +143,34 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
                 $group = $_POST['groups'][$key] ?? 'general';
                 $settings->set($key, $value, $group);
             }
-            $uploadedSiteLogo = handleBrandingUpload('site_logo_file', 'site-logo');
+            $uploadedSiteLogo = handleAssetUpload('site_logo_file', 'site-logo');
             if ($uploadedSiteLogo) {
                 $settings->set('site_logo', $uploadedSiteLogo, 'branding');
             }
 
-            $uploadedFooterLogo = handleBrandingUpload('footer_logo_file', 'footer-logo');
+            $uploadedFooterLogo = handleAssetUpload('footer_logo_file', 'footer-logo');
             if ($uploadedFooterLogo) {
                 $settings->set('footer_logo', $uploadedFooterLogo, 'branding');
+            }
+
+            $uploadedAboutIntroImage = handleAssetUpload('about_intro_image_file', 'about-intro-image', 'about');
+            if ($uploadedAboutIntroImage) {
+                $settings->set('about_intro_image', $uploadedAboutIntroImage, 'content');
+            }
+
+            $uploadedAboutHistoryImage = handleAssetUpload('about_history_image_file', 'about-history-image', 'about');
+            if ($uploadedAboutHistoryImage) {
+                $settings->set('about_history_image', $uploadedAboutHistoryImage, 'content');
+            }
+
+            $uploadedAboutVideoBgImage = handleAssetUpload('about_video_bg_image_file', 'about-video-bg-image', 'about');
+            if ($uploadedAboutVideoBgImage) {
+                $settings->set('about_video_bg_image', $uploadedAboutVideoBgImage, 'content');
+            }
+
+            $uploadedAboutCtaImage = handleAssetUpload('about_cta_image_file', 'about-cta-image', 'about');
+            if ($uploadedAboutCtaImage) {
+                $settings->set('about_cta_image', $uploadedAboutCtaImage, 'content');
             }
             $_SESSION['toast_success'] = 'Settings updated successfully.';
         } elseif ($_POST['action'] === 'add') {
@@ -197,7 +232,22 @@ $managedSettingKeys = [
     'footer_instagram_url',
     'footer_facebook_url',
     'footer_twitter_url',
-    'footer_linkedin_url'
+    'footer_linkedin_url',
+    'about_intro_eyebrow',
+    'about_intro_title',
+    'about_intro_body',
+    'about_feature_1',
+    'about_feature_2',
+    'about_feature_3',
+    'about_quote_button_text',
+    'about_support_label',
+    'about_story_title',
+    'about_story_body',
+    'about_bottom_cta_body',
+    'about_intro_image',
+    'about_history_image',
+    'about_video_bg_image',
+    'about_cta_image'
 ];
 foreach ($allSettings as $s) {
     if (in_array($s['setting_key'], $managedSettingKeys, true)) {
@@ -290,6 +340,114 @@ require 'inc/admin_header.php';
                                         </div>
                                         <input type="file" name="footer_logo_file" class="form-control" accept=".png,.jpg,.jpeg,.svg,.webp">
                                         <div class="form-text">Used in the main website footer.</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card card-default mb-3">
+                            <div class="card-header">
+                                <div class="card-title d-flex align-items-center">
+                                    <i class="fas fa-address-card me-2"></i>
+                                    About Page Content
+                                </div>
+                            </div>
+                            <div class="card-body">
+                                <div class="row g-4">
+                                    <div class="col-md-6">
+                                        <label class="form-label fw-semibold">Intro Eyebrow</label>
+                                        <input type="hidden" name="groups[about_intro_eyebrow]" value="content">
+                                        <input type="text" name="settings[about_intro_eyebrow]" class="form-control" value="<?php echo htmlspecialchars($aboutIntroEyebrow); ?>">
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label fw-semibold">Quote Button Text</label>
+                                        <input type="hidden" name="groups[about_quote_button_text]" value="content">
+                                        <input type="text" name="settings[about_quote_button_text]" class="form-control" value="<?php echo htmlspecialchars($aboutQuoteButton); ?>">
+                                    </div>
+                                    <div class="col-12">
+                                        <label class="form-label fw-semibold">Intro Title</label>
+                                        <input type="hidden" name="groups[about_intro_title]" value="content">
+                                        <textarea name="settings[about_intro_title]" class="form-control" rows="2"><?php echo htmlspecialchars($aboutIntroTitle); ?></textarea>
+                                        <div class="form-text">You can use simple HTML like &lt;br&gt; for line breaks.</div>
+                                    </div>
+                                    <div class="col-12">
+                                        <label class="form-label fw-semibold">Intro Body</label>
+                                        <input type="hidden" name="groups[about_intro_body]" value="content">
+                                        <textarea name="settings[about_intro_body]" class="form-control" rows="5"><?php echo htmlspecialchars($aboutIntroBody); ?></textarea>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <label class="form-label fw-semibold">Feature 1</label>
+                                        <input type="hidden" name="groups[about_feature_1]" value="content">
+                                        <input type="text" name="settings[about_feature_1]" class="form-control" value="<?php echo htmlspecialchars($aboutFeatureOne); ?>">
+                                    </div>
+                                    <div class="col-md-4">
+                                        <label class="form-label fw-semibold">Feature 2</label>
+                                        <input type="hidden" name="groups[about_feature_2]" value="content">
+                                        <input type="text" name="settings[about_feature_2]" class="form-control" value="<?php echo htmlspecialchars($aboutFeatureTwo); ?>">
+                                    </div>
+                                    <div class="col-md-4">
+                                        <label class="form-label fw-semibold">Feature 3</label>
+                                        <input type="hidden" name="groups[about_feature_3]" value="content">
+                                        <input type="text" name="settings[about_feature_3]" class="form-control" value="<?php echo htmlspecialchars($aboutFeatureThree); ?>">
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label fw-semibold">Support Label</label>
+                                        <input type="hidden" name="groups[about_support_label]" value="content">
+                                        <input type="text" name="settings[about_support_label]" class="form-control" value="<?php echo htmlspecialchars($aboutSupportLabel); ?>">
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label fw-semibold">Story Title</label>
+                                        <input type="hidden" name="groups[about_story_title]" value="content">
+                                        <input type="text" name="settings[about_story_title]" class="form-control" value="<?php echo htmlspecialchars($aboutStoryTitle); ?>">
+                                    </div>
+                                    <div class="col-12">
+                                        <label class="form-label fw-semibold">Story Body</label>
+                                        <input type="hidden" name="groups[about_story_body]" value="content">
+                                        <textarea name="settings[about_story_body]" class="form-control" rows="4"><?php echo htmlspecialchars($aboutStoryBody); ?></textarea>
+                                    </div>
+                                    <div class="col-12">
+                                        <label class="form-label fw-semibold">Bottom CTA Body</label>
+                                        <input type="hidden" name="groups[about_bottom_cta_body]" value="content">
+                                        <textarea name="settings[about_bottom_cta_body]" class="form-control" rows="4"><?php echo htmlspecialchars($aboutBottomCtaBody); ?></textarea>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card card-default mb-3">
+                            <div class="card-header">
+                                <div class="card-title d-flex align-items-center">
+                                    <i class="fas fa-images me-2"></i>
+                                    About Page Images
+                                </div>
+                            </div>
+                            <div class="card-body">
+                                <div class="row g-4">
+                                    <div class="col-md-6">
+                                        <label class="form-label fw-semibold">Intro Section Image</label>
+                                        <div class="border rounded-3 p-3 bg-light mb-2 text-center">
+                                            <img src="<?php echo htmlspecialchars(tpv_asset_url($aboutIntroImage)); ?>" alt="About intro preview" style="max-width: 180px; max-height: 140px; width: auto; height: auto;">
+                                        </div>
+                                        <input type="file" name="about_intro_image_file" class="form-control" accept=".png,.jpg,.jpeg,.svg,.webp">
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label fw-semibold">History Section Image</label>
+                                        <div class="border rounded-3 p-3 bg-light mb-2 text-center">
+                                            <img src="<?php echo htmlspecialchars(tpv_asset_url($aboutHistoryImage)); ?>" alt="About history preview" style="max-width: 180px; max-height: 140px; width: auto; height: auto;">
+                                        </div>
+                                        <input type="file" name="about_history_image_file" class="form-control" accept=".png,.jpg,.jpeg,.svg,.webp">
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label fw-semibold">Video Background Image</label>
+                                        <div class="border rounded-3 p-3 bg-light mb-2 text-center">
+                                            <img src="<?php echo htmlspecialchars(tpv_asset_url($aboutVideoBackgroundImage)); ?>" alt="About video background preview" style="max-width: 180px; max-height: 140px; width: auto; height: auto;">
+                                        </div>
+                                        <input type="file" name="about_video_bg_image_file" class="form-control" accept=".png,.jpg,.jpeg,.svg,.webp">
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label fw-semibold">Bottom CTA Image</label>
+                                        <div class="border rounded-3 p-3 bg-light mb-2 text-center">
+                                            <img src="<?php echo htmlspecialchars(tpv_asset_url($aboutCtaImage)); ?>" alt="About CTA preview" style="max-width: 180px; max-height: 140px; width: auto; height: auto;">
+                                        </div>
+                                        <input type="file" name="about_cta_image_file" class="form-control" accept=".png,.jpg,.jpeg,.svg,.webp">
                                     </div>
                                 </div>
                             </div>

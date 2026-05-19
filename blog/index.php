@@ -87,14 +87,7 @@ $baseUrl = 'https://project.tpvconstruction.com.ng';
 
 <body class="blog wp-custom-logo wp-theme-tpv tt-magic-cursor elementor-default elementor-kit-7">
 
-	<div class="preloader">
-		<div class="loading-container">
-			<div class="loading"></div>
-			<div id="loading-icon"><img src="../wp-content/themes/tpv/assets/images/loader.png" alt=""></div>
-		</div>
-	</div>
-	<div id="magic-cursor">
-		<div id="ball"></div>
+	
 	</div>
 
 	<a class="skip-link screen-reader-text" href="#content">Skip to content</a>
