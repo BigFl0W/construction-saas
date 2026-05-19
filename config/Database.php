@@ -5,30 +5,15 @@
  * Uses environment variables for configuration
  */
 
+require_once __DIR__ . '/env.php';
+
 class Database {
     private static $instance = null;
     private $connection;
     private $environment;
     
     // Database configurations for different environments
-    private $dbConfig = [
-        'local' => [
-            'host' => 'localhost',
-            'name' => 'construction_db',
-            'user' => 'root',
-            'pass' => '',
-            'charset' => 'utf8mb4',
-            'port' => '3306'
-        ],
-        'production' => [
-            'host' => 'localhost', // Set your production host
-            'name' => 'tpvcons1_database', // Set your production database name
-            'user' => 'tpvcons1_database', // Set your production username
-            'pass' => '!@#admin!@#', // Set your production password
-            'charset' => 'utf8mb4',
-            'port' => '3306'
-        ]
-    ];
+    private $dbConfig = [];
     
     /**
      * Private constructor to prevent direct creation of object
@@ -36,6 +21,7 @@ class Database {
     private function __construct() {
         // Auto-detect environment (you can also set a constant)
         $this->environment = $this->detectEnvironment();
+        $this->dbConfig = $this->resolveDbConfig();
         $this->connect();
     }
     
@@ -43,6 +29,11 @@ class Database {
      * Detect if we're in local or production environment
      */
     private function detectEnvironment() {
+        $appEnv = strtolower((string) tpv_env('APP_ENV', ''));
+        if ($appEnv !== '') {
+            return in_array($appEnv, ['local', 'development'], true) ? 'local' : 'production';
+        }
+
         // Check if we're on localhost
         $whitelist = ['127.0.0.1', '::1', 'localhost'];
         
@@ -59,39 +50,82 @@ class Database {
         // Default to production for safety
         return 'production';
     }
+
+    private function resolveDbConfig() {
+        $defaultLocal = [
+            'host' => 'localhost',
+            'name' => 'construction_db',
+            'user' => 'root',
+            'pass' => '',
+            'charset' => 'utf8mb4',
+            'port' => '3306'
+        ];
+
+        $dbName = tpv_env('DB_NAME', $this->environment === 'local' ? $defaultLocal['name'] : '');
+        $dbUser = tpv_env('DB_USER', $this->environment === 'local' ? $defaultLocal['user'] : '');
+        $dbPass = tpv_env('DB_PASS', $this->environment === 'local' ? $defaultLocal['pass'] : '');
+
+        return [
+            'local' => [
+                'host' => tpv_env('DB_HOST', $defaultLocal['host']),
+                'name' => $dbName !== '' ? $dbName : $defaultLocal['name'],
+                'user' => $dbUser !== '' ? $dbUser : $defaultLocal['user'],
+                'pass' => $dbPass,
+                'charset' => tpv_env('DB_CHARSET', $defaultLocal['charset']),
+                'port' => tpv_env('DB_PORT', $defaultLocal['port'])
+            ],
+            'production' => [
+                'host' => tpv_env('DB_HOST', 'localhost'),
+                'name' => $dbName,
+                'user' => $dbUser,
+                'pass' => $dbPass,
+                'charset' => tpv_env('DB_CHARSET', 'utf8mb4'),
+                'port' => tpv_env('DB_PORT', '3306')
+            ]
+        ];
+    }
     
     /**
      * Establish PDO connection
      */
     private function connect() {
-    $config = $this->dbConfig[$this->environment];
-    
-    $dsn = sprintf(
-        "mysql:host=%s;dbname=%s;charset=%s;port=%s",
-        $config['host'],
-        $config['name'],
-        $config['charset'],
-        $config['port']
-    );
-    
-    $options = [
-        PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
-        PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
-        PDO::ATTR_EMULATE_PREPARES => false,
-        PDO::MYSQL_ATTR_INIT_COMMAND => "SET NAMES utf8mb4 COLLATE utf8mb4_unicode_ci"
-    ];
-    
-    try {
-        $this->connection = new PDO($dsn, $config['user'], $config['pass'], $options);
-        error_log("Database connected successfully to " . $config['name'] . " on " . $config['host']);
-    } catch (PDOException $e) {
-        error_log("DATABASE CONNECTION FATAL ERROR: " . $e->getMessage());
-        error_log("DSN: " . $dsn);
-        error_log("User: " . $config['user']);
-        error_log("Environment: " . $this->environment);
-        die("Database connection failed. Please check error logs.");
+        $config = $this->dbConfig[$this->environment];
+
+        if (
+            trim((string) ($config['host'] ?? '')) === '' ||
+            trim((string) ($config['name'] ?? '')) === '' ||
+            trim((string) ($config['user'] ?? '')) === ''
+        ) {
+            error_log('DATABASE CONFIGURATION ERROR: Required DB environment values are missing.');
+            die('Database configuration is incomplete. Please review your environment settings.');
+        }
+
+        $dsn = sprintf(
+            "mysql:host=%s;dbname=%s;charset=%s;port=%s",
+            $config['host'],
+            $config['name'],
+            $config['charset'],
+            $config['port']
+        );
+
+        $options = [
+            PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
+            PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
+            PDO::ATTR_EMULATE_PREPARES => false,
+            PDO::MYSQL_ATTR_INIT_COMMAND => "SET NAMES utf8mb4 COLLATE utf8mb4_unicode_ci"
+        ];
+
+        try {
+            $this->connection = new PDO($dsn, $config['user'], $config['pass'], $options);
+            error_log("Database connected successfully to " . $config['name'] . " on " . $config['host']);
+        } catch (PDOException $e) {
+            error_log("DATABASE CONNECTION FATAL ERROR: " . $e->getMessage());
+            error_log("DSN: " . $dsn);
+            error_log("User: " . $config['user']);
+            error_log("Environment: " . $this->environment);
+            die("Database connection failed. Please check error logs.");
+        }
     }
-}
     /**
      * Test database connection and return detailed status
      * This method can be used for debugging or connection testing

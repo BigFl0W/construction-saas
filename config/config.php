@@ -3,13 +3,24 @@
  * Main Configuration File
  */
 
+require_once __DIR__ . '/env.php';
+
+$serverName = $_SERVER['SERVER_NAME'] ?? '';
+$remoteAddr = $_SERVER['REMOTE_ADDR'] ?? '';
+$isLocalEnvironment = in_array($serverName, ['localhost', '127.0.0.1'], true)
+    || in_array($remoteAddr, ['127.0.0.1', '::1'], true)
+    || tpv_env('APP_ENV', '') === 'local';
+
+$configuredEnvironment = tpv_env('APP_ENV', $isLocalEnvironment ? 'development' : 'production');
+$debugEnabled = tpv_env_bool('APP_DEBUG', $configuredEnvironment !== 'production');
+
 // Error reporting (turn off in production)
-if ($_SERVER['SERVER_NAME'] === 'localhost' || $_SERVER['REMOTE_ADDR'] === '127.0.0.1') {
+if ($debugEnabled) {
     error_reporting(E_ALL);
-    ini_set('display_errors', 1);
+    ini_set('display_errors', '1');
 } else {
     error_reporting(0);
-    ini_set('display_errors', 0);
+    ini_set('display_errors', '0');
 }
 
 // Session configuration
@@ -21,7 +32,7 @@ if (!headers_sent()) {
 }
 
 // Constants
-define('SITE_NAME', 'TPV Construction and Services LTD');
+define('SITE_NAME', tpv_env('SITE_NAME', 'TPV Construction and Services LTD'));
 $documentRoot = str_replace('\\', '/', realpath($_SERVER['DOCUMENT_ROOT'] ?? '') ?: ($_SERVER['DOCUMENT_ROOT'] ?? ''));
 $projectRoot = str_replace('\\', '/', realpath(dirname(__DIR__)) ?: dirname(__DIR__));
 $basePath = '';
@@ -32,11 +43,17 @@ $basePath = '/' . trim($basePath, '/');
 if ($basePath === '/') {
     $basePath = '';
 }
-define('SITE_URL', 'http://' . $_SERVER['HTTP_HOST'] . $basePath . '/');
+
+$requestScheme = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ? 'https' : 'http';
+$detectedSiteUrl = $requestScheme . '://' . ($_SERVER['HTTP_HOST'] ?? 'localhost') . $basePath . '/';
+$configuredSiteUrl = tpv_env('APP_URL', '');
+$siteUrl = $configuredSiteUrl !== '' ? rtrim($configuredSiteUrl, '/') . '/' : $detectedSiteUrl;
+
+define('SITE_URL', $siteUrl);
 define('UPLOAD_PATH', __DIR__ . '/../uploads/');
 define('UPLOAD_URL', SITE_URL . 'uploads/');
 define('MAX_FILE_SIZE', 5 * 1024 * 1024); // 5MB
-define('ENVIRONMENT', (in_array($_SERVER['SERVER_NAME'], ['localhost', '127.0.0.1']) ? 'development' : 'production'));
+define('ENVIRONMENT', $configuredEnvironment);
 
 // Auto-loader (simple)
 spl_autoload_register(function ($class) {
@@ -56,7 +73,7 @@ spl_autoload_register(function ($class) {
 });
 
 // Timezone
-$resolvedTimezone = 'Africa/Lagos';
+$resolvedTimezone = tpv_env('APP_TIMEZONE', 'Africa/Lagos');
 try {
     $pdo = Database::getInstance()->getConnection();
     $stmt = $pdo->prepare("SELECT setting_value FROM settings WHERE setting_key = 'timezone' LIMIT 1");

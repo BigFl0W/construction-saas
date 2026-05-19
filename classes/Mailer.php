@@ -1,5 +1,6 @@
 <?php
 require_once dirname(__DIR__) . '/config/Database.php';
+require_once dirname(__DIR__) . '/config/env.php';
 require_once dirname(__DIR__) . '/includes/email-template.php';
 require_once dirname(__DIR__) . '/classes/Settings.php';
 require_once dirname(__DIR__) . '/lib/PHPMailer/Exception.php';
@@ -27,19 +28,22 @@ class Mailer {
         $defaultCompany = $this->settings ? $this->settings->get('company_name', 'TPV Construction and Services LTD') : 'TPV Construction and Services LTD';
         $configuredFromEmail = $this->settings ? trim((string) $this->settings->get('smtp_from_email', '')) : '';
         $configuredFromName = $this->settings ? trim((string) $this->settings->get('smtp_from_name', '')) : '';
-        $this->fromEmail = $configuredFromEmail !== '' ? $configuredFromEmail : (getenv('RESEND_FROM_EMAIL') ?: 'onboarding@resend.dev');
+        $envFromEmail = tpv_env('MAIL_FROM_ADDRESS', tpv_env('RESEND_FROM_EMAIL', ''));
+        $this->fromEmail = $configuredFromEmail !== '' ? $configuredFromEmail : ($envFromEmail !== '' ? $envFromEmail : 'onboarding@resend.dev');
         $this->fromName = $defaultCompany;
         $this->companyName = $defaultCompany;
         if ($configuredFromName !== '') {
             $this->fromName = $configuredFromName;
+        } elseif (($envFromName = tpv_env('MAIL_FROM_NAME', '')) !== '') {
+            $this->fromName = $envFromName;
         }
-        $this->resendApiKey = getenv('RESEND_API_KEY') ?: 're_DFJ5tJNL_KqzKcxPwbfuuuJGpXwHAaJKg';
-        $this->mailDriver = $this->settings ? trim((string) $this->settings->get('mail_driver', 'phpmailer')) : 'phpmailer';
-        $this->smtpHost = $this->settings ? trim((string) $this->settings->get('smtp_host', '')) : '';
-        $this->smtpPort = (int) ($this->settings ? $this->settings->get('smtp_port', '587') : 587);
-        $this->smtpUsername = $this->settings ? trim((string) $this->settings->get('smtp_username', '')) : '';
-        $this->smtpPassword = $this->settings ? trim((string) $this->settings->get('smtp_password', '')) : '';
-        $this->smtpEncryption = $this->settings ? trim((string) $this->settings->get('smtp_encryption', 'tls')) : 'tls';
+        $this->resendApiKey = tpv_env('RESEND_API_KEY', '');
+        $this->mailDriver = $this->settings ? trim((string) $this->settings->get('mail_driver', tpv_env('MAIL_DRIVER', 'phpmailer'))) : tpv_env('MAIL_DRIVER', 'phpmailer');
+        $this->smtpHost = $this->settings ? trim((string) $this->settings->get('smtp_host', tpv_env('SMTP_HOST', ''))) : tpv_env('SMTP_HOST', '');
+        $this->smtpPort = (int) ($this->settings ? $this->settings->get('smtp_port', tpv_env('SMTP_PORT', '587')) : tpv_env('SMTP_PORT', '587'));
+        $this->smtpUsername = $this->settings ? trim((string) $this->settings->get('smtp_username', tpv_env('SMTP_USERNAME', ''))) : tpv_env('SMTP_USERNAME', '');
+        $this->smtpPassword = $this->settings ? trim((string) $this->settings->get('smtp_password', tpv_env('SMTP_PASSWORD', ''))) : tpv_env('SMTP_PASSWORD', '');
+        $this->smtpEncryption = $this->settings ? trim((string) $this->settings->get('smtp_encryption', tpv_env('SMTP_ENCRYPTION', 'tls'))) : tpv_env('SMTP_ENCRYPTION', 'tls');
     }
 
     public function send($to, $subject, $body, $replyTo = null) {
