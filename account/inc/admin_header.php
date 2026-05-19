@@ -11,6 +11,26 @@ $toastWarning = $_SESSION['toast_warning'] ?? '';
 $toastInfo = $_SESSION['toast_info'] ?? '';
 unset($_SESSION['toast_success'], $_SESSION['toast_error'], $_SESSION['toast_warning'], $_SESSION['toast_info']);
 unset($_SESSION['blog_success'], $_SESSION['blog_error']);
+
+$unreadContactNotifications = 0;
+$recentContactNotifications = [];
+try {
+    $headerDb = Database::getInstance();
+    $contactTableExists = $headerDb->query("SHOW TABLES LIKE 'contact_submissions'")->fetchColumn();
+    if ($contactTableExists) {
+        $unreadContactNotifications = (int) $headerDb->query("SELECT COUNT(*) FROM contact_submissions WHERE status = 'unread'")->fetchColumn();
+        $recentContactNotifications = $headerDb->query(
+            "SELECT id, name, email, subject, created_at, status
+             FROM contact_submissions
+             WHERE status = 'unread'
+             ORDER BY created_at DESC
+             LIMIT 5"
+        )->fetchAll();
+    }
+} catch (Exception $e) {
+    $unreadContactNotifications = 0;
+    $recentContactNotifications = [];
+}
 ?>
 <!doctype html>
 <html lang="en">
@@ -176,6 +196,144 @@ unset($_SESSION['blog_success'], $_SESSION['blog_error']);
         }
         .header .thumbnail-wrapper { display: inline-block; overflow: hidden; border-radius: 50%; }
         .header .thumbnail-wrapper img { display: block; }
+        .notification-bell {
+            position: relative;
+            width: 40px;
+            height: 40px;
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            background: #fff;
+            color: #334155;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s ease;
+            box-shadow: 0 4px 12px rgba(15, 23, 42, 0.04);
+        }
+        .notification-bell:hover {
+            color: #0f172a;
+            border-color: rgba(var(--accent-rgb), 0.4);
+            box-shadow: 0 10px 20px rgba(15, 23, 42, 0.08);
+        }
+        .notification-badge {
+            position: absolute;
+            top: -6px;
+            right: -6px;
+            min-width: 20px;
+            height: 20px;
+            padding: 0 6px;
+            border-radius: 999px;
+            background: #dc2626;
+            color: #fff;
+            font-size: 0.68rem;
+            font-weight: 700;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 8px 20px rgba(220, 38, 38, 0.25);
+        }
+        .nav-pill-badge {
+            margin-left: auto;
+            min-width: 22px;
+            height: 22px;
+            padding: 0 7px;
+            border-radius: 999px;
+            background: rgba(220, 38, 38, 0.16);
+            color: #fca5a5;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.7rem;
+            font-weight: 700;
+        }
+        .notification-dropdown {
+            width: 360px;
+            padding: 0;
+            border: none;
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 24px 40px rgba(15, 23, 42, 0.14);
+        }
+        .notification-dropdown-header {
+            padding: 16px 18px 12px;
+            border-bottom: 1px solid #eef2f7;
+            background: #fff;
+        }
+        .notification-dropdown-header h6 {
+            margin: 0;
+            font-size: 0.95rem;
+            font-weight: 700;
+            color: #0f172a;
+        }
+        .notification-dropdown-header p {
+            margin: 4px 0 0;
+            font-size: 0.78rem;
+            color: #64748b;
+        }
+        .notification-dropdown-body {
+            max-height: 360px;
+            overflow-y: auto;
+            background: #fff;
+        }
+        .notification-item {
+            display: block;
+            padding: 14px 18px;
+            border-bottom: 1px solid #f1f5f9;
+            color: inherit;
+            text-decoration: none;
+            transition: background 0.2s ease;
+        }
+        .notification-item:hover {
+            background: #f8fafc;
+            color: inherit;
+        }
+        .notification-item:last-child {
+            border-bottom: none;
+        }
+        .notification-item-title {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+            margin-bottom: 4px;
+        }
+        .notification-item-title strong {
+            color: #0f172a;
+            font-size: 0.85rem;
+        }
+        .notification-item-time {
+            color: #94a3b8;
+            font-size: 0.72rem;
+            white-space: nowrap;
+        }
+        .notification-item-meta,
+        .notification-item-subject {
+            margin: 0;
+            font-size: 0.78rem;
+            color: #64748b;
+            line-height: 1.45;
+        }
+        .notification-dropdown-footer {
+            padding: 12px 18px;
+            border-top: 1px solid #eef2f7;
+            background: #fbfdff;
+            text-align: center;
+        }
+        .notification-dropdown-footer a {
+            font-size: 0.82rem;
+            font-weight: 700;
+        }
+        .notification-empty {
+            padding: 28px 18px;
+            text-align: center;
+            color: #94a3b8;
+        }
+        .notification-empty i {
+            display: block;
+            font-size: 1.25rem;
+            margin-bottom: 8px;
+            color: #cbd5e1;
+        }
 
         /* ===== PAGE CONTENT ===== */
         .page-content-wrapper { flex: 1; padding: 20px; }
@@ -837,6 +995,9 @@ unset($_SESSION['blog_success'], $_SESSION['blog_error']);
                 <a href="contact_messages.php">
                     <span class="icon-thumbnail"><i class="fas fa-inbox"></i></span>
                     <span class="title">Contact Messages</span>
+                    <?php if ($unreadContactNotifications > 0): ?>
+                        <span class="nav-pill-badge"><?php echo $unreadContactNotifications > 99 ? '99+' : $unreadContactNotifications; ?></span>
+                    <?php endif; ?>
                 </a>
             </li>
             <li class="<?php echo navActive('admin_users'); ?>">
@@ -861,6 +1022,48 @@ unset($_SESSION['blog_success'], $_SESSION['blog_error']);
         <div class="brand"><img src="assets/img/logo.png" width="78" /></div>
         <a href="projects.php?action=new" class="btn btn-primary btn-sm d-none d-lg-inline-flex"><i class="fas fa-plus me-1"></i> New project</a>
         <div class="ms-auto d-flex align-items-center gap-2">
+            <div class="dropdown">
+                <button class="notification-bell" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="View contact notifications">
+                    <i class="fas fa-bell"></i>
+                    <?php if ($unreadContactNotifications > 0): ?>
+                        <span class="notification-badge"><?php echo $unreadContactNotifications > 99 ? '99+' : $unreadContactNotifications; ?></span>
+                    <?php endif; ?>
+                </button>
+                <div class="dropdown-menu dropdown-menu-end notification-dropdown">
+                    <div class="notification-dropdown-header">
+                        <h6>New Enquiries</h6>
+                        <p>
+                            <?php if ($unreadContactNotifications > 0): ?>
+                                You have <?php echo $unreadContactNotifications; ?> unread contact <?php echo $unreadContactNotifications === 1 ? 'message' : 'messages'; ?>.
+                            <?php else: ?>
+                                No new contact messages right now.
+                            <?php endif; ?>
+                        </p>
+                    </div>
+                    <div class="notification-dropdown-body">
+                        <?php if (!empty($recentContactNotifications)): ?>
+                            <?php foreach ($recentContactNotifications as $notification): ?>
+                                <a class="notification-item" href="contact_messages.php?status=unread&focus=<?php echo (int) $notification['id']; ?>#message-<?php echo (int) $notification['id']; ?>">
+                                    <div class="notification-item-title">
+                                        <strong><?php echo htmlspecialchars($notification['name'] ?: 'New contact'); ?></strong>
+                                        <span class="notification-item-time"><?php echo htmlspecialchars(date('d M, H:i', strtotime($notification['created_at']))); ?></span>
+                                    </div>
+                                    <p class="notification-item-meta"><?php echo htmlspecialchars($notification['email']); ?></p>
+                                    <p class="notification-item-subject"><?php echo htmlspecialchars(mb_strimwidth((string) ($notification['subject'] ?: 'Website enquiry'), 0, 70, '...')); ?></p>
+                                </a>
+                            <?php endforeach; ?>
+                        <?php else: ?>
+                            <div class="notification-empty">
+                                <i class="fas fa-inbox"></i>
+                                Your inbox is clear.
+                            </div>
+                        <?php endif; ?>
+                    </div>
+                    <div class="notification-dropdown-footer">
+                        <a href="contact_messages.php">Open Contact Messages</a>
+                    </div>
+                </div>
+            </div>
             <span class="d-none d-lg-inline text-muted small">
                 <span class="fw-semibold"><?php echo htmlspecialchars($userName); ?></span>
                 <span class="ms-1"><?php echo htmlspecialchars($currentUser['user_type'] ?? ''); ?></span>

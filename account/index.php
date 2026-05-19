@@ -471,6 +471,37 @@ body {
         <p>Here’s what is happening with your projects today.</p>
     </div>
 
+    <?php if ($unreadContactCount > 0): ?>
+    <div class="modern-card" style="border:1px solid rgba(220,38,38,0.12); box-shadow: 0 16px 30px -24px rgba(220,38,38,0.45);">
+        <div class="modern-card-body d-flex flex-column flex-lg-row align-items-lg-center justify-content-between gap-3">
+            <div class="d-flex align-items-start gap-3">
+                <div style="width:54px;height:54px;border-radius:16px;background:#fee2e2;color:#dc2626;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                    <i class="fas fa-bell" style="font-size:1.2rem;"></i>
+                </div>
+                <div>
+                    <div class="d-flex align-items-center flex-wrap gap-2 mb-1">
+                        <h3 class="modern-card-title mb-0">New contact enquiries waiting</h3>
+                        <span class="badge-modern danger"><?php echo number_format($unreadContactCount); ?> unread</span>
+                    </div>
+                    <p class="mb-0 text-muted">
+                        <?php if (!empty($recentContactMessages)): ?>
+                            Latest from <strong><?php echo htmlspecialchars($recentContactMessages[0]['name']); ?></strong>
+                            about <strong><?php echo htmlspecialchars($functions->truncateText($recentContactMessages[0]['subject'] ?: 'Website enquiry', 42)); ?></strong>.
+                        <?php else: ?>
+                            New messages have arrived from the website contact form.
+                        <?php endif; ?>
+                    </p>
+                </div>
+            </div>
+            <div class="d-flex gap-2">
+                <a href="contact_messages.php?status=unread" class="btn btn-danger">
+                    <i class="fas fa-inbox me-1"></i> Review Messages
+                </a>
+            </div>
+        </div>
+    </div>
+    <?php endif; ?>
+
     <!-- Metrics Row -->
     <div class="row">
         <div class="col-xl-3 col-lg-6 col-md-6">

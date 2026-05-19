@@ -116,6 +116,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 $filters = [];
 $where = [];
 $params = [];
+$focusMessageId = isset($_GET['focus']) ? (int) $_GET['focus'] : 0;
 
 if (isset($_GET['status']) && in_array($_GET['status'], ['unread', 'read', 'replied', 'archived'])) {
     $filters['status'] = $_GET['status'];
@@ -278,7 +279,7 @@ require 'inc/admin_header.php';
             </div>
             <?php else: ?>
             <?php foreach ($messages as $msg): ?>
-            <div class="message-card mb-3 <?php echo $msg['status'] === 'unread' ? 'unread' : ''; ?>">
+            <div id="message-<?php echo (int) $msg['id']; ?>" class="message-card mb-3 <?php echo $msg['status'] === 'unread' ? 'unread' : ''; ?> <?php echo $focusMessageId === (int) $msg['id'] ? 'focused' : ''; ?>">
                 <div class="message-header">
                     <div class="d-flex flex-wrap justify-content-between align-items-center w-100">
                         <div class="d-flex align-items-center gap-2">
@@ -431,6 +432,11 @@ require 'inc/admin_header.php';
     border-left: 4px solid #dc2626;
     background: #fffcfc;
 }
+.message-card.focused {
+    border-color: rgba(212,161,62,0.55);
+    box-shadow: 0 0 0 3px rgba(212,161,62,0.15), 0 16px 34px -24px rgba(212,161,62,0.5);
+    animation: focusedMessagePulse 1.8s ease-out 1;
+}
 .message-header {
     padding: 14px 18px;
     border-bottom: 1px solid #f1f5f9;
@@ -553,9 +559,14 @@ require 'inc/admin_header.php';
     border-radius: 6px;
     border: 1px solid #e2e8f0;
 }
+@keyframes focusedMessagePulse {
+    0% { box-shadow: 0 0 0 0 rgba(212,161,62,0.32); }
+    100% { box-shadow: 0 0 0 18px rgba(212,161,62,0); }
+}
 </style>
 
 <?php
+$focusMessageIdJs = (int) $focusMessageId;
 $extraScripts = <<<HEREDOC
 <script>
 $(function() {
@@ -576,6 +587,16 @@ $(function() {
         $('#replyModal textarea[name="reply_message"]').val('');
         $('#replyModal').modal('show');
     });
+
+    var focusMessageId = {$focusMessageIdJs};
+    if (focusMessageId) {
+        var focusedMessage = document.getElementById('message-' + focusMessageId);
+        if (focusedMessage) {
+            setTimeout(function() {
+                focusedMessage.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }, 150);
+        }
+    }
 });
 </script>
 HEREDOC;
