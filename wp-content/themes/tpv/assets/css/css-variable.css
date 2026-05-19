@@ -1,0 +1,11 @@
+body{
+	--e-global-color-primary					: #12223B;
+	--e-global-color-secondary					: #E9F7FE;
+	--e-global-color-text						: #667282;
+	--e-global-color-accent						: #E5363D;
+	--e-global-color-4271826					: #FFFFFF;
+	--e-global-color-17c0fac					: #12223B30;
+	--e-global-color-f6d07ed					: #FFFFFF20;
+	--e-global-typography-primary-font-family	: "Manrope", sans-serif;
+	--e-global-typography-text-font-family      : "DM Sans", sans-serif;
+}

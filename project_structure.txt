@@ -1,0 +1,142 @@
+Project structure for /Applications/XAMPP/xamppfiles/htdocs/tpv-new-website
+
+database.sql
+index.php
+post.php
+{slug}/
+	index.php
+10-essential-tips-for-choosing-the-right-builder/
+	index.php
+about-us/
+	index.php
+account/
+	404.html
+	500.html
+	blank_template.html
+	blog_approve.php
+	blog_categories.php
+	blog_comment_add.php
+	blog_comments.php
+	blog_delete.php
+	blog_edit.php
+	blog_list.php
+	blog_new.php
+	blog_posts.php
+	blog_save.php
+	blog_update.php
+	blog_view.php
+	boxed_layout.html
+	builder.html
+	buttons.html
+	calendar_lang.html
+	calendar_lazy.html
+	calendar_month.html
+	calendar.html
+	clients.html
+	color.html
+	default_layout.html
+	email_compose.html
+	email.html
+	favicon.ico
+	form_layouts.html
+	form_wizard.html
+	gallery.html
+	google_map.html
+	icons.html
+	index.php
+	invoice.html
+	lock_screen.html
+	login.php
+	logout.php
+	modals.html
+	nestables.html
+	notifications.html
+	progress.html
+	project_stages.html
+	projects.html
+	register.html
+	Screenshot 2026-02-22 at 9.41.01 AM.png
+	secondary_layout.html
+	sliders.html
+	social.html
+	tables.html
+	tabs_accordian.html
+	test_login.php
+	timeline.html
+	tree_view.html
+	typography.html
+	upload_editor_image.php
+	upload_featured.php
+	vector_map.html
+	views_from_top.html
+	views_push_parallax.html
+	views_push.html
+	views.html
+	assets/
+	pages/
+assets/
+	js/
+blog/
+	index.php
+	post.php
+category/
+	uncategorized/
+classes/
+	Auth.php
+	Blog.php
+	Functions.php
+config/
+	config.php
+	Database.php
+	test_connection.php
+contact-us/
+	index.php
+	trying.php
+faqs/
+	index.php
+home-slider/
+	index.html
+	index.php
+home-video/
+	index.php
+how-to-design-your-dream-home-a-step-by-step-guide/
+	index.php
+	feed/
+includes/
+	contact-form.php
+	footer.php
+	header.php
+logs/
+our-team/
+	index.php
+projects/
+	index.php
+	aspen-heights/
+	bayside-residences/
+	crescent-towers/
+	feed/
+	forest-hill-towers/
+	horizon-heights/
+	parkview-plaza/
+renovation-vs-new-construction/
+	index.php
+	feed/
+services/
+	index.php
+	architecture-design/
+	building-construction/
+	building-renovation/
+	interior-exterior/
+...
+tag/
+	...
+uploads/
+	blog/
+wp-content/
+	...
+wp-includes/
+	...
+wp-json/
+	...
+
+(Truncated view may omit additional files and folders.)
