@@ -336,6 +336,124 @@ if (empty($contactLocations)) {
             color: #64748b;
         }
 
+        .contact-success-card {
+            position: relative;
+            overflow: hidden;
+            background: linear-gradient(135deg, #f7fffb 0%, #eefbf5 52%, #e6f7ef 100%);
+            border: 1px solid rgba(16, 185, 129, 0.2);
+            border-radius: 28px;
+            padding: 38px 34px;
+            box-shadow: 0 24px 60px -35px rgba(15, 118, 110, 0.45);
+            color: #0f172a;
+        }
+        .contact-success-card::before {
+            content: '';
+            position: absolute;
+            inset: auto -60px -60px auto;
+            width: 220px;
+            height: 220px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(16, 185, 129, 0.18) 0%, rgba(16, 185, 129, 0) 70%);
+        }
+        .contact-success-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 16px;
+            border-radius: 999px;
+            background: rgba(255, 255, 255, 0.92);
+            color: #047857;
+            font-size: 13px;
+            font-weight: 800;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            box-shadow: 0 12px 28px -20px rgba(15, 23, 42, 0.4);
+        }
+        .contact-success-icon {
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            background: #10b981;
+            color: #ffffff;
+            font-size: 11px;
+            flex-shrink: 0;
+        }
+        .contact-success-title {
+            margin: 22px 0 10px;
+            font-size: clamp(2rem, 3vw, 2.8rem);
+            line-height: 1;
+            font-weight: 800;
+            letter-spacing: -0.04em;
+            color: #0f172a;
+        }
+        .contact-success-text {
+            margin: 0;
+            max-width: 640px;
+            font-size: 18px;
+            line-height: 1.7;
+            color: #475569;
+        }
+        .contact-success-actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 14px;
+            margin-top: 26px;
+        }
+        .contact-success-action {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 48px;
+            padding: 0 22px;
+            border-radius: 999px;
+            text-decoration: none;
+            font-size: 15px;
+            font-weight: 700;
+            transition: transform 0.25s ease, box-shadow 0.25s ease, background 0.25s ease;
+        }
+        .contact-success-action-primary {
+            background: linear-gradient(135deg, #E5363D 0%, #c61f26 100%);
+            color: #ffffff;
+            box-shadow: 0 18px 30px -20px rgba(229, 54, 61, 0.75);
+        }
+        .contact-success-action-secondary {
+            background: rgba(255, 255, 255, 0.92);
+            color: #0f172a;
+            border: 1px solid rgba(15, 23, 42, 0.08);
+        }
+        .contact-success-action:hover {
+            transform: translateY(-2px);
+        }
+        .contact-success-action-primary:hover {
+            color: #ffffff;
+        }
+        .contact-success-action-secondary:hover {
+            color: #0f172a;
+            box-shadow: 0 18px 34px -24px rgba(15, 23, 42, 0.3);
+        }
+
+        @media (max-width: 767px) {
+            .contact-success-card {
+                padding: 28px 22px;
+                border-radius: 22px;
+            }
+            .contact-success-title {
+                font-size: 1.9rem;
+            }
+            .contact-success-text {
+                font-size: 16px;
+            }
+            .contact-success-actions {
+                flex-direction: column;
+            }
+            .contact-success-action {
+                width: 100%;
+            }
+        }
+
         /* Map Styling */
         .location-map iframe {
             border-radius: 24px;
@@ -573,10 +691,17 @@ if (empty($contactLocations)) {
                         <div class="contact-form elementor-widget">
                             <div class="elementor-widget-container">
                                 <?php if ($contactSent): ?>
-                                <div class="alert alert-success text-center py-4" style="background:rgba(16,185,129,0.15);border:1px solid rgba(16,185,129,0.3);border-radius:10px;color:#fff;">
-                                    <i class="fas fa-check-circle fa-2x mb-2" style="color:#10b981;"></i>
-                                    <h4 style="color:#fff;">Thank You!</h4>
-                                    <p class="mb-0"><?php echo htmlspecialchars($contactSuccessMessage); ?></p>
+                                <div class="contact-success-card">
+                                    <div class="contact-success-pill">
+                                        <span class="contact-success-icon"><i class="fas fa-check"></i></span>
+                                        Message Received
+                                    </div>
+                                    <h4 class="contact-success-title">Thank you for reaching out.</h4>
+                                    <p class="contact-success-text"><?php echo htmlspecialchars($contactSuccessMessage); ?></p>
+                                    <div class="contact-success-actions">
+                                        <a href="<?php echo htmlspecialchars(SITE_URL . 'quote/'); ?>" class="contact-success-action contact-success-action-primary">Request a Quote</a>
+                                        <a href="<?php echo htmlspecialchars(SITE_URL); ?>" class="contact-success-action contact-success-action-secondary">Back to Home</a>
+                                    </div>
                                 </div>
                                 <?php else: ?>
                                 <?php if (!empty($contactErrors)): ?>
