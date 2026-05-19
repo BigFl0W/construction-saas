@@ -52,7 +52,9 @@ class Auth {
         if (!isset($_SESSION['created'])) {
             $_SESSION['created'] = time();
         } elseif (time() - $_SESSION['created'] > 1800) {
-            session_regenerate_id(true);
+            if (session_status() === PHP_SESSION_ACTIVE) {
+                session_regenerate_id(true);
+            }
             $_SESSION['created'] = time();
         }
     }
@@ -188,7 +190,9 @@ class Auth {
             $this->setRememberMeCookie($actor['id'], $actorType);
         }
 
-        session_regenerate_id(true);
+        if (session_status() === PHP_SESSION_ACTIVE) {
+            session_regenerate_id(true);
+        }
         $this->logDebug('Login successful for ' . $actorType . ' ID: ' . $actor['id']);
     }
 
@@ -379,7 +383,9 @@ class Auth {
                 $this->actorType = $actorType;
                 $this->userData = $actor;
                 $this->updateLastLogin($actor['id'], $actorType);
-                session_regenerate_id(true);
+                if (session_status() === PHP_SESSION_ACTIVE) {
+                    session_regenerate_id(true);
+                }
             }
         } catch (Exception $e) {
             $this->logDebug('Login by ID error: ' . $e->getMessage());

@@ -11,6 +11,10 @@ $toastWarning = $_SESSION['toast_warning'] ?? '';
 $toastInfo = $_SESSION['toast_info'] ?? '';
 unset($_SESSION['toast_success'], $_SESSION['toast_error'], $_SESSION['toast_warning'], $_SESSION['toast_info']);
 unset($_SESSION['blog_success'], $_SESSION['blog_error']);
+$headerCsrfToken = $_SESSION['csrf_token'] ?? '';
+if ($headerCsrfToken === '' && isset($auth) && method_exists($auth, 'generateCSRF')) {
+    $headerCsrfToken = $auth->generateCSRF();
+}
 
 $unreadContactNotifications = 0;
 $recentContactNotifications = [];
@@ -317,11 +321,39 @@ try {
             padding: 12px 18px;
             border-top: 1px solid #eef2f7;
             background: #fbfdff;
-            text-align: center;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
         }
         .notification-dropdown-footer a {
             font-size: 0.82rem;
             font-weight: 700;
+        }
+        .notification-actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+        .notification-actions form {
+            flex: 1 1 0;
+            min-width: 0;
+        }
+        .notification-actions .btn {
+            width: 100%;
+            border-radius: 10px;
+            font-size: 0.76rem;
+            font-weight: 700;
+            padding: 8px 10px;
+        }
+        .notification-open-link {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            min-height: 40px;
+            border-radius: 10px;
+            background: #fff;
+            border: 1px solid #e2e8f0;
         }
         .notification-empty {
             padding: 28px 18px;
@@ -1060,7 +1092,21 @@ try {
                         <?php endif; ?>
                     </div>
                     <div class="notification-dropdown-footer">
-                        <a href="contact_messages.php">Open Contact Messages</a>
+                        <?php if ($unreadContactNotifications > 0): ?>
+                        <div class="notification-actions">
+                            <form method="post" action="contact_messages.php">
+                                <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($headerCsrfToken); ?>">
+                                <input type="hidden" name="action" value="mark_all_read">
+                                <button type="submit" class="btn btn-light">Mark all read</button>
+                            </form>
+                            <form method="post" action="contact_messages.php" onsubmit="return confirm('Clear all unread notifications from the bell?');">
+                                <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($headerCsrfToken); ?>">
+                                <input type="hidden" name="action" value="clear_notifications">
+                                <button type="submit" class="btn btn-outline-danger">Clear all</button>
+                            </form>
+                        </div>
+                        <?php endif; ?>
+                        <a href="contact_messages.php" class="notification-open-link">Open Contact Messages</a>
                     </div>
                 </div>
             </div>

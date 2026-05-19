@@ -55,6 +55,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         } elseif ($action === 'mark_unread' && $submissionId) {
             $db->query("UPDATE contact_submissions SET status = 'unread' WHERE id = :id", ['id' => $submissionId]);
             $_SESSION['toast_success'] = 'Message marked as unread.';
+        } elseif ($action === 'mark_all_read') {
+            $affected = $db->query("UPDATE contact_submissions SET status = 'read' WHERE status = 'unread'")->rowCount();
+            $_SESSION['toast_success'] = $affected > 0 ? $affected . ' notification' . ($affected === 1 ? ' was' : 's were') . ' marked as read.' : 'There were no unread notifications to mark as read.';
+        } elseif ($action === 'clear_notifications') {
+            $affected = $db->query("UPDATE contact_submissions SET status = 'archived' WHERE status = 'unread'")->rowCount();
+            $_SESSION['toast_success'] = $affected > 0 ? $affected . ' notification' . ($affected === 1 ? ' was' : 's were') . ' cleared from the notification center.' : 'There were no unread notifications to clear.';
         } elseif ($action === 'archive' && $submissionId) {
             $db->query("UPDATE contact_submissions SET status = 'archived' WHERE id = :id", ['id' => $submissionId]);
             $_SESSION['toast_success'] = 'Message archived.';
@@ -109,7 +115,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             }
         }
     }
-    header('Location: contact_messages.php' . (!empty($_SERVER['QUERY_STRING']) ? '?' . $_SERVER['QUERY_STRING'] : ''));
+    if (in_array($action, ['mark_all_read', 'clear_notifications'], true)) {
+        header('Location: contact_messages.php');
+    } else {
+        header('Location: contact_messages.php' . (!empty($_SERVER['QUERY_STRING']) ? '?' . $_SERVER['QUERY_STRING'] : ''));
+    }
     exit;
 }
 
@@ -248,28 +258,21 @@ require 'inc/admin_header.php';
             </div>
         </div>
         <div class="card-body">
-            <div class="row filter-row m-b-20">
-                <div class="col-md-4 mb-2 mb-md-0">
-                    <div class="input-group">
-                        <input type="text" class="form-control rounded-pill" id="searchBox" placeholder="Search by name, email, subject...">
-                        <span class="input-group-append">
-                            <button class="btn btn-outline-secondary rounded-pill" type="button"><i class="fas fa-search"></i></button>
-                        </span>
-                    </div>
+            <div class="contact-toolbar">
+                <div class="contact-search-wrap">
+                    <input type="text" class="form-control" id="searchBox" placeholder="Search by name, email, subject or message...">
                 </div>
-                <div class="col-md-8 text-md-end">
-                    <form method="get" class="d-inline-flex gap-2 flex-wrap justify-content-end">
-                        <select name="status" class="form-select form-select-sm" style="width:140px;">
-                            <option value="">All status</option>
-                            <option value="unread" <?php echo ($filters['status'] ?? '') === 'unread' ? 'selected' : ''; ?>>Unread</option>
-                            <option value="read" <?php echo ($filters['status'] ?? '') === 'read' ? 'selected' : ''; ?>>Read</option>
-                            <option value="replied" <?php echo ($filters['status'] ?? '') === 'replied' ? 'selected' : ''; ?>>Replied</option>
-                            <option value="archived" <?php echo ($filters['status'] ?? '') === 'archived' ? 'selected' : ''; ?>>Archived</option>
-                        </select>
-                        <button type="submit" class="btn btn-sm btn-primary rounded-pill px-3"><i class="fas fa-filter me-1"></i>Filter</button>
-                        <a href="contact_messages.php" class="btn btn-sm btn-outline-secondary rounded-pill px-3"><i class="fas fa-undo me-1"></i>Reset</a>
-                    </form>
-                </div>
+                <form method="get" class="contact-filter-form">
+                    <select name="status" class="form-select">
+                        <option value="">All status</option>
+                        <option value="unread" <?php echo ($filters['status'] ?? '') === 'unread' ? 'selected' : ''; ?>>Unread</option>
+                        <option value="read" <?php echo ($filters['status'] ?? '') === 'read' ? 'selected' : ''; ?>>Read</option>
+                        <option value="replied" <?php echo ($filters['status'] ?? '') === 'replied' ? 'selected' : ''; ?>>Replied</option>
+                        <option value="archived" <?php echo ($filters['status'] ?? '') === 'archived' ? 'selected' : ''; ?>>Archived</option>
+                    </select>
+                    <button type="submit" class="btn btn-primary"><i class="fas fa-filter me-1"></i>Filter</button>
+                    <a href="contact_messages.php" class="btn btn-outline-secondary d-inline-flex align-items-center justify-content-center"><i class="fas fa-undo me-1"></i>Reset</a>
+                </form>
             </div>
 
             <?php if (empty($messages)): ?>
@@ -418,6 +421,198 @@ require 'inc/admin_header.php';
 </div>
 
 <style>
+.stat-card {
+    background: #fff;
+    border: 1px solid #e9eef5;
+    border-radius: 18px;
+    padding: 18px 20px;
+    box-shadow: 0 10px 24px -22px rgba(15, 23, 42, 0.35);
+}
+.stat-icon {
+    width: auto;
+    height: auto;
+    background: transparent !important;
+    border-radius: 0;
+    padding: 0;
+    box-shadow: none !important;
+    font-size: 1.75rem;
+    line-height: 1;
+}
+.stat-card h6 {
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: #64748b;
+    margin-bottom: 4px !important;
+}
+.stat-card h4 {
+    color: #0f172a;
+    letter-spacing: -0.03em;
+}
+.contact-toolbar {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 12px;
+    padding: 6px 0 2px;
+}
+.contact-search-wrap {
+    min-width: 0;
+    width: 100%;
+}
+.contact-search-wrap .form-control {
+    width: 100%;
+    height: 48px;
+    border-radius: 14px;
+    border: 1px solid #d9e2ef;
+    background: #ffffff;
+    padding: 0 16px;
+    font-size: 0.95rem;
+    box-shadow: 0 10px 22px -24px rgba(15, 23, 42, 0.25);
+}
+.contact-search-wrap .form-control::placeholder {
+    color: #94a3b8;
+}
+.contact-search-wrap .form-control:focus {
+    border-color: rgba(212,161,62,0.45);
+    box-shadow: 0 0 0 4px rgba(212,161,62,0.12);
+}
+.contact-filter-form {
+    display: grid;
+    grid-template-columns: 160px auto auto;
+    align-items: center;
+    gap: 8px;
+}
+.contact-filter-form .form-select,
+.contact-filter-form .btn {
+    min-height: 48px;
+    border-radius: 14px;
+    font-weight: 600;
+}
+.contact-filter-form .form-select {
+    width: 100%;
+    border: 1px solid #d9e2ef;
+    background: #ffffff;
+    box-shadow: 0 10px 22px -24px rgba(15, 23, 42, 0.25);
+    padding-left: 14px;
+    padding-right: 38px;
+    font-size: 0.95rem;
+}
+.contact-filter-form .btn {
+    min-width: 0;
+    padding: 0 14px;
+    font-size: 0.92rem;
+    white-space: nowrap;
+    box-shadow: none;
+}
+.contact-filter-form .btn i {
+    margin-right: 6px !important;
+}
+@media (max-width: 1200px) {
+    .contact-toolbar {
+        grid-template-columns: 1fr;
+    }
+    .contact-filter-form {
+        grid-template-columns: 1fr 120px 120px;
+        width: 100%;
+    }
+}
+@media (max-width: 768px) {
+    .contact-toolbar {
+        grid-template-columns: 1fr;
+        gap: 10px;
+    }
+    .stat-card {
+        padding: 14px 16px;
+        border-radius: 16px;
+    }
+    .stat-icon {
+        font-size: 1.45rem;
+    }
+    .contact-filter-form {
+        grid-template-columns: 1fr 1fr;
+        width: 100%;
+        gap: 8px;
+    }
+    .contact-filter-form select {
+        grid-column: 1 / -1;
+    }
+    .contact-filter-form .btn,
+    .contact-filter-form .form-select {
+        width: 100%;
+    }
+    .contact-search-wrap .form-control {
+        height: 46px;
+        font-size: 0.92rem;
+        border-radius: 12px;
+        padding: 0 14px;
+    }
+    .contact-filter-form .form-select,
+    .contact-filter-form .btn {
+        min-height: 46px;
+        border-radius: 12px;
+        font-size: 0.88rem;
+        padding: 0 12px;
+    }
+    .message-card {
+        border-radius: 10px;
+    }
+    .message-header {
+        padding: 12px 14px;
+    }
+    .message-body {
+        padding: 14px;
+    }
+    .message-footer {
+        padding: 12px 14px;
+        gap: 8px;
+    }
+    .message-footer .action-btn,
+    .message-footer form {
+        flex: 1 1 calc(50% - 4px);
+    }
+    .message-footer form .action-btn,
+    .message-footer > .action-btn {
+        width: 100%;
+        justify-content: center;
+        display: inline-flex;
+        align-items: center;
+        min-height: 42px;
+    }
+    .sender-avatar {
+        width: 34px;
+        height: 34px;
+        font-size: 14px;
+    }
+    .sender-name {
+        display: block;
+        font-size: 0.95rem;
+        line-height: 1.25;
+    }
+    .message-header .text-muted.small {
+        display: block;
+        margin-left: 0 !important;
+        margin-top: 2px;
+        font-size: 0.76rem !important;
+    }
+    .message-header .d-flex.flex-wrap.justify-content-between.align-items-center.w-100 {
+        gap: 10px;
+        align-items: flex-start !important;
+    }
+    .message-header .d-flex.align-items-center.gap-2:last-child {
+        width: 100%;
+        justify-content: space-between;
+        padding-left: 44px;
+    }
+    .reply-item {
+        padding: 10px;
+        gap: 10px;
+    }
+    .reply-avatar {
+        width: 28px;
+        height: 28px;
+        font-size: 12px;
+    }
+}
 .message-card {
     background: #fff;
     border: 1px solid #e2e8f0;
