@@ -10,6 +10,7 @@ require_once BASE_PATH . '/classes/Functions.php';
 
 $auth = new Auth();
 $functions = Functions::getInstance();
+$adminCount = (int) ((Database::getInstance()->query("SELECT COUNT(*) AS total FROM admins WHERE deleted_at IS NULL")->fetch()['total'] ?? 0));
 
 if ($auth->isLoggedIn()) {
     header('Location: index.php');
@@ -44,7 +45,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
             if ($result['success']) {
                 if (isset($result['user']['id'])) {
-                    $functions->logActivity($result['user']['id'], 'login', 'User logged in successfully');
+                    $functions->logActivity(
+                        $result['user']['id'],
+                        'login',
+                        'User logged in successfully',
+                        null,
+                        $result['user']['auth_source'] ?? 'user'
+                    );
                 }
                 $_SESSION['login_success'] = 'Welcome back, ' . htmlspecialchars($result['user']['first_name'] ?? $username) . '.';
                 header('Location: index.php');
@@ -86,86 +93,115 @@ if (isset($_SESSION['login_success'])) {
             align-items: center;
             justify-content: center;
             min-height: 100vh;
-            padding: 20px;
+            padding: 18px;
         }
         .login-wrapper {
-            display: flex;
             background: #fff;
             border-radius: 16px;
             box-shadow: 0 20px 60px rgba(0,0,0,0.08);
             overflow: hidden;
-            max-width: 920px;
+            max-width: 500px;
             width: 100%;
-            min-height: 540px;
+            min-height: 0;
         }
-        .login-brand {
-            flex: 1;
-            background: linear-gradient(135deg, #1a2332 0%, #232f41 100%);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            padding: 40px;
-            color: #fff;
-            position: relative;
-        }
-        .login-brand::after {
-            content: '';
-            position: absolute;
-            inset: 0;
-            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><path fill="rgba(255,255,255,0.03)" d="M20 20L80 20L80 80L20 80Z"/><path fill="rgba(255,255,255,0.02)" d="M0 0L100 0L100 100L0 100Z"/></svg>') repeat;
-            background-size: 40px;
-        }
-        .login-brand > * { position: relative; z-index: 1; }
-        .login-brand img { max-height: 48px; margin-bottom: 20px; }
-        .login-brand h2 { font-size: 1.5rem; font-weight: 700; margin-bottom: 8px; }
-        .login-brand p { font-size: 0.85rem; color: rgba(255,255,255,0.6); text-align: center; max-width: 280px; line-height: 1.5; }
 
         .login-form {
-            flex: 1;
-            padding: 48px;
+            padding: 28px 28px 24px;
             display: flex;
             flex-direction: column;
             justify-content: center;
-            max-width: 460px;
         }
-        .login-form h3 { font-size: 1.25rem; font-weight: 700; margin-bottom: 4px; color: #1a2332; }
-        .login-form .subtitle { font-size: 0.8rem; color: #6b7a8f; margin-bottom: 28px; }
+        .form-badge {
+            width: 42px;
+            height: 42px;
+            border-radius: 12px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(212,161,62,0.14);
+            color: #b78010;
+            margin-bottom: 14px;
+            font-size: 1rem;
+        }
+        .login-form h3 {
+            font-size: 1.3rem;
+            font-weight: 700;
+            margin-bottom: 4px;
+            color: #1a2332;
+        }
+        .login-form .subtitle {
+            font-size: 0.8rem;
+            color: #6b7a8f;
+            margin-bottom: 16px;
+        }
 
-        .form-floating { margin-bottom: 16px; }
+        .setup-note {
+            border: none;
+            border-radius: 14px;
+            padding: 12px 14px;
+            margin-bottom: 14px;
+            background: #fff7db;
+            color: #7a5800;
+        }
+        .setup-note .title {
+            font-weight: 700;
+            margin-bottom: 4px;
+            color: #5f4600;
+        }
+        .setup-note .copy {
+            font-size: 0.8rem;
+            line-height: 1.45;
+            margin: 0 0 10px;
+        }
+        .setup-note .btn {
+            border-radius: 999px;
+            font-size: 0.76rem;
+            padding: 6px 14px;
+        }
+
+        .form-floating { margin-bottom: 12px; }
         .form-floating .form-control {
-            border-radius: 10px;
+            border-radius: 12px;
             border: 1.5px solid #e2e8f0;
-            padding: 1rem 0.75rem 0.5rem;
+            padding: 0.88rem 0.75rem 0.42rem;
             height: auto;
             font-size: 0.875rem;
+            min-height: 50px;
         }
         .form-floating .form-control:focus {
             border-color: #d4a13e;
             box-shadow: 0 0 0 3px rgba(212,161,62,0.12);
         }
-        .form-floating label { padding: 0.85rem 0.75rem; font-size: 0.825rem; color: #6b7a8f; }
+        .form-floating label {
+            padding: 0.72rem 0.75rem;
+            font-size: 0.79rem;
+            color: #6b7a8f;
+        }
 
         .btn-login {
             width: 100%;
             padding: 12px;
-            border-radius: 10px;
+            border-radius: 12px;
             font-weight: 600;
             font-size: 0.9rem;
             background: #d4a13e;
             border: none;
             color: #1a2332;
             transition: all 0.2s;
+            margin-top: 6px;
         }
-        .btn-login:hover { background: #c08e2e; transform: translateY(-1px); box-shadow: 0 4px 12px rgba(212,161,62,0.3); }
+        .btn-login:hover {
+            background: #c08e2e;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(212,161,62,0.3);
+        }
 
-        .form-check { margin-bottom: 20px; }
+        .form-check { margin-bottom: 14px; }
         .form-check-input:checked { background-color: #d4a13e; border-color: #d4a13e; }
 
-        .login-footer { margin-top: auto; padding-top: 24px; }
+        .login-footer { margin-top: 14px; }
         .login-footer p { font-size: 0.75rem; color: #6b7a8f; margin: 0; }
 
-        /* Toast */
         .toast-custom {
             display: flex;
             align-items: flex-start;
@@ -205,11 +241,36 @@ if (isset($_SESSION['login_success'])) {
         }
 
         @media (max-width: 768px) {
-            .login-wrapper { flex-direction: column; max-width: 420px; min-height: auto; }
-            .login-brand { padding: 32px 24px; }
-            .login-brand h2 { font-size: 1.25rem; }
-            .login-form { padding: 32px 24px; max-width: 100%; }
+            .login-wrapper { max-width: 430px; min-height: auto; }
+            .login-form { padding: 20px 20px 22px; }
+            .login-form h3 { font-size: 1.18rem; }
+            .login-form .subtitle { font-size: 0.76rem; margin-bottom: 12px; }
+            .setup-note { padding: 12px 14px; margin-bottom: 14px; }
+            .setup-note .title { font-size: 0.95rem; margin-bottom: 2px; }
+            .setup-note .copy { font-size: 0.76rem; }
+            .form-floating .form-control {
+                min-height: 46px;
+                font-size: 0.82rem;
+                padding: 0.8rem 0.72rem 0.35rem;
+            }
+            .form-floating label {
+                font-size: 0.75rem;
+                padding: 0.68rem 0.72rem;
+            }
+            .btn-login {
+                margin-top: 4px;
+                padding: 11px;
+                font-size: 0.86rem;
+            }
+            .login-footer { margin-top: 12px; }
             .toast-custom { max-width: calc(100% - 32px); right: 16px; top: 16px; }
+        }
+
+        @media (max-width: 420px) {
+            body { padding: 10px; }
+            .login-wrapper { border-radius: 14px; }
+            .login-form { padding: 18px 16px 20px; }
+            .login-footer { display: none; }
         }
     </style>
 </head>
@@ -230,14 +291,19 @@ setTimeout(function() {
 <?php endif; ?>
 
 <div class="login-wrapper">
-    <div class="login-brand">
-        <img src="assets/img/logo-48x48_c.png" alt="TPV Construction and Services LTD" />
-        <h2>TPV Construction and Services LTD</h2>
-        <p>Manage projects, clients, workforce, and resources from one command center.</p>
-    </div>
     <div class="login-form">
+        <div class="form-badge">
+            <i class="fas fa-right-to-bracket"></i>
+        </div>
         <h3>Welcome back</h3>
         <p class="subtitle">Sign in to your account to continue.</p>
+        <?php if ($adminCount === 0): ?>
+        <div class="setup-note" role="alert">
+            <div class="title">No admin accounts are set up yet.</div>
+            <p class="copy">Use the bootstrap flow to create the first official dashboard account.</p>
+            <a href="first_admin_setup.php" class="btn btn-sm btn-dark">Create First Admin</a>
+        </div>
+        <?php endif; ?>
         <form method="POST" action="" id="loginForm">
             <?php echo $auth->csrfField(); ?>
             <div class="form-floating">

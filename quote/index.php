@@ -7,23 +7,6 @@ $db = Database::getInstance();
 $functions = Functions::getInstance();
 $quoteSuccess = isset($_GET['quote_sent']);
 $quoteError = '';
-$quoteData = [
-    'first_name' => '',
-    'last_name' => '',
-    'email' => '',
-    'phone' => '',
-    'company' => '',
-    'client_type' => '',
-    'services' => [],
-    'project_type' => '',
-    'project_size' => '',
-    'project_location' => '',
-    'start_date' => '',
-    'budget' => '5000000',
-    'timeline' => '',
-    'description' => '',
-    'referral_source' => ''
-];
 
 function quoteClean($value) {
     return trim((string)$value);
@@ -208,13 +191,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['quote_submit'])) {
 
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&display=swap');
-        body {
-            font-family: 'Outfit', sans-serif !important;
-            background:
-                radial-gradient(circle at top left, rgba(229,54,61,0.07), transparent 28%),
-                linear-gradient(180deg, #f8fafc 0%, #f1f5f9 100%);
-            color: #0f172a;
-        }
+        body { font-family: 'Outfit', sans-serif !important; }
 
         /* ══════════════════════════════════════════════
            FIX: Force ElementsKit desktop nav to display.
@@ -294,7 +271,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['quote_submit'])) {
             background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #0f172a 100%);
             position: relative;
             overflow: hidden;
-            padding: 88px 20px 72px;
+            padding: 90px 20px 60px;
             text-align: center;
         }
         .tpv-quote-hero::before {
@@ -333,14 +310,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['quote_submit'])) {
             text-transform: uppercase;
             margin-bottom: 22px;
         }
-        .tpv-quote-badge strong {
-            display: inline-block;
-            width: 8px;
-            height: 8px;
-            border-radius: 50%;
-            background: #E5363D;
-            box-shadow: 0 0 16px rgba(229,54,61,0.7);
-        }
         .tpv-quote-hero h1 {
             font-size: clamp(2rem, 5vw, 3.4rem);
             font-weight: 800;
@@ -358,18 +327,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['quote_submit'])) {
             margin: 0 auto 28px;
         }
         .tpv-hero-stats {
-            display: grid;
-            grid-template-columns: repeat(3, minmax(0, 1fr));
-            gap: 18px;
+            display: flex;
+            justify-content: center;
+            gap: 50px;
+            flex-wrap: wrap;
             margin-top: 30px;
             padding-top: 30px;
             border-top: 1px solid rgba(255,255,255,0.07);
-        }
-        .tpv-hero-stats > div {
-            padding: 18px 16px;
-            border-radius: 20px;
-            background: rgba(255,255,255,0.03);
-            border: 1px solid rgba(255,255,255,0.06);
         }
         .tpv-hero-stat-num { font-size: 2rem; font-weight: 900; color: #E5363D; line-height: 1; }
         .tpv-hero-stat-lbl { font-size: 12px; color: #64748b; margin-top: 4px; letter-spacing: 0.5px; }
@@ -383,19 +347,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['quote_submit'])) {
         .tpv-quote-wrap {
             max-width: 1220px;
             margin: 0 auto;
-            padding: 56px 24px 88px;
+            padding: 56px 24px 80px;
             display: grid;
-            grid-template-columns: minmax(0, 1.65fr) minmax(300px, 360px);
+            grid-template-columns: 1fr 350px;
             gap: 36px;
             align-items: start;
         }
-        @media(max-width:1060px){
-            .tpv-quote-wrap{
-                grid-template-columns: 1fr;
-                gap: 24px;
-                padding: 36px 18px 72px;
-            }
-        }
+        @media(max-width:1060px){ .tpv-quote-wrap{ grid-template-columns:1fr; } }
 
         /* ── Form Card ── */
         .tpv-form-card {
@@ -404,12 +362,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['quote_submit'])) {
             padding: 44px 40px;
             box-shadow: 0 20px 60px -20px rgba(0,0,0,0.08), 0 0 0 1px rgba(0,0,0,0.04);
         }
-        @media(max-width:600px){
-            .tpv-form-card{
-                border-radius: 22px;
-                padding: 26px 18px;
-            }
-        }
+        @media(max-width:600px){ .tpv-form-card{ padding:26px 18px; } }
         .tpv-form-card h2 { font-size: 1.5rem; font-weight: 800; color: #0f172a; margin-bottom: 6px; letter-spacing: -0.5px; }
         .tpv-form-card > p { font-size: 14px; color: #64748b; margin-bottom: 32px; line-height: 1.6; }
 
@@ -444,7 +397,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['quote_submit'])) {
 
         /* Service grid */
         .tpv-svc-grid {
-            display: grid; grid-template-columns: repeat(auto-fit,minmax(170px,1fr)); gap: 12px; margin-bottom: 4px;
+            display: grid; grid-template-columns: repeat(auto-fill,minmax(155px,1fr)); gap: 10px; margin-bottom: 4px;
         }
         .tpv-svc-cb { display: none; }
         .tpv-svc-lbl {
@@ -466,7 +419,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['quote_submit'])) {
 
         /* Timeline */
         .tpv-timeline-grid { display: grid; grid-template-columns: repeat(auto-fill,minmax(120px,1fr)); gap: 8px; }
-        @media(max-width:580px){ .tpv-timeline-grid { grid-template-columns: 1fr 1fr; } }
         .tpv-tl-rb { display: none; }
         .tpv-tl-lbl {
             display: flex; align-items: center; justify-content: center; text-align: center;
@@ -501,7 +453,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['quote_submit'])) {
             margin-top: 8px;
         }
         .tpv-submit-btn:hover { transform: translateY(-3px); box-shadow: 0 20px 40px -5px rgba(229,54,61,0.5); }
-        .tpv-submit-btn:disabled { opacity: 0.8; cursor: wait; transform: none; }
         .tpv-submit-note { text-align: center; font-size: 12px; color: #94a3b8; margin-top: 12px; }
         .tpv-alert {
             border-radius: 14px; padding: 14px 16px; margin-bottom: 22px;
@@ -528,18 +479,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['quote_submit'])) {
         }
 
         /* ── Sidebar ── */
-        .tpv-sidebar {
-            display: flex;
-            flex-direction: column;
-            gap: 22px;
-            position: sticky;
-            top: 110px;
-        }
-        @media(max-width:1060px){
-            .tpv-sidebar{
-                position: static;
-            }
-        }
+        .tpv-sidebar { display: flex; flex-direction: column; gap: 22px; }
+        @media(max-width:1060px){ .tpv-sidebar{ display: grid; grid-template-columns: 1fr 1fr; } }
+        @media(max-width:580px){ .tpv-sidebar{ grid-template-columns:1fr; } }
 
         .tpv-card {
             background: #fff; border-radius: 22px; padding: 26px 24px;
@@ -575,36 +517,26 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['quote_submit'])) {
         .tpv-contact-card h4 { font-size: 15px; font-weight: 800; margin-bottom: 14px; }
         .tpv-contact-item { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; font-size: 13px; }
         .tpv-contact-item:last-child { margin-bottom: 0; }
-        .tpv-contact-item-ico { width: 32px; height: 32px; background: rgba(255,255,255,0.15); border-radius: 9px; display: flex; align-items: center; justify-content: center; font-size: 14px; flex-shrink: 0; }
+        .tpv-contact-item-ico {
+            width: 40px;
+            height: 40px;
+            background: rgba(255,255,255,0.92);
+            border: 1px solid rgba(255,255,255,0.55);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 17px;
+            color: #c81e25;
+            box-shadow: 0 10px 20px -14px rgba(15,23,42,0.55);
+            flex-shrink: 0;
+        }
         .tpv-contact-item a { color: rgba(255,255,255,0.92); text-decoration: none; font-weight: 600; }
         .tpv-contact-item p { color: rgba(255,255,255,0.65); font-size: 11px; margin: 0; }
 
         .tpv-testimonial { background: linear-gradient(145deg,#f8fafc,#fff); border-left: 4px solid #E5363D; border-radius: 0 14px 14px 0; padding: 16px 14px; }
         .tpv-testimonial blockquote { font-size: 13px; color: #374151; line-height: 1.65; font-style: italic; margin: 0 0 10px; }
 
-        @media(max-width:820px){
-            .tpv-quote-hero {
-                padding: 72px 18px 56px;
-            }
-            .tpv-hero-stats {
-                grid-template-columns: 1fr;
-            }
-            .tpv-hero-stats > div {
-                text-align: left;
-            }
-        }
-
-        @media(max-width:480px){
-            .tpv-quote-hero h1 {
-                letter-spacing: -1px;
-            }
-            .tpv-breadcrumb ol {
-                gap: 6px;
-            }
-            .tpv-svc-grid {
-                grid-template-columns: 1fr 1fr;
-            }
-        }
         .tpv-t-author { display: flex; align-items: center; gap: 10px; }
         .tpv-avatar { width: 34px; height: 34px; border-radius: 50%; background: linear-gradient(135deg,#E5363D,#b91c1c); display: flex; align-items: center; justify-content: center; color: #fff; font-weight: 800; font-size: 12px; }
         .tpv-author-name { font-size: 12px; font-weight: 700; color: #0f172a; }
@@ -642,7 +574,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['quote_submit'])) {
     <!-- Hero -->
     <section class="tpv-quote-hero" id="content">
         <div class="tpv-quote-hero-inner">
-            <div class="tpv-quote-badge"><strong></strong> Free No-Obligation Estimate</div>
+            <div class="tpv-quote-badge">⭐ Free No-Obligation Estimate</div>
             <h1>Start Your <em>Dream Project</em><br>With a Free Quote</h1>
             <p>Fill in the form and our expert team will prepare a tailored cost estimate for your construction project within 24 hours.</p>
             <div class="tpv-hero-stats">
@@ -680,27 +612,27 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['quote_submit'])) {
                     <div class="tpv-row">
                         <div class="tpv-fg">
                             <label class="tpv-label" for="qFirst">First Name <span class="req">*</span></label>
-                            <input id="qFirst" name="first_name" type="text" class="tpv-input" placeholder="e.g. Chukwuemeka" value="<?php echo quoteHtml($quoteData['first_name']); ?>" required>
+                            <input id="qFirst" name="first_name" type="text" class="tpv-input" placeholder="e.g. Chukwuemeka" required>
                         </div>
                         <div class="tpv-fg">
                             <label class="tpv-label" for="qLast">Last Name <span class="req">*</span></label>
-                            <input id="qLast" name="last_name" type="text" class="tpv-input" placeholder="e.g. Okonkwo" value="<?php echo quoteHtml($quoteData['last_name']); ?>" required>
+                            <input id="qLast" name="last_name" type="text" class="tpv-input" placeholder="e.g. Okonkwo" required>
                         </div>
                     </div>
                     <div class="tpv-row">
                         <div class="tpv-fg">
                             <label class="tpv-label" for="qEmail">Email Address <span class="req">*</span></label>
-                            <input id="qEmail" name="email" type="email" class="tpv-input" placeholder="you@example.com" value="<?php echo quoteHtml($quoteData['email']); ?>" required>
+                            <input id="qEmail" name="email" type="email" class="tpv-input" placeholder="you@example.com" required>
                         </div>
                         <div class="tpv-fg">
                             <label class="tpv-label" for="qPhone">Phone Number <span class="req">*</span></label>
-                            <input id="qPhone" name="phone" type="tel" class="tpv-input" placeholder="080XXXXXXXX" value="<?php echo quoteHtml($quoteData['phone']); ?>" required>
+                            <input id="qPhone" name="phone" type="tel" class="tpv-input" placeholder="080XXXXXXXX" required>
                         </div>
                     </div>
                     <div class="tpv-row">
                         <div class="tpv-fg">
                             <label class="tpv-label" for="qCompany">Company / Organisation</label>
-                            <input id="qCompany" name="company" type="text" class="tpv-input" placeholder="(Optional)" value="<?php echo quoteHtml($quoteData['company']); ?>">
+                            <input id="qCompany" name="company" type="text" class="tpv-input" placeholder="(Optional)">
                         </div>
                         <div class="tpv-fg">
                             <label class="tpv-label" for="qClientType">Client Type <span class="req">*</span></label>

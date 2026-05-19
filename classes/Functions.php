@@ -229,17 +229,24 @@ class Functions {
     /**
      * Log activity
      */
-    public function logActivity($userId, $action, $description, $ip = null) {
+    public function logActivity($userId, $action, $description, $ip = null, $actorType = null) {
         if (!$ip) {
             $ip = $_SERVER['REMOTE_ADDR'] ?? 'UNKNOWN';
         }
-        
-        $sql = "INSERT INTO activity_logs (user_id, action, description, ip_address, created_at) 
-                VALUES (:user_id, :action, :description, :ip, NOW())";
+
+        if ($actorType === null) {
+            $actorType = $_SESSION['construction_auth']['actor_type'] ?? 'user';
+        }
+
+        $userColumn = $actorType === 'admin' ? 'admin_id' : 'user_id';
+        $otherColumn = $actorType === 'admin' ? 'user_id' : 'admin_id';
+
+        $sql = "INSERT INTO activity_logs ({$userColumn}, {$otherColumn}, action, description, ip_address, created_at)
+                VALUES (:actor_id, NULL, :action, :description, :ip, NOW())";
         
         try {
             $this->db->query($sql, [
-                'user_id' => $userId,
+                'actor_id' => $userId,
                 'action' => $action,
                 'description' => $description,
                 'ip' => $ip

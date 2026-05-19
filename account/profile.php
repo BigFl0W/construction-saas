@@ -8,6 +8,8 @@ $auth->requireAuth();
 $currentUser = $auth->getUserData();
 $functions = Functions::getInstance();
 $db = Database::getInstance();
+$accountTable = $auth->isAdminAuth() ? 'admins' : 'users';
+$accountLabel = $auth->isAdminAuth() ? 'Administrator' : 'User';
 
 $message = '';
 $messageType = '';
@@ -27,7 +29,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
             if ($firstName && $lastName && $email && $username) {
                 $db->query(
-                    "UPDATE users SET first_name = :fn, last_name = :ln, email = :email, username = :username WHERE id = :id",
+                    "UPDATE {$accountTable} SET first_name = :fn, last_name = :ln, email = :email, username = :username WHERE id = :id",
                     ['fn' => $firstName, 'ln' => $lastName, 'email' => $email, 'username' => $username, 'id' => $currentUser['id']]
                 );
                 $currentUser['first_name'] = $firstName;
@@ -45,7 +47,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $newPassword = $_POST['new_password'] ?? '';
             $confirmPassword = $_POST['confirm_password'] ?? '';
 
-            $stmt = $db->query("SELECT password FROM users WHERE id = :id", ['id' => $currentUser['id']]);
+            $stmt = $db->query("SELECT password FROM {$accountTable} WHERE id = :id", ['id' => $currentUser['id']]);
             $userRow = $stmt->fetch();
 
             if (!password_verify($currentPassword, $userRow['password'])) {
@@ -59,7 +61,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $messageType = 'danger';
             } else {
                 $hash = password_hash($newPassword, PASSWORD_DEFAULT);
-                $db->query("UPDATE users SET password = :pwd WHERE id = :id", ['pwd' => $hash, 'id' => $currentUser['id']]);
+                $db->query("UPDATE {$accountTable} SET password = :pwd WHERE id = :id", ['pwd' => $hash, 'id' => $currentUser['id']]);
                 $message = 'Password changed successfully.';
                 $messageType = 'success';
             }
@@ -168,7 +170,8 @@ require 'inc/admin_header.php';
                                     <h5 class="card-title m-0"><i class="fas fa-info-circle me-2"></i> Account Info</h5>
                                 </div>
                                 <div class="card-body">
-                                    <div class="mb-2"><strong>User type:</strong> <?php echo htmlspecialchars($currentUser['user_type'] ?? 'N/A'); ?></div>
+                                    <div class="mb-2"><strong>Account type:</strong> <?php echo htmlspecialchars($accountLabel); ?></div>
+                                    <div class="mb-2"><strong>Role:</strong> <?php echo htmlspecialchars($currentUser['user_type'] ?? 'N/A'); ?></div>
                                     <div class="mb-2"><strong>Last login:</strong> <?php echo htmlspecialchars($currentUser['last_login'] ? $functions->timeAgo($currentUser['last_login']) : 'Never'); ?></div>
                                     <div class="mb-0"><strong>Status:</strong> <?php echo htmlspecialchars($currentUser['status'] ?? 'Active'); ?></div>
                                 </div>

@@ -772,8 +772,32 @@ CREATE TABLE blog_post_daily_stats (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- ======================================================================
--- 8.5. USERS TABLE (for authentication)
+-- 8.5. ADMINS AND USERS TABLES (for authentication)
 -- ======================================================================
+
+CREATE TABLE admins (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    username VARCHAR(50) UNIQUE NOT NULL,
+    email VARCHAR(255) UNIQUE NOT NULL,
+    password VARCHAR(255) NOT NULL,
+    first_name VARCHAR(100),
+    last_name VARCHAR(100),
+    role ENUM('super_admin', 'admin', 'manager') DEFAULT 'admin',
+    status ENUM('active', 'inactive', 'suspended') DEFAULT 'active',
+    profile_image VARCHAR(500),
+    last_login TIMESTAMP NULL,
+    login_attempts INT DEFAULT 0,
+    locked_until TIMESTAMP NULL,
+    created_by INT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    deleted_at TIMESTAMP NULL,
+    FOREIGN KEY (created_by) REFERENCES admins(id) ON DELETE SET NULL,
+    INDEX idx_admins_username (username),
+    INDEX idx_admins_email (email),
+    INDEX idx_admins_status (status),
+    INDEX idx_admins_role (role)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE users (
     id INT PRIMARY KEY AUTO_INCREMENT,
@@ -796,6 +820,18 @@ CREATE TABLE users (
     INDEX idx_users_status (status)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+CREATE TABLE admin_tokens (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    admin_id INT NOT NULL,
+    token VARCHAR(255) NOT NULL,
+    expires_at TIMESTAMP NOT NULL,
+    used BOOLEAN DEFAULT false,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (admin_id) REFERENCES admins(id) ON DELETE CASCADE,
+    INDEX idx_admin_tokens_token (token),
+    INDEX idx_admin_tokens_admin (admin_id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
 CREATE TABLE user_tokens (
     id INT PRIMARY KEY AUTO_INCREMENT,
     user_id INT NOT NULL,
@@ -811,12 +847,15 @@ CREATE TABLE user_tokens (
 CREATE TABLE activity_logs (
     id BIGINT PRIMARY KEY AUTO_INCREMENT,
     user_id INT NULL,
+    admin_id INT NULL,
     action VARCHAR(100) NOT NULL,
     description TEXT,
     ip_address VARCHAR(45),
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE SET NULL,
+    FOREIGN KEY (admin_id) REFERENCES admins(id) ON DELETE SET NULL,
     INDEX idx_activity_user (user_id),
+    INDEX idx_activity_admin (admin_id),
     INDEX idx_activity_action (action),
     INDEX idx_activity_created (created_at)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -904,7 +943,12 @@ INSERT INTO materials (uuid, name, unit, current_stock, reorder_level, supplier_
 (UUID(), 'Rebar #4', 'ton', 20, 5, 1),
 (UUID(), 'Plywood 4x8', 'sheet', 150, 50, 1);
 
--- Insert default admin user (password: admin123)
+-- Insert default dashboard admins (password: admin123)
+INSERT INTO admins (username, email, password, first_name, last_name, role, status) VALUES
+('admin', 'admin@tpvconstruction.com', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'System', 'Administrator', 'super_admin', 'active'),
+('manager', 'manager@tpvconstruction.com', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'Project', 'Manager', 'manager', 'active');
+
+-- Insert legacy auth users (password: admin123)
 INSERT INTO users (username, email, password, first_name, last_name, user_type, status) VALUES
 ('admin', 'admin@tpvconstruction.com', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'System', 'Administrator', 'admin', 'active'),
 ('manager', 'manager@tpvconstruction.com', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'Project', 'Manager', 'manager', 'active');

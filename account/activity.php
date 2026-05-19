@@ -9,15 +9,39 @@ $currentUser = $auth->getUserData();
 $functions = Functions::getInstance();
 $db = Database::getInstance();
 
-$filterUser = isset($_GET['user_id']) ? (int)$_GET['user_id'] : null;
+$filterActor = isset($_GET['actor']) ? trim($_GET['actor']) : '';
 $filterAction = isset($_GET['action']) ? $_GET['action'] : null;
 $dateFrom = isset($_GET['date_from']) ? $_GET['date_from'] : null;
 $dateTo = isset($_GET['date_to']) ? $_GET['date_to'] : null;
 
 try {
-    $sql = "SELECT al.*, u.first_name, u.last_name, u.username FROM activity_logs al LEFT JOIN users u ON al.user_id = u.id WHERE 1=1";
+    $sql = "SELECT
+                al.*,
+                u.first_name AS user_first_name,
+                u.last_name AS user_last_name,
+                u.username AS user_username,
+                a.first_name AS admin_first_name,
+                a.last_name AS admin_last_name,
+                a.username AS admin_username,
+                CASE
+                    WHEN al.admin_id IS NOT NULL THEN 'admin'
+                    ELSE 'user'
+                END AS actor_type
+            FROM activity_logs al
+            LEFT JOIN users u ON al.user_id = u.id
+            LEFT JOIN admins a ON al.admin_id = a.id
+            WHERE 1=1";
     $params = [];
-    if ($filterUser) { $sql .= " AND al.user_id = :user_id"; $params['user_id'] = $filterUser; }
+    if ($filterActor !== '') {
+        [$actorType, $actorId] = array_pad(explode(':', $filterActor, 2), 2, null);
+        if ($actorType === 'admin' && ctype_digit((string) $actorId)) {
+            $sql .= " AND al.admin_id = :admin_id";
+            $params['admin_id'] = (int) $actorId;
+        } elseif ($actorType === 'user' && ctype_digit((string) $actorId)) {
+            $sql .= " AND al.user_id = :user_id";
+            $params['user_id'] = (int) $actorId;
+        }
+    }
     if ($filterAction) { $sql .= " AND al.action = :action"; $params['action'] = $filterAction; }
     if ($dateFrom) { $sql .= " AND DATE(al.created_at) >= :date_from"; $params['date_from'] = $dateFrom; }
     if ($dateTo) { $sql .= " AND DATE(al.created_at) <= :date_to"; $params['date_to'] = $dateTo; }
@@ -25,6 +49,7 @@ try {
     $items = $db->query($sql, $params)->fetchAll();
 
     $users = $db->query("SELECT id, first_name, last_name, username FROM users WHERE deleted_at IS NULL ORDER BY first_name")->fetchAll();
+    $admins = $db->query("SELECT id, first_name, last_name, username FROM admins WHERE deleted_at IS NULL ORDER BY first_name")->fetchAll();
     $actions = $db->query("SELECT DISTINCT action FROM activity_logs ORDER BY action")->fetchAll();
 } catch (Exception $e) {
     $_SESSION['toast_error'] = $e->getMessage();
@@ -51,11 +76,20 @@ require 'inc/admin_header.php';
                     <div class="filter-section">
                         <form method="GET" class="row align-items-end">
                             <div class="col-md-3">
-                                <label class="form-label">User</label>
-                                <select name="user_id" class="form-control">
-                                    <option value="">All Users</option>
+                                <label class="form-label">Actor</label>
+                                <select name="actor" class="form-control">
+                                    <option value="">All Actors</option>
+                                    <?php foreach ($admins as $admin): ?>
+                                    <?php $adminValue = 'admin:' . $admin['id']; ?>
+                                    <option value="<?php echo htmlspecialchars($adminValue); ?>" <?php echo $filterActor === $adminValue ? 'selected' : ''; ?>>
+                                        <?php echo htmlspecialchars(trim(($admin['first_name'] ?? '') . ' ' . ($admin['last_name'] ?? '')) . ' (' . ($admin['username'] ?? 'admin') . ') - Admin'); ?>
+                                    </option>
+                                    <?php endforeach; ?>
                                     <?php foreach ($users as $u): ?>
-                                    <option value="<?php echo $u['id']; ?>" <?php echo $filterUser == $u['id'] ? 'selected' : ''; ?>><?php echo htmlspecialchars($u['first_name'] . ' ' . $u['last_name'] . ' (' . $u['username'] . ')'); ?></option>
+                                    <?php $userValue = 'user:' . $u['id']; ?>
+                                    <option value="<?php echo htmlspecialchars($userValue); ?>" <?php echo $filterActor === $userValue ? 'selected' : ''; ?>>
+                                        <?php echo htmlspecialchars($u['first_name'] . ' ' . $u['last_name'] . ' (' . $u['username'] . ') - User'); ?>
+                                    </option>
                                     <?php endforeach; ?>
                                 </select>
                             </div>
@@ -106,7 +140,20 @@ require 'inc/admin_header.php';
                                         <?php foreach ($items as $item): ?>
                                         <tr class="log-entry">
                                             <td class="text-nowrap"><?php echo date('M d, Y g:i A', strtotime($item['created_at'])); ?></td>
-                                            <td><?php echo htmlspecialchars(($item['first_name'] ?? '') . ' ' . ($item['last_name'] ?? $item['username'] ?? 'System')); ?></td>
+                                            <td>
+                                                <?php
+                                                $isAdminActor = ($item['actor_type'] ?? 'user') === 'admin';
+                                                $firstName = $isAdminActor ? ($item['admin_first_name'] ?? '') : ($item['user_first_name'] ?? '');
+                                                $lastName = $isAdminActor ? ($item['admin_last_name'] ?? '') : ($item['user_last_name'] ?? '');
+                                                $username = $isAdminActor ? ($item['admin_username'] ?? '') : ($item['user_username'] ?? '');
+                                                $actorName = trim($firstName . ' ' . $lastName);
+                                                if ($actorName === '') {
+                                                    $actorName = $username !== '' ? $username : 'System';
+                                                }
+                                                ?>
+                                                <?php echo htmlspecialchars($actorName); ?>
+                                                <div class="small text-muted text-uppercase"><?php echo htmlspecialchars($isAdminActor ? 'Admin' : 'User'); ?></div>
+                                            </td>
                                             <td><span class="activity-action"><?php echo htmlspecialchars(str_replace('_', ' ', ucfirst($item['action']))); ?></span></td>
                                             <td><?php echo htmlspecialchars($item['description'] ?? '-'); ?></td>
                                             <td><code><?php echo htmlspecialchars($item['ip_address'] ?? '-'); ?></code></td>

@@ -839,6 +839,12 @@ unset($_SESSION['blog_success'], $_SESSION['blog_error']);
                     <span class="title">Contact Messages</span>
                 </a>
             </li>
+            <li class="<?php echo navActive('admin_users'); ?>">
+                <a href="admin_users.php">
+                    <span class="icon-thumbnail"><i class="fas fa-user-shield"></i></span>
+                    <span class="title">Admin Users</span>
+                </a>
+            </li>
             <li class="<?php echo navActive('settings'); ?>">
                 <a href="settings.php">
                     <span class="icon-thumbnail"><i class="fas fa-cog"></i></span>
