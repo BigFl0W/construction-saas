@@ -1,4 +1,5 @@
 <?php
+$siteLogoUrl = tpv_setting_asset_url('site_logo', 'wp-content/uploads/2024/06/logo.png');
 $uri = $_SERVER['REQUEST_URI'] ?? '';
 $isHome     = (preg_match('/^\/(tpv-new-website\/)?(index\.php)?$/', $uri)) ? 'current-menu-ancestor current-menu-parent' : '';
 $isAbout    = (strpos($uri, '/about-us')   !== false) ? 'current-menu-ancestor current-menu-parent' : '';
@@ -26,7 +27,7 @@ $isQuote    = (strpos($uri, '/quote')      !== false) ? 'current-menu-ancestor c
 										<div class="ata-site-logo-set">
 											<div class="ata-site-logo-container">
 												<img class="ata-site-logo-img elementor-animation-"
-													src="../wp-content/uploads/2024/06/logo.png" alt="default-logo" width="150" height="50" />
+													src="<?php echo htmlspecialchars($siteLogoUrl); ?>" alt="default-logo" width="150" height="50" />
 											</div>
 										</div>
 									</a>

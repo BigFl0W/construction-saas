@@ -1,4 +1,5 @@
 <?php
+$siteLogoUrl = tpv_setting_asset_url('site_logo', 'wp-content/uploads/2024/06/logo.png');
 $uri = $_SERVER['REQUEST_URI'] ?? '';
 $isHome = preg_match('#/Archive/?$#', $uri) ? 'is-active' : '';
 $isAbout = strpos($uri, '/about-us') !== false ? 'is-active' : '';
@@ -222,7 +223,7 @@ $isQuote = strpos($uri, '/quote') !== false ? 'is-active' : '';
 <header class="tpv-site-header">
     <div class="tpv-site-header__inner">
         <a class="tpv-site-header__brand" href="../" aria-label="TPV Construction and Services LTD home">
-            <img src="../wp-content/uploads/2024/06/logo.png" alt="TPV Construction and Services LTD">
+            <img src="<?php echo htmlspecialchars($siteLogoUrl); ?>" alt="TPV Construction and Services LTD">
         </a>
 
         <input class="tpv-site-header__mobile-toggle" type="checkbox" id="tpv-site-header-toggle">

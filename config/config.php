@@ -23,8 +23,16 @@ ini_set('session.cookie_samesite', 'Strict');
 
 // Constants
 define('SITE_NAME', 'TPV Construction and Services LTD');
-$basePath = str_replace($_SERVER['DOCUMENT_ROOT'], '', dirname(__DIR__));
-$basePath = rtrim(str_replace('\\', '/', $basePath), '/');
+$documentRoot = str_replace('\\', '/', realpath($_SERVER['DOCUMENT_ROOT'] ?? '') ?: ($_SERVER['DOCUMENT_ROOT'] ?? ''));
+$projectRoot = str_replace('\\', '/', realpath(dirname(__DIR__)) ?: dirname(__DIR__));
+$basePath = '';
+if ($documentRoot && strpos($projectRoot, $documentRoot) === 0) {
+    $basePath = substr($projectRoot, strlen($documentRoot));
+}
+$basePath = '/' . trim($basePath, '/');
+if ($basePath === '/') {
+    $basePath = '';
+}
 define('SITE_URL', 'http://' . $_SERVER['HTTP_HOST'] . $basePath . '/');
 define('UPLOAD_PATH', __DIR__ . '/../uploads/');
 define('UPLOAD_URL', SITE_URL . 'uploads/');
@@ -47,3 +55,35 @@ spl_autoload_register(function ($class) {
         }
     }
 });
+
+if (!function_exists('tpv_asset_url')) {
+    function tpv_asset_url($path) {
+        if (!$path) {
+            return '';
+        }
+
+        $path = str_replace('\\', '/', trim((string) $path));
+        if (preg_match('#^https?://#i', $path)) {
+            return $path;
+        }
+
+        return SITE_URL . ltrim($path, '/');
+    }
+}
+
+if (!function_exists('tpv_setting_asset_url')) {
+    function tpv_setting_asset_url($key, $defaultRelativePath) {
+        static $settingsInstance = null;
+
+        if ($settingsInstance === null) {
+            $settingsInstance = class_exists('Settings') ? new Settings() : null;
+        }
+
+        $value = $settingsInstance ? $settingsInstance->get($key, $defaultRelativePath) : $defaultRelativePath;
+        if (!$value) {
+            $value = $defaultRelativePath;
+        }
+
+        return tpv_asset_url($value);
+    }
+}

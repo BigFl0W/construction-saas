@@ -479,7 +479,7 @@
 									<a data-elementor-open-lightbox="" class='elementor-clickable' href="https://tpvconstrcution.com.ng/">
 										<div class="ata-site-logo-set">
 											<div class="ata-site-logo-container">
-												<img class="ata-site-logo-img elementor-animation-" src="../../wp-content/uploads/2024/06/logo.png" alt="default-logo" width="150" height="50" />
+												<img class="ata-site-logo-img elementor-animation-" src="<?php echo htmlspecialchars(tpv_setting_asset_url('site_logo', 'wp-content/uploads/2024/06/logo.png')); ?>" alt="default-logo" width="150" height="50" />
 											</div>
 										</div>
 									</a>
@@ -1205,7 +1205,7 @@
 						<div class="elementor-element elementor-element-2b12312 e-con-full e-flex e-con e-child" data-id="2b12312" data-element_type="container" data-e-type="container">
 							<div class="elementor-element elementor-element-65cb43e at-image-animation at-animation-image-none elementor-widget elementor-widget-image" data-id="65cb43e" data-element_type="widget" data-e-type="widget" data-settings="{&quot;ekit_we_effect_on&quot;:&quot;none&quot;}" data-widget_type="image.default">
 								<div class="elementor-widget-container">
-									<img width="234" height="78" src="../../wp-content/uploads/2024/06/footer-logo.png" class="attachment-full size-full wp-image-1698" alt="">
+									<img width="234" height="78" src="<?php echo htmlspecialchars(tpv_setting_asset_url('footer_logo', 'wp-content/uploads/2024/06/footer-logo.png')); ?>" class="attachment-full size-full wp-image-1698" alt="">
 								</div>
 							</div>
 							<div class="elementor-element elementor-element-7b129ce elementor-widget elementor-widget-text-editor" data-id="7b129ce" data-element_type="widget" data-e-type="widget" data-settings="{&quot;ekit_we_effect_on&quot;:&quot;none&quot;}" data-widget_type="text-editor.default">

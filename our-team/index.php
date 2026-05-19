@@ -504,7 +504,7 @@
 										<div class="ata-site-logo-set">
 											<div class="ata-site-logo-container">
 												<img class="ata-site-logo-img elementor-animation-"
-													src="../wp-content/uploads/2024/06/logo.png" alt="default-logo"
+													src="<?php echo htmlspecialchars(tpv_setting_asset_url('site_logo', 'wp-content/uploads/2024/06/logo.png')); ?>" alt="default-logo"
 													width="150" height="50" />
 											</div>
 										</div>
@@ -1428,7 +1428,7 @@
 								data-settings="{&quot;ekit_we_effect_on&quot;:&quot;none&quot;}"
 								data-widget_type="image.default">
 								<div class="elementor-widget-container">
-									<img width="234" height="78" src="../wp-content/uploads/2024/06/footer-logo.png"
+									<img width="234" height="78" src="<?php echo htmlspecialchars(tpv_setting_asset_url('footer_logo', 'wp-content/uploads/2024/06/footer-logo.png')); ?>"
 										class="attachment-full size-full wp-image-1698" alt="">
 								</div>
 							</div>

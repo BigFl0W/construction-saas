@@ -280,7 +280,7 @@ if (!$cover) $cover = $items[0];
                             <div class="ata-site-logo">
                                 <a href="https://tpvconstruction.com.ng">
                                     <div class="ata-site-logo-set"><div class="ata-site-logo-container">
-                                        <img src="../wp-content/uploads/2024/06/logo.png" alt="TPV Construction" width="150" height="50">
+                                        <img src="<?php echo htmlspecialchars(tpv_setting_asset_url('site_logo', 'wp-content/uploads/2024/06/logo.png')); ?>" alt="TPV Construction" width="150" height="50">
                                     </div></div>
                                 </a>
                             </div>
@@ -447,7 +447,7 @@ if (!$cover) $cover = $items[0];
                         <div class="elementor-widget elementor-widget-image">
                             <div class="elementor-widget-container">
                                 <img loading="lazy" width="234" height="78"
-                                     src="../wp-content/uploads/2024/06/footer-logo.png"
+                                     src="<?php echo htmlspecialchars(tpv_setting_asset_url('footer_logo', 'wp-content/uploads/2024/06/footer-logo.png')); ?>"
                                      class="attachment-full size-full" alt="">
                             </div>
                         </div>

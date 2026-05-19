@@ -1,3 +1,4 @@
+<?php $footerLogoUrl = tpv_setting_asset_url('footer_logo', 'wp-content/uploads/2024/06/footer-logo.png'); ?>
 <div class="ekit-template-content-markup ekit-template-content-footer ekit-template-content-theme-support">
 		<div data-elementor-type="wp-post" data-elementor-id="1688" class="elementor elementor-1688">
 			<div class="elementor-element elementor-element-aac5742 e-flex e-con-boxed e-con e-parent" data-id="aac5742"
@@ -13,7 +14,7 @@
 								data-settings="{&quot;ekit_we_effect_on&quot;:&quot;none&quot;}"
 								data-widget_type="image.default">
 								<div class="elementor-widget-container">
-									<img src="../wp-content/uploads/2024/06/footer-logo.png"
+									<img src="<?php echo htmlspecialchars($footerLogoUrl); ?>"
 										class="attachment-full size-full wp-image-1698" alt="TPV Construction and Services LTD Logo" width="150" height="108" />
 								</div>
 							</div>
