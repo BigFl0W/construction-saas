@@ -1,6 +1,7 @@
 <?php
 require_once dirname(__DIR__) . '/config/Database.php';
 require_once dirname(__DIR__) . '/includes/email-template.php';
+require_once dirname(__DIR__) . '/classes/Settings.php';
 
 class Mailer {
     private $fromEmail;
@@ -10,8 +11,10 @@ class Mailer {
 
     public function __construct() {
         $this->fromEmail = getenv('RESEND_FROM_EMAIL') ?: 'TPV Construction <onboarding@resend.dev>';
-        $this->fromName = 'TPV Construction and Services LTD';
-        $this->companyName = 'TPV Construction and Services LTD';
+        $settings = class_exists('Settings') ? new Settings() : null;
+        $defaultCompany = $settings ? $settings->get('company_name', 'TPV Construction and Services LTD') : 'TPV Construction and Services LTD';
+        $this->fromName = $defaultCompany;
+        $this->companyName = $defaultCompany;
         $this->resendApiKey = getenv('RESEND_API_KEY') ?: 're_DFJ5tJNL_KqzKcxPwbfuuuJGpXwHAaJKg';
     }
 

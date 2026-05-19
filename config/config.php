@@ -12,9 +12,6 @@ if ($_SERVER['SERVER_NAME'] === 'localhost' || $_SERVER['REMOTE_ADDR'] === '127.
     ini_set('display_errors', 0);
 }
 
-// Timezone
-date_default_timezone_set('Africa/Lagos'); // Set your timezone
-
 // Session configuration
 ini_set('session.cookie_httponly', 1);
 ini_set('session.use_strict_mode', 1);
@@ -55,6 +52,21 @@ spl_autoload_register(function ($class) {
         }
     }
 });
+
+// Timezone
+$resolvedTimezone = 'Africa/Lagos';
+try {
+    $pdo = Database::getInstance()->getConnection();
+    $stmt = $pdo->prepare("SELECT setting_value FROM settings WHERE setting_key = 'timezone' LIMIT 1");
+    $stmt->execute();
+    $timezoneValue = $stmt->fetchColumn();
+    if (is_string($timezoneValue) && $timezoneValue !== '' && in_array($timezoneValue, timezone_identifiers_list(), true)) {
+        $resolvedTimezone = $timezoneValue;
+    }
+} catch (Throwable $e) {
+    // Fall back to the project default timezone when settings are unavailable.
+}
+date_default_timezone_set($resolvedTimezone);
 
 if (!function_exists('tpv_asset_url')) {
     function tpv_asset_url($path) {

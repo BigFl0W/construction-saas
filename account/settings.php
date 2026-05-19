@@ -13,6 +13,69 @@ $db = Database::getInstance();
 $settings = new Settings();
 $siteLogo = $settings->get('site_logo', 'wp-content/uploads/2024/06/logo.png');
 $footerLogo = $settings->get('footer_logo', 'wp-content/uploads/2024/06/footer-logo.png');
+$footerDescription = $settings->get('footer_description', "Building Nigeria's future with excellence, integrity, and innovation. Your trusted partner for quality construction across the nation.");
+$footerServicesHeading = $settings->get('footer_services_heading', 'Our Services');
+$footerCompanyHeading = $settings->get('footer_company_heading', 'Company');
+$footerContactHeading = $settings->get('footer_contact_heading', 'Contact Us');
+$footerPhone = $settings->get('footer_phone', '+234 701 234 5678');
+$footerEmail = $settings->get('footer_email', 'info@tpvconstruction.com.ng');
+$footerLocations = $settings->get('footer_locations', "Abuja Office: 2nd Floor, Right Wing, APDC Building, Area 11, Abuja\nOgun Office: Beside Aladey Hotel, Along Federal Poly Express Road, Ilaro\nNasarawa Office: By New York Park and Gardens, Keffi, Nasarawa\nLagos Office: 10A, Onipinla Lane, Harmony Enclave, Ikeja");
+$footerCopyright = $settings->get('footer_copyright', 'Copyright © 2026 TPV Construction and Services LTD. All Rights Reserved.');
+$footerInstagram = $settings->get('footer_instagram_url', '#');
+$footerFacebook = $settings->get('footer_facebook_url', '#');
+$footerTwitter = $settings->get('footer_twitter_url', '#');
+$footerLinkedin = $settings->get('footer_linkedin_url', '#');
+$companyName = $settings->get('company_name', 'TPV Construction and Services LTD');
+$companyEmail = $settings->get('company_email', 'info@tpvconstruction.com.ng');
+$companyPhone = $settings->get('company_phone', '+234 701 234 5678');
+$companyAddress = $settings->get('company_address', '2nd Floor, Right Wing, APDC Building, Area 11, Abuja, Nigeria');
+$timezoneSetting = $settings->get('timezone', 'Africa/Lagos');
+
+$normalizationMap = [
+    'company_name' => ['current' => $companyName, 'replacement' => 'TPV Construction and Services LTD'],
+    'company_email' => ['current' => $companyEmail, 'replacement' => 'info@tpvconstruction.com.ng'],
+    'company_phone' => ['current' => $companyPhone, 'replacement' => '+234 701 234 5678'],
+    'company_address' => ['current' => $companyAddress, 'replacement' => '2nd Floor, Right Wing, APDC Building, Area 11, Abuja, Nigeria'],
+    'timezone' => ['current' => $timezoneSetting, 'replacement' => 'Africa/Lagos'],
+    'contact_email' => ['current' => $settings->get('contact_email', 'info@tpvconstruction.com.ng'), 'replacement' => 'info@tpvconstruction.com.ng'],
+    'site_name' => ['current' => $settings->get('site_name', 'TPV Construction and Services LTD'), 'replacement' => 'TPV Construction and Services LTD'],
+    'site_tagline' => ['current' => $settings->get('site_tagline', 'Building Excellence'), 'replacement' => 'Building Excellence']
+];
+
+foreach ($normalizationMap as $key => $item) {
+    $currentValue = trim((string) $item['current']);
+    $replacement = $item['replacement'];
+    $shouldNormalize = $currentValue === '';
+
+    if ($key === 'company_name' && stripos($currentValue, 'ironbridge') !== false) {
+        $shouldNormalize = true;
+    }
+    if ($key === 'company_email' && (stripos($currentValue, 'ironbridge') !== false || !filter_var($currentValue, FILTER_VALIDATE_EMAIL))) {
+        $shouldNormalize = true;
+    }
+    if ($key === 'company_phone' && stripos($currentValue, '555') !== false) {
+        $shouldNormalize = true;
+    }
+    if ($key === 'company_address' && stripos($currentValue, 'builder st') !== false) {
+        $shouldNormalize = true;
+    }
+    if ($key === 'timezone' && $currentValue === 'America/New_York') {
+        $shouldNormalize = true;
+    }
+    if ($key === 'contact_email' && stripos($currentValue, '@tpvconstruction.com.ng') === false) {
+        $shouldNormalize = true;
+    }
+
+    if ($shouldNormalize) {
+        $settings->set($key, $replacement, 'general');
+    }
+}
+
+$companyName = $settings->get('company_name', 'TPV Construction and Services LTD');
+$companyEmail = $settings->get('company_email', 'info@tpvconstruction.com.ng');
+$companyPhone = $settings->get('company_phone', '+234 701 234 5678');
+$companyAddress = $settings->get('company_address', '2nd Floor, Right Wing, APDC Building, Area 11, Abuja, Nigeria');
+$timezoneSetting = $settings->get('timezone', 'Africa/Lagos');
 
 function handleBrandingUpload($fileKey, $targetName) {
     if (!isset($_FILES[$fileKey]) || !is_array($_FILES[$fileKey]) || ($_FILES[$fileKey]['error'] ?? UPLOAD_ERR_NO_FILE) === UPLOAD_ERR_NO_FILE) {
@@ -98,7 +161,12 @@ $groups = $settings->getGroups();
 if (empty($groups)) {
     $settings->set('site_name', 'TPV Construction and Services LTD', 'general');
     $settings->set('site_tagline', 'Building Excellence', 'general');
-    $settings->set('contact_email', 'info@tpvconstruction.com', 'general');
+    $settings->set('contact_email', 'info@tpvconstruction.com.ng', 'general');
+    $settings->set('company_name', 'TPV Construction and Services LTD', 'general');
+    $settings->set('company_email', 'info@tpvconstruction.com.ng', 'general');
+    $settings->set('company_phone', '+234 701 234 5678', 'general');
+    $settings->set('company_address', '2nd Floor, Right Wing, APDC Building, Area 11, Abuja, Nigeria', 'general');
+    $settings->set('timezone', 'Africa/Lagos', 'general');
     $settings->set('currency', 'USD', 'financial');
     $settings->set('tax_rate', '7.5', 'financial');
     $settings->set('date_format', 'Y-m-d', 'formatting');
@@ -110,7 +178,31 @@ if (empty($groups)) {
 
 $allSettings = $settings->getAll();
 $grouped = [];
+$managedSettingKeys = [
+    'company_name',
+    'company_email',
+    'company_phone',
+    'company_address',
+    'timezone',
+    'site_logo',
+    'footer_logo',
+    'footer_description',
+    'footer_services_heading',
+    'footer_company_heading',
+    'footer_contact_heading',
+    'footer_phone',
+    'footer_email',
+    'footer_locations',
+    'footer_copyright',
+    'footer_instagram_url',
+    'footer_facebook_url',
+    'footer_twitter_url',
+    'footer_linkedin_url'
+];
 foreach ($allSettings as $s) {
+    if (in_array($s['setting_key'], $managedSettingKeys, true)) {
+        continue;
+    }
     $g = $s['setting_group'];
     if (!isset($grouped[$g])) $grouped[$g] = [];
     $grouped[$g][] = $s;
@@ -140,6 +232,43 @@ require 'inc/admin_header.php';
                         <div class="card card-default mb-3">
                             <div class="card-header">
                                 <div class="card-title d-flex align-items-center">
+                                    <i class="fas fa-building me-2"></i>
+                                    Company Profile
+                                </div>
+                            </div>
+                            <div class="card-body">
+                                <div class="row g-4">
+                                    <div class="col-md-6">
+                                        <label class="form-label fw-semibold">Company Name</label>
+                                        <input type="hidden" name="groups[company_name]" value="general">
+                                        <input type="text" name="settings[company_name]" class="form-control" value="<?php echo htmlspecialchars($companyName); ?>">
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label fw-semibold">Company Email</label>
+                                        <input type="hidden" name="groups[company_email]" value="general">
+                                        <input type="email" name="settings[company_email]" class="form-control" value="<?php echo htmlspecialchars($companyEmail); ?>">
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label fw-semibold">Company Phone</label>
+                                        <input type="hidden" name="groups[company_phone]" value="general">
+                                        <input type="text" name="settings[company_phone]" class="form-control" value="<?php echo htmlspecialchars($companyPhone); ?>">
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label fw-semibold">Timezone</label>
+                                        <input type="hidden" name="groups[timezone]" value="general">
+                                        <input type="text" name="settings[timezone]" class="form-control" value="<?php echo htmlspecialchars($timezoneSetting); ?>">
+                                    </div>
+                                    <div class="col-md-12">
+                                        <label class="form-label fw-semibold">Company Address</label>
+                                        <input type="hidden" name="groups[company_address]" value="general">
+                                        <textarea name="settings[company_address]" class="form-control" rows="3"><?php echo htmlspecialchars($companyAddress); ?></textarea>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card card-default mb-3">
+                            <div class="card-header">
+                                <div class="card-title d-flex align-items-center">
                                     <i class="fas fa-image me-2"></i>
                                     Branding Assets
                                 </div>
@@ -161,6 +290,91 @@ require 'inc/admin_header.php';
                                         </div>
                                         <input type="file" name="footer_logo_file" class="form-control" accept=".png,.jpg,.jpeg,.svg,.webp">
                                         <div class="form-text">Used in the main website footer.</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card card-default mb-3">
+                            <div class="card-header">
+                                <div class="card-title d-flex align-items-center">
+                                    <i class="fas fa-shoe-prints me-2"></i>
+                                    Footer Content
+                                </div>
+                            </div>
+                            <div class="card-body">
+                                <div class="row g-4">
+                                    <div class="col-md-6">
+                                        <label class="form-label fw-semibold">Footer Description</label>
+                                        <input type="hidden" name="groups[footer_description]" value="footer">
+                                        <textarea name="settings[footer_description]" class="form-control" rows="4"><?php echo htmlspecialchars($footerDescription); ?></textarea>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label fw-semibold">Office Locations</label>
+                                        <input type="hidden" name="groups[footer_locations]" value="footer">
+                                        <textarea name="settings[footer_locations]" class="form-control" rows="4"><?php echo htmlspecialchars($footerLocations); ?></textarea>
+                                        <div class="form-text">Use one office address per line.</div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <label class="form-label fw-semibold">Services Heading</label>
+                                        <input type="hidden" name="groups[footer_services_heading]" value="footer">
+                                        <input type="text" name="settings[footer_services_heading]" class="form-control" value="<?php echo htmlspecialchars($footerServicesHeading); ?>">
+                                    </div>
+                                    <div class="col-md-4">
+                                        <label class="form-label fw-semibold">Company Heading</label>
+                                        <input type="hidden" name="groups[footer_company_heading]" value="footer">
+                                        <input type="text" name="settings[footer_company_heading]" class="form-control" value="<?php echo htmlspecialchars($footerCompanyHeading); ?>">
+                                    </div>
+                                    <div class="col-md-4">
+                                        <label class="form-label fw-semibold">Contact Heading</label>
+                                        <input type="hidden" name="groups[footer_contact_heading]" value="footer">
+                                        <input type="text" name="settings[footer_contact_heading]" class="form-control" value="<?php echo htmlspecialchars($footerContactHeading); ?>">
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label fw-semibold">Phone</label>
+                                        <input type="hidden" name="groups[footer_phone]" value="footer">
+                                        <input type="text" name="settings[footer_phone]" class="form-control" value="<?php echo htmlspecialchars($footerPhone); ?>">
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label fw-semibold">Email</label>
+                                        <input type="hidden" name="groups[footer_email]" value="footer">
+                                        <input type="email" name="settings[footer_email]" class="form-control" value="<?php echo htmlspecialchars($footerEmail); ?>">
+                                    </div>
+                                    <div class="col-md-12">
+                                        <label class="form-label fw-semibold">Copyright Text</label>
+                                        <input type="hidden" name="groups[footer_copyright]" value="footer">
+                                        <input type="text" name="settings[footer_copyright]" class="form-control" value="<?php echo htmlspecialchars($footerCopyright); ?>">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card card-default mb-3">
+                            <div class="card-header">
+                                <div class="card-title d-flex align-items-center">
+                                    <i class="fas fa-share-alt me-2"></i>
+                                    Footer Social Links
+                                </div>
+                            </div>
+                            <div class="card-body">
+                                <div class="row g-4">
+                                    <div class="col-md-6">
+                                        <label class="form-label fw-semibold">Instagram URL</label>
+                                        <input type="hidden" name="groups[footer_instagram_url]" value="footer">
+                                        <input type="url" name="settings[footer_instagram_url]" class="form-control" value="<?php echo htmlspecialchars($footerInstagram); ?>">
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label fw-semibold">Facebook URL</label>
+                                        <input type="hidden" name="groups[footer_facebook_url]" value="footer">
+                                        <input type="url" name="settings[footer_facebook_url]" class="form-control" value="<?php echo htmlspecialchars($footerFacebook); ?>">
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label fw-semibold">X / Twitter URL</label>
+                                        <input type="hidden" name="groups[footer_twitter_url]" value="footer">
+                                        <input type="url" name="settings[footer_twitter_url]" class="form-control" value="<?php echo htmlspecialchars($footerTwitter); ?>">
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label fw-semibold">LinkedIn URL</label>
+                                        <input type="hidden" name="groups[footer_linkedin_url]" value="footer">
+                                        <input type="url" name="settings[footer_linkedin_url]" class="form-control" value="<?php echo htmlspecialchars($footerLinkedin); ?>">
                                     </div>
                                 </div>
                             </div>

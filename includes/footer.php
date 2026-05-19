@@ -1,4 +1,27 @@
-<?php $footerLogoUrl = tpv_setting_asset_url('footer_logo', 'wp-content/uploads/2024/06/footer-logo.png'); ?>
+<?php
+require_once dirname(__DIR__) . '/classes/Settings.php';
+
+$footerSettings = new Settings();
+$companyName = trim((string) $footerSettings->get('company_name', 'TPV Construction and Services LTD'));
+$companyEmailDefault = trim((string) $footerSettings->get('company_email', 'info@tpvconstruction.com.ng'));
+$companyPhoneDefault = trim((string) $footerSettings->get('company_phone', '+234 701 234 5678'));
+$companyAddressDefault = trim((string) $footerSettings->get('company_address', '2nd Floor, Right Wing, APDC Building, Area 11, Abuja, Nigeria'));
+$footerLogoUrl = tpv_setting_asset_url('footer_logo', 'wp-content/uploads/2024/06/footer-logo.png');
+$footerDescription = $footerSettings->get('footer_description', "Building Nigeria's future with excellence, integrity, and innovation. Your trusted partner for quality construction across the nation.");
+$footerServicesHeading = $footerSettings->get('footer_services_heading', 'Our Services');
+$footerCompanyHeading = $footerSettings->get('footer_company_heading', 'Company');
+$footerContactHeading = $footerSettings->get('footer_contact_heading', 'Contact Us');
+$footerPhone = trim((string) $footerSettings->get('footer_phone', $companyPhoneDefault ?: '+234 701 234 5678'));
+$footerEmail = trim((string) $footerSettings->get('footer_email', $companyEmailDefault ?: 'info@tpvconstruction.com.ng'));
+$footerLocationsRaw = (string) $footerSettings->get('footer_locations', $companyAddressDefault ?: "2nd Floor, Right Wing, APDC Building, Area 11, Abuja, Nigeria");
+$footerCopyright = $footerSettings->get('footer_copyright', 'Copyright © 2026 ' . ($companyName ?: 'TPV Construction and Services LTD') . '. All Rights Reserved.');
+$footerInstagramUrl = trim((string) $footerSettings->get('footer_instagram_url', '#'));
+$footerFacebookUrl = trim((string) $footerSettings->get('footer_facebook_url', '#'));
+$footerTwitterUrl = trim((string) $footerSettings->get('footer_twitter_url', '#'));
+$footerLinkedinUrl = trim((string) $footerSettings->get('footer_linkedin_url', '#'));
+$footerLocations = array_values(array_filter(array_map('trim', preg_split('/\r\n|\r|\n/', $footerLocationsRaw))));
+$footerPhoneHref = 'tel:' . preg_replace('/[^0-9+]/', '', $footerPhone);
+?>
 <div class="ekit-template-content-markup ekit-template-content-footer ekit-template-content-theme-support">
 		<div data-elementor-type="wp-post" data-elementor-id="1688" class="elementor elementor-1688">
 			<div class="elementor-element elementor-element-aac5742 e-flex e-con-boxed e-con e-parent" data-id="aac5742"
@@ -23,7 +46,7 @@
 								data-settings="{&quot;ekit_we_effect_on&quot;:&quot;none&quot;}"
 								data-widget_type="text-editor.default">
 								<div class="elementor-widget-container">
-									<p>Building Nigeria's future with excellence, integrity, and innovation. Your trusted partner for quality construction across the nation.</p>
+									<p><?php echo htmlspecialchars($footerDescription); ?></p>
 								</div>
 							</div>
 						</div>
@@ -34,7 +57,7 @@
 								data-settings="{&quot;ekit_we_effect_on&quot;:&quot;none&quot;}"
 								data-widget_type="heading.default">
 								<div class="elementor-widget-container">
-									<h3 class="elementor-heading-title elementor-size-default">Our Services</h3>
+									<h3 class="elementor-heading-title elementor-size-default"><?php echo htmlspecialchars($footerServicesHeading); ?></h3>
 								</div>
 							</div>
 							<div class="elementor-element elementor-element-80e8ad5 footer-menu-list elementor-widget elementor-widget-ekit-vertical-menu"
@@ -86,7 +109,7 @@
 								data-settings="{&quot;ekit_we_effect_on&quot;:&quot;none&quot;}"
 								data-widget_type="heading.default">
 								<div class="elementor-widget-container">
-									<h3 class="elementor-heading-title elementor-size-default">Company</h3>
+									<h3 class="elementor-heading-title elementor-size-default"><?php echo htmlspecialchars($footerCompanyHeading); ?></h3>
 								</div>
 							</div>
 							<div class="elementor-element elementor-element-400af0a footer-menu-list elementor-widget elementor-widget-ekit-vertical-menu"
@@ -129,7 +152,7 @@
 								data-settings="{&quot;ekit_we_effect_on&quot;:&quot;none&quot;}"
 								data-widget_type="heading.default">
 								<div class="elementor-widget-container">
-									<h3 class="elementor-heading-title elementor-size-default">Contact Us</h3>
+									<h3 class="elementor-heading-title elementor-size-default"><?php echo htmlspecialchars($footerContactHeading); ?></h3>
 								</div>
 							</div>
 							<div class="elementor-element elementor-element-6ac0296 e-con-full e-flex e-con e-child"
@@ -140,7 +163,7 @@
 									data-widget_type="elementskit-icon-box.default">
 									<div class="elementor-widget-container">
 										<div class="ekit-wid-con">
-											<a href="tel:+2347012345678" class="ekit_global_links">
+											<a href="<?php echo htmlspecialchars($footerPhoneHref); ?>" class="ekit_global_links">
 												<div class="elementskit-infobox text-left text-left icon-lef-right-aligin elementor-animation- media">
 													<div class="elementskit-box-header elementor-animation-">
 														<div class="elementskit-info-box-icon text-center">
@@ -161,7 +184,7 @@
 													</div>
 													<div class="box-body">
 														<h3 class="elementskit-info-box-title">
-															+234 701 234 5678 </h3>
+															<?php echo htmlspecialchars($footerPhone); ?> </h3>
 													</div>
 												</div>
 											</a>
@@ -174,7 +197,7 @@
 									data-widget_type="elementskit-icon-box.default">
 									<div class="elementor-widget-container">
 										<div class="ekit-wid-con">
-											<a href="mailto:info@tpvconstruction.com.ng" class="ekit_global_links">
+											<a href="mailto:<?php echo htmlspecialchars($footerEmail); ?>" class="ekit_global_links">
 												<div class="elementskit-infobox text-left text-left icon-lef-right-aligin elementor-animation- media">
 													<div class="elementskit-box-header elementor-animation-">
 														<div class="elementskit-info-box-icon text-center">
@@ -195,7 +218,7 @@
 													</div>
 													<div class="box-body">
 														<h3 class="elementskit-info-box-title">
-															info@tpvconstruction.com.ng </h3>
+															<?php echo htmlspecialchars($footerEmail); ?> </h3>
 													</div>
 												</div>
 											</a>
@@ -232,25 +255,15 @@
 												<div class="box-body location-text">
 													<div class="marquee-wrapper">
 														<div class="marquee-content">
-															<span class="marquee-item">🏢 Abuja Office: 2nd Floor, Right Wing, APDC Building, Area 11, Abuja</span>
-															<span class="marquee-separator">✦</span>
-															<span class="marquee-item">🏛️ Ogun Office: Beside Aladey Hotel, Along Federal Poly Express Road, Ilaro</span>
-															<span class="marquee-separator">✦</span>
-															<span class="marquee-item">🏙️ Nasarawa Office: By New York Park and Gardens, Keffi, Nasarawa</span>
-															<span class="marquee-separator">✦</span>
-															<span class="marquee-item">🏗️ Lagos Office: 10A, Onipinla Lane, Harmony Enclave, Ikeja</span>
-															<span class="marquee-separator">✦</span>
-
-															<!-- Duplicate for seamless loop -->
-															<span class="marquee-item">🏢 Abuja Office: 2nd Floor, Right Wing, APDC Building, Area 11, Abuja</span>
-															<span class="marquee-separator">✦</span>
-															<span class="marquee-item">🏛️ Ogun Office: Beside Aladey Hotel, Along Federal Poly Express Road, Ilaro</span>
-															<span class="marquee-separator">✦</span>
-															<span class="marquee-item">🏙️ Nasarawa Office: By New York Park and Gardens, Keffi, Nasarawa</span>
-															<span class="marquee-separator">✦</span>
-															<span class="marquee-item">🏗️ Lagos Office: 10A, Onipinla Lane, Harmony Enclave, Ikeja</span>
-															<span class="marquee-separator">✦</span>
-														</div>
+									<?php for ($loop = 0; $loop < 2; $loop++): ?>
+										<?php foreach ($footerLocations as $index => $location): ?>
+											<span class="marquee-item"><?php echo htmlspecialchars($location); ?></span>
+											<?php if ($index !== count($footerLocations) - 1 || $loop === 0): ?>
+												<span class="marquee-separator">&bull;</span>
+											<?php endif; ?>
+										<?php endforeach; ?>
+									<?php endfor; ?>
+								</div>
 													</div>
 												</div>
 											</div>
@@ -270,7 +283,7 @@
 								data-settings="{&quot;ekit_we_effect_on&quot;:&quot;none&quot;}"
 								data-widget_type="text-editor.default">
 								<div class="elementor-widget-container">
-									<p>Copyright © 2026 TPV Construction and Services LTD. All Rights Reserved.</p>
+									<p><?php echo htmlspecialchars($footerCopyright); ?></p>
 								</div>
 							</div>
 						</div>
@@ -284,17 +297,17 @@
 									<div class="ekit-wid-con">
 										<ul class="ekit_social_media">
 											<li class="elementor-repeater-item-4b0caec">
-												<a href="#" aria-label="Instagram" class="instagram">
+												<a href="<?php echo htmlspecialchars($footerInstagramUrl ?: '#'); ?>" aria-label="Instagram" class="instagram">
 													<i aria-hidden="true" class="icon icon-instagram-1"></i>
 												</a>
 											</li>
 											<li class="elementor-repeater-item-2d9d002">
-												<a href="#" aria-label="Facebook" class="facebook">
+												<a href="<?php echo htmlspecialchars($footerFacebookUrl ?: '#'); ?>" aria-label="Facebook" class="facebook">
 													<i aria-hidden="true" class="icon icon-facebook"></i>
 												</a>
 											</li>
 											<li class="elementor-repeater-item-189442f">
-												<a href="#" aria-label="Twitter" class="twitter">
+												<a href="<?php echo htmlspecialchars($footerTwitterUrl ?: '#'); ?>" aria-label="Twitter" class="twitter">
 													<svg aria-hidden="true" class="e-font-icon-svg e-fab-x-twitter"
 														viewbox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
 														<path
@@ -304,7 +317,7 @@
 												</a>
 											</li>
 											<li class="elementor-repeater-item-a68971f">
-												<a href="#" aria-label="LinkedIn" class="linkedin">
+												<a href="<?php echo htmlspecialchars($footerLinkedinUrl ?: '#'); ?>" aria-label="LinkedIn" class="linkedin">
 													<i aria-hidden="true" class="icon icon-linkedin"></i>
 												</a>
 											</li>
