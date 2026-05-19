@@ -684,7 +684,7 @@
 							<div class="elementor-widget-container">
 								<div class="elementor-icon-box-wrapper">
 									<div class="elementor-icon-box-icon">
-										<a href="tel:+2347012345678" class="elementor-icon" tabindex="-1"
+										<a href="<?php echo htmlspecialchars($supportPhoneHref); ?>" class="elementor-icon" tabindex="-1"
 											aria-label="call support center 24X7">
 											<svg xmlns="http://www.w3.org/2000/svg" width="70" height="70"
 												viewbox="0 0 70 70" fill="none">
@@ -703,12 +703,12 @@
 									</div>
 									<div class="elementor-icon-box-content">
 										<h3 class="elementor-icon-box-title">
-											<a href="tel:+2347012345678">
+											<a href="<?php echo htmlspecialchars($supportPhoneHref); ?>">
 												call support center 24X7
 											</a>
 										</h3>
 										<p class="elementor-icon-box-description">
-											+234 701 234 5678
+											<?php echo htmlspecialchars($supportPhone); ?>
 										</p>
 									</div>
 								</div>
@@ -2153,3 +2153,9 @@
 </body>
 
 </html>
+<?php
+require_once '../config/config.php';
+$pageSettings = new Settings();
+$supportPhone = trim((string) $pageSettings->get('company_phone', '+234 701 234 5678'));
+$supportPhoneHref = 'tel:' . preg_replace('/[^0-9+]/', '', $supportPhone);
+?>
