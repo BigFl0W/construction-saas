@@ -2,25 +2,105 @@
 require_once dirname(__DIR__) . '/config/Database.php';
 require_once dirname(__DIR__) . '/includes/email-template.php';
 require_once dirname(__DIR__) . '/classes/Settings.php';
+require_once dirname(__DIR__) . '/lib/PHPMailer/Exception.php';
+require_once dirname(__DIR__) . '/lib/PHPMailer/PHPMailer.php';
+require_once dirname(__DIR__) . '/lib/PHPMailer/SMTP.php';
+
+use PHPMailer\PHPMailer\Exception as PHPMailerException;
+use PHPMailer\PHPMailer\PHPMailer;
 
 class Mailer {
     private $fromEmail;
     private $fromName;
     private $companyName;
     private $resendApiKey;
+    private $settings;
+    private $mailDriver;
+    private $smtpHost;
+    private $smtpPort;
+    private $smtpUsername;
+    private $smtpPassword;
+    private $smtpEncryption;
 
     public function __construct() {
-        $this->fromEmail = getenv('RESEND_FROM_EMAIL') ?: 'TPV Construction <onboarding@resend.dev>';
-        $settings = class_exists('Settings') ? new Settings() : null;
-        $defaultCompany = $settings ? $settings->get('company_name', 'TPV Construction and Services LTD') : 'TPV Construction and Services LTD';
+        $this->settings = class_exists('Settings') ? new Settings() : null;
+        $defaultCompany = $this->settings ? $this->settings->get('company_name', 'TPV Construction and Services LTD') : 'TPV Construction and Services LTD';
+        $configuredFromEmail = $this->settings ? trim((string) $this->settings->get('smtp_from_email', '')) : '';
+        $configuredFromName = $this->settings ? trim((string) $this->settings->get('smtp_from_name', '')) : '';
+        $this->fromEmail = $configuredFromEmail !== '' ? $configuredFromEmail : (getenv('RESEND_FROM_EMAIL') ?: 'onboarding@resend.dev');
         $this->fromName = $defaultCompany;
         $this->companyName = $defaultCompany;
+        if ($configuredFromName !== '') {
+            $this->fromName = $configuredFromName;
+        }
         $this->resendApiKey = getenv('RESEND_API_KEY') ?: 're_DFJ5tJNL_KqzKcxPwbfuuuJGpXwHAaJKg';
+        $this->mailDriver = $this->settings ? trim((string) $this->settings->get('mail_driver', 'phpmailer')) : 'phpmailer';
+        $this->smtpHost = $this->settings ? trim((string) $this->settings->get('smtp_host', '')) : '';
+        $this->smtpPort = (int) ($this->settings ? $this->settings->get('smtp_port', '587') : 587);
+        $this->smtpUsername = $this->settings ? trim((string) $this->settings->get('smtp_username', '')) : '';
+        $this->smtpPassword = $this->settings ? trim((string) $this->settings->get('smtp_password', '')) : '';
+        $this->smtpEncryption = $this->settings ? trim((string) $this->settings->get('smtp_encryption', 'tls')) : 'tls';
     }
 
     public function send($to, $subject, $body, $replyTo = null) {
         $html = $this->buildTemplate($subject, $body);
+        if ($this->mailDriver === 'phpmailer') {
+            $sent = $this->sendWithPhpMailer($to, $subject, $html, $replyTo);
+            if ($sent) {
+                return true;
+            }
+        }
+
         return $this->sendWithResend($to, $subject, $html, $replyTo);
+    }
+
+    private function sendWithPhpMailer($to, $subject, $html, $replyTo = null) {
+        try {
+            $mail = new PHPMailer(true);
+            $mail->CharSet = 'UTF-8';
+            $mail->isHTML(true);
+
+            if ($this->smtpHost !== '') {
+                $mail->isSMTP();
+                $mail->Host = $this->smtpHost;
+                $mail->Port = $this->smtpPort > 0 ? $this->smtpPort : 587;
+                if ($this->smtpUsername !== '') {
+                    $mail->SMTPAuth = true;
+                    $mail->Username = $this->smtpUsername;
+                    $mail->Password = $this->smtpPassword;
+                } else {
+                    $mail->SMTPAuth = false;
+                }
+
+                if ($this->smtpEncryption === 'ssl') {
+                    $mail->SMTPSecure = PHPMailer::ENCRYPTION_SMTPS;
+                } elseif ($this->smtpEncryption === 'tls') {
+                    $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
+                } else {
+                    $mail->SMTPSecure = false;
+                    $mail->SMTPAutoTLS = false;
+                }
+            } else {
+                $mail->isMail();
+            }
+
+            $mail->setFrom($this->fromEmail, $this->fromName);
+            $mail->addAddress($to);
+            if ($replyTo) {
+                $mail->addReplyTo($replyTo);
+            }
+            $mail->Subject = $subject;
+            $mail->Body = $html;
+            $mail->AltBody = trim(preg_replace('/\s+/', ' ', strip_tags($subject . ' ' . $html)));
+
+            return $mail->send();
+        } catch (PHPMailerException $e) {
+            error_log('PHPMailer send failed: ' . $e->getMessage());
+            return false;
+        } catch (\Throwable $e) {
+            error_log('PHPMailer runtime failed: ' . $e->getMessage());
+            return false;
+        }
     }
 
     private function sendWithResend($to, $subject, $html, $replyTo = null) {
@@ -34,7 +114,7 @@ class Mailer {
         }
 
         $payload = [
-            'from' => $this->fromEmail,
+            'from' => $this->fromName . ' <' . $this->fromEmail . '>',
             'to' => [$to],
             'subject' => $subject,
             'html' => $html

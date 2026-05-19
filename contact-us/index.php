@@ -1,9 +1,61 @@
 <?php
-session_start();
+require_once '../config/config.php';
+if (session_status() !== PHP_SESSION_ACTIVE) {
+    session_start();
+}
+$contactSettings = new Settings();
 $contactSent = isset($_GET['sent']);
 $contactErrors = $_SESSION['contact_errors'] ?? [];
 $contactOld = $_SESSION['contact_old'] ?? [];
 unset($_SESSION['contact_errors'], $_SESSION['contact_old']);
+
+$contactHeroTitle = trim((string) $contactSettings->get('contact_hero_title', 'Contact Us'));
+$contactFormEyebrow = trim((string) $contactSettings->get('contact_form_eyebrow', 'Contact us'));
+$contactFormTitle = trim((string) $contactSettings->get('contact_form_title', 'Get in touch with us'));
+$contactFormBody = trim((string) $contactSettings->get('contact_form_body', 'Please fill out the form below, and a member of our team will get back to you as soon as possible.'));
+$contactPhoneTitle = trim((string) $contactSettings->get('contact_phone_title', 'Call Our Head Office'));
+$contactPhoneNote = trim((string) $contactSettings->get('contact_phone_note', 'Available Mon-Fri, 8am-6pm'));
+$contactEmailTitle = trim((string) $contactSettings->get('contact_email_title', 'Write To Us'));
+$contactEmailNote = trim((string) $contactSettings->get('contact_email_note', 'We reply within 24 hours'));
+$contactSidebarHeading = trim((string) $contactSettings->get('contact_sidebar_heading', 'follow us'));
+$contactSidebarImage = trim((string) $contactSettings->get('contact_sidebar_image', 'wp-content/uploads/2024/06/contact-info-img.png'));
+$contactMapApiKey = trim((string) $contactSettings->get('contact_map_api_key', 'AIzaSyBFw0Qbyq9zTFTd-tUY6dZWTgaQzuU17R8'));
+$contactMapDefaultQuery = trim((string) $contactSettings->get('contact_map_default_query', 'Port+Harcourt+Rivers+Nigeria'));
+$contactSuccessMessage = trim((string) $contactSettings->get('contact_success_message', 'Your message has been sent successfully. We will get back to you within 24 hours.'));
+$contactLocationsData = trim((string) $contactSettings->get('contact_locations_data', "Abuja Office|Area 11, Abuja|2nd Floor, Right Wing, APDC Building, Area 11, Abuja|09097128241|abuja@tpvconstruction.com.ng|APDC+Building+Area+11+Abuja+Nigeria\nOgun Office|Ilaro, Ogun State|Beside Aladey Hotel, Along Federal Poly Express Road, Ilaro, Ogun State|09097128241|ogun@tpvconstruction.com.ng|Federal+Poly+Express+Road+Ilaro+Ogun+State+Nigeria\nNasarawa Office|Keffi, Nasarawa|By New York Park and Gardens, Keffi, Nasarawa|08069418816|nasarawa@tpvconstruction.com.ng|Keffi+Nasarawa+Nigeria\nLagos Office|Ikeja, Lagos|10A, Onipinla Lane, Harmony Enclave, Off Adeniyi Jones Avenue, Ikeja, Lagos|08104830712|lagos@tpvconstruction.com.ng|Harmony+Enclave+Ikeja+Lagos+Nigeria"));
+$companyPhone = trim((string) $contactSettings->get('company_phone', '+234 701 234 5678'));
+$companyEmail = trim((string) $contactSettings->get('company_email', 'info@tpvconstruction.com.ng'));
+$footerInstagram = trim((string) $contactSettings->get('footer_instagram_url', '#'));
+$footerFacebook = trim((string) $contactSettings->get('footer_facebook_url', '#'));
+$footerTwitter = trim((string) $contactSettings->get('footer_twitter_url', '#'));
+$footerLinkedin = trim((string) $contactSettings->get('footer_linkedin_url', '#'));
+
+$contactLocations = [];
+foreach (preg_split('/\r\n|\r|\n/', $contactLocationsData) as $line) {
+    $line = trim($line);
+    if ($line === '') {
+        continue;
+    }
+    $parts = array_map('trim', explode('|', $line));
+    $contactLocations[] = [
+        'name' => $parts[0] ?? 'Office',
+        'city' => $parts[1] ?? '',
+        'address' => $parts[2] ?? '',
+        'phone' => $parts[3] ?? $companyPhone,
+        'email' => $parts[4] ?? $companyEmail,
+        'map_query' => $parts[5] ?? $contactMapDefaultQuery,
+    ];
+}
+if (empty($contactLocations)) {
+    $contactLocations[] = [
+        'name' => 'Head Office',
+        'city' => '',
+        'address' => trim((string) $contactSettings->get('company_address', '2nd Floor, Right Wing, APDC Building, Area 11, Abuja, Nigeria')),
+        'phone' => $companyPhone,
+        'email' => $companyEmail,
+        'map_query' => $contactMapDefaultQuery,
+    ];
+}
 ?>
 <!DOCTYPE html>
 <html lang="en-US">
@@ -255,6 +307,35 @@ unset($_SESSION['contact_errors'], $_SESSION['contact_old']);
             background: linear-gradient(135deg, #bd1218 0%, #E5363D 100%);
         }
 
+        .contact-page-meta {
+            display: grid;
+            gap: 14px;
+            margin-bottom: 24px;
+        }
+        .contact-page-meta-item {
+            padding: 18px 20px;
+            background: rgba(255, 255, 255, 0.92);
+            border-radius: 14px;
+            box-shadow: 0 10px 25px rgba(15, 23, 42, 0.06);
+        }
+        .contact-page-meta-item strong {
+            display: block;
+            color: #0f172a;
+            font-size: 15px;
+            margin-bottom: 6px;
+        }
+        .contact-page-meta-item p {
+            margin: 0 0 4px;
+        }
+        .contact-page-meta-item a {
+            color: #E5363D;
+            text-decoration: none;
+            font-weight: 700;
+        }
+        .contact-page-meta-item small {
+            color: #64748b;
+        }
+
         /* Map Styling */
         .location-map iframe {
             border-radius: 24px;
@@ -385,7 +466,7 @@ unset($_SESSION['contact_errors'], $_SESSION['contact_old']);
                     <div class="e-con-inner">
                         <div class="elementor-element elementor-element-077029b at-heading-animation at-animation-heading-style-3 elementor-widget elementor-widget-heading" data-id="077029b" data-element_type="widget" data-widget_type="heading.default">
                             <div class="elementor-widget-container">
-                                <h1 class="elementor-heading-title elementor-size-default">Contact Us</h1>
+                                <h1 class="elementor-heading-title elementor-size-default"><?php echo htmlspecialchars($contactHeroTitle); ?></h1>
                             </div>
                         </div>
                         <div class="elementor-element elementor-element-37c956b elementor-invisible elementor-widget elementor-widget-elementskit-breadcrumb" data-id="37c956b" data-element_type="widget" data-settings="{&quot;_animation&quot;:&quot;fadeInUp&quot;}" data-widget_type="elementskit-breadcrumb.default">
@@ -413,7 +494,7 @@ unset($_SESSION['contact_errors'], $_SESSION['contact_old']);
                             <div class="elementskit-testimonial-slider ekit_testimonial_style_5 arrow_inside slider-dotted" data-config='{"rtl":false,"arrows":true,"dots":true,"pauseOnHover":true,"autoplay":{"delay":10000,"disableOnInteraction":false,"pauseOnMouseEnter":true},"speed":1500,"slidesPerGroup":1,"slidesPerView":3,"loop":true,"spaceBetween":30,"breakpoints":{"320":{"slidesPerView":1,"slidesPerGroup":1,"spaceBetween":10},"768":{"slidesPerView":2,"slidesPerGroup":1,"spaceBetween":20},"1024":{"slidesPerView":3,"slidesPerGroup":1,"spaceBetween":30}}}'>
                                 <div class="ekit-main-swiper swiper">
                                     <div class="swiper-wrapper">
-                                        <!-- Abuja Office -->
+                                        <?php foreach ($contactLocations as $location): ?>
                                         <div class="swiper-slide">
                                             <div class="swiper-slide-inner">
                                                 <div class="elementskit-single-testimonial-slider elementskit-testimonial-slider-block-style location-card">
@@ -426,92 +507,18 @@ unset($_SESSION['contact_errors'], $_SESSION['contact_old']);
                                                         </div>
                                                     </div>
                                                     <div class="elementskit-commentor-content">
-                                                        <h3 class="location-name">Abuja Office</h3>
-                                                        <h4 class="location-city">Area 11, Abuja</h4>
-                                                        <p class="location-address">2nd Floor, Right Wing, APDC Building, Area 11, Abuja</p>
+                                                        <h3 class="location-name"><?php echo htmlspecialchars($location['name']); ?></h3>
+                                                        <h4 class="location-city"><?php echo htmlspecialchars($location['city']); ?></h4>
+                                                        <p class="location-address"><?php echo htmlspecialchars($location['address']); ?></p>
                                                         <div class="location-contact">
-                                                            <p class="location-phone"><a href="tel:09097128241">09097128241</a></p>
-                                                            <a href="mailto:abuja@tpvconstruction.com.ng" class="location-email">abuja@tpvconstruction.com.ng</a>
+                                                            <p class="location-phone"><a href="tel:<?php echo htmlspecialchars(preg_replace('/[^0-9+]/', '', $location['phone'])); ?>"><?php echo htmlspecialchars($location['phone']); ?></a></p>
+                                                            <a href="mailto:<?php echo htmlspecialchars($location['email']); ?>" class="location-email"><?php echo htmlspecialchars($location['email']); ?></a>
                                                         </div>
                                                     </div>
                                                 </div>
                                             </div>
                                         </div>
-
-                                        <!-- Ogun Office -->
-                                        <div class="swiper-slide">
-                                            <div class="swiper-slide-inner">
-                                                <div class="elementskit-single-testimonial-slider elementskit-testimonial-slider-block-style location-card">
-                                                    <div class="elementskit-commentor-header">
-                                                        <div class="location-icon">
-                                                            <svg xmlns="http://www.w3.org/2000/svg" width="60" height="60" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-                                                                <path d="M12 21C15.5 17.4 19 14.1764 19 10.2C19 6.22355 15.866 3 12 3C8.13401 3 5 6.22355 5 10.2C5 14.1764 8.5 17.4 12 21Z" stroke="currentColor" stroke-linejoin="round"/>
-                                                                <circle cx="12" cy="10" r="3" stroke="currentColor"/>
-                                                            </svg>
-                                                        </div>
-                                                    </div>
-                                                    <div class="elementskit-commentor-content">
-                                                        <h3 class="location-name">Ogun Office</h3>
-                                                        <h4 class="location-city">Ilaro, Ogun State</h4>
-                                                        <p class="location-address">Beside Aladey Hotel, Along Federal Poly Express Road, Ilaro, Ogun State</p>
-                                                        <div class="location-contact">
-                                                            <p class="location-phone"><a href="tel:09097128241">09097128241</a></p>
-                                                            <a href="mailto:ogun@tpvconstruction.com.ng" class="location-email">ogun@tpvconstruction.com.ng</a>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-
-                                        <!-- Nasarawa Office -->
-                                        <div class="swiper-slide">
-                                            <div class="swiper-slide-inner">
-                                                <div class="elementskit-single-testimonial-slider elementskit-testimonial-slider-block-style location-card">
-                                                    <div class="elementskit-commentor-header">
-                                                        <div class="location-icon">
-                                                            <svg xmlns="http://www.w3.org/2000/svg" width="60" height="60" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-                                                                <path d="M12 21C15.5 17.4 19 14.1764 19 10.2C19 6.22355 15.866 3 12 3C8.13401 3 5 6.22355 5 10.2C5 14.1764 8.5 17.4 12 21Z" stroke="currentColor" stroke-linejoin="round"/>
-                                                                <circle cx="12" cy="10" r="3" stroke="currentColor"/>
-                                                            </svg>
-                                                        </div>
-                                                    </div>
-                                                    <div class="elementskit-commentor-content">
-                                                        <h3 class="location-name">Nasarawa Office</h3>
-                                                        <h4 class="location-city">Keffi, Nasarawa</h4>
-                                                        <p class="location-address">By New York Park and Gardens, Keffi, Nasarawa</p>
-                                                        <div class="location-contact">
-                                                            <p class="location-phone"><a href="tel:08069418816">08069418816</a></p>
-                                                            <a href="mailto:nasarawa@tpvconstruction.com.ng" class="location-email">nasarawa@tpvconstruction.com.ng</a>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-
-                                        <!-- Lagos Office -->
-                                        <div class="swiper-slide">
-                                            <div class="swiper-slide-inner">
-                                                <div class="elementskit-single-testimonial-slider elementskit-testimonial-slider-block-style location-card">
-                                                    <div class="elementskit-commentor-header">
-                                                        <div class="location-icon">
-                                                            <svg xmlns="http://www.w3.org/2000/svg" width="60" height="60" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-                                                                <path d="M12 21C15.5 17.4 19 14.1764 19 10.2C19 6.22355 15.866 3 12 3C8.13401 3 5 6.22355 5 10.2C5 14.1764 8.5 17.4 12 21Z" stroke="currentColor" stroke-linejoin="round"/>
-                                                                <circle cx="12" cy="10" r="3" stroke="currentColor"/>
-                                                            </svg>
-                                                        </div>
-                                                    </div>
-                                                    <div class="elementskit-commentor-content">
-                                                        <h3 class="location-name">Lagos Office</h3>
-                                                        <h4 class="location-city">Ikeja, Lagos</h4>
-                                                        <p class="location-address">10A, Onipinla Lane, Harmony Enclave, Off Adeniyi Jones Avenue, Ikeja, Lagos</p>
-                                                        <div class="location-contact">
-                                                            <p class="location-phone"><a href="tel:08104830712">08104830712</a></p>
-                                                            <a href="mailto:lagos@tpvconstruction.com.ng" class="location-email">lagos@tpvconstruction.com.ng</a>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
+                                        <?php endforeach; ?>
                                     </div>
                                     <div class="swiper-pagination"></div>
                                     <div class="swiper-button-prev"></div>
@@ -532,7 +539,7 @@ unset($_SESSION['contact_errors'], $_SESSION['contact_old']);
                         <iframe id="locationMap"
                             class="w-100 mb-n2"
                             style="height: 450px; width: 100%; border: 0;"
-                            src="https://www.google.com/maps/embed/v1/place?key=AIzaSyBFw0Qbyq9zTFTd-tUY6dZWTgaQzuU17R8&q=Port+Harcourt+Rivers+Nigeria"
+                            src="https://www.google.com/maps/embed/v1/place?key=<?php echo htmlspecialchars(rawurlencode($contactMapApiKey)); ?>&q=<?php echo htmlspecialchars($contactMapDefaultQuery); ?>"
                             frameborder="0"
                             allowfullscreen=""
                             aria-hidden="false"
@@ -548,14 +555,19 @@ unset($_SESSION['contact_errors'], $_SESSION['contact_old']);
             <div class="e-con-inner">
                 <div class="elementor-element elementor-element-b5c14c8 e-con-full e-flex e-con e-child" data-id="b5c14c8" data-element_type="container">
                     <div class="elementor-element elementor-element-f130c6c e-con-full e-flex e-con e-child" data-id="f130c6c" data-element_type="container" data-settings="{&quot;background_background&quot;:&quot;classic&quot;}">
+                        <div class="elementor-element elementor-element-49c625f at-heading-animation elementor-widget elementor-widget-heading" data-id="49c625f" data-element_type="widget" data-widget_type="heading.default">
+                            <div class="elementor-widget-container">
+                                <h3 class="elementor-heading-title elementor-size-default"><?php echo htmlspecialchars($contactFormEyebrow); ?></h3>
+                            </div>
+                        </div>
                         <div class="elementor-element elementor-element-1c38e3f at-heading-animation elementor-widget elementor-widget-heading" data-id="1c38e3f" data-element_type="widget" data-widget_type="heading.default">
                             <div class="elementor-widget-container">
-                                <h2 class="elementor-heading-title elementor-size-default">Ready to get started? let's chat.</h2>
+                                <h2 class="elementor-heading-title elementor-size-default"><?php echo htmlspecialchars($contactFormTitle); ?></h2>
                             </div>
                         </div>
                         <div class="elementor-element elementor-element-e67b911 elementor-widget elementor-widget-text-editor" data-id="e67b911" data-element_type="widget" data-widget_type="text-editor.default">
                             <div class="elementor-widget-container">
-                                <p>Please fill out the form below, and a member of our team will get back to you as soon as possible.</p>
+                                <p><?php echo nl2br(htmlspecialchars($contactFormBody)); ?></p>
                             </div>
                         </div>
                         <div class="contact-form elementor-widget">
@@ -564,7 +576,7 @@ unset($_SESSION['contact_errors'], $_SESSION['contact_old']);
                                 <div class="alert alert-success text-center py-4" style="background:rgba(16,185,129,0.15);border:1px solid rgba(16,185,129,0.3);border-radius:10px;color:#fff;">
                                     <i class="fas fa-check-circle fa-2x mb-2" style="color:#10b981;"></i>
                                     <h4 style="color:#fff;">Thank You!</h4>
-                                    <p class="mb-0">Your message has been sent successfully. We will get back to you within 24 hours.</p>
+                                    <p class="mb-0"><?php echo htmlspecialchars($contactSuccessMessage); ?></p>
                                 </div>
                                 <?php else: ?>
                                 <?php if (!empty($contactErrors)): ?>
@@ -606,25 +618,36 @@ unset($_SESSION['contact_errors'], $_SESSION['contact_old']);
                         <div class="elementor-element elementor-element-04a534d e-con-full contact-sidebar e-flex e-con e-child" data-id="04a534d" data-element_type="container" data-settings="{&quot;background_background&quot;:&quot;classic&quot;}">
                             <div class="elementor-element elementor-element-7a22d79 elementor-widget elementor-widget-heading" data-id="7a22d79" data-element_type="widget" data-widget_type="heading.default">
                                 <div class="elementor-widget-container">
-                                    <h3 class="elementor-heading-title elementor-size-default">follow us</h3>
+                                    <h3 class="elementor-heading-title elementor-size-default"><?php echo htmlspecialchars($contactSidebarHeading); ?></h3>
+                                </div>
+                            </div>
+                            <div class="contact-page-meta">
+                                <div class="contact-page-meta-item">
+                                    <strong><?php echo htmlspecialchars($contactPhoneTitle); ?></strong>
+                                    <p><a href="tel:<?php echo htmlspecialchars(preg_replace('/[^0-9+]/', '', $companyPhone)); ?>"><?php echo htmlspecialchars($companyPhone); ?></a></p>
+                                    <small><?php echo htmlspecialchars($contactPhoneNote); ?></small>
+                                </div>
+                                <div class="contact-page-meta-item">
+                                    <strong><?php echo htmlspecialchars($contactEmailTitle); ?></strong>
+                                    <p><a href="mailto:<?php echo htmlspecialchars($companyEmail); ?>"><?php echo htmlspecialchars($companyEmail); ?></a></p>
+                                    <small><?php echo htmlspecialchars($contactEmailNote); ?></small>
                                 </div>
                             </div>
                             <div class="elementor-element elementor-element-6af3709 elementor-widget elementor-widget-elementskit-social-media" data-id="6af3709" data-element_type="widget" data-widget_type="elementskit-social-media.default">
                                 <div class="elementor-widget-container">
                                     <div class="ekit-wid-con">
                                         <ul class="ekit_social_media">
-                                            <li class="elementor-repeater-item-d13ec6c"><a href="https://facebook.com" class="instagram"><svg class="e-font-icon-svg e-fab-instagram" viewBox="0 0 448 512"><path d="M224.1 141c-63.6 0-114.9 51.3-114.9 114.9s51.3 114.9 114.9 114.9S339 319.5 339 255.9 287.7 141 224.1 141z"></path></svg></a></li>
-                                            <li class="elementor-repeater-item-9d2a925"><a href="https://facebook.com" class="facebook"><i class="icon icon-facebook"></i></a></li>
-                                            <li class="elementor-repeater-item-c185241"><a href="https://facebook.com" class="twitter"><svg class="e-font-icon-svg e-fab-x-twitter" viewBox="0 0 512 512"><path d="M389.2 48h70.6L305.6 224.2 487 464H345L233.7 318.6 106.5 464H35.8L200.7 275.5 26.8 48H172.4L272.9 180.9 389.2 48z"></path></svg></a></li>
-                                            <li class="elementor-repeater-item-18dfedb"><a href="https://facebook.com" class="github"><i class="icon icon-github"></i></a></li>
-                                            <li class="elementor-repeater-item-d0581ab"><a href="https://facebook.com" class="in"><svg class="e-font-icon-svg e-fab-linkedin-in" viewBox="0 0 448 512"><path d="M100.28 448H7.4V148.9h92.88zM53.79 108.1C24.09 108.1 0 83.5 0 53.8a53.79 53.79 0 0 1 107.58 0c0 29.7-24.1 54.3-53.79 54.3zM447.9 448h-92.68V302.4c0-34.7-.7-79.2-48.29-79.2-48.29 0-55.69 37.7-55.69 76.7V448h-92.78V148.9h89.08v40.8h1.3c12.4-23.5 42.69-48.3 87.88-48.3 94 0 111.28 61.9 111.28 142.3V448z"></path></svg></a></li>
+                                            <li class="elementor-repeater-item-d13ec6c"><a href="<?php echo htmlspecialchars($footerInstagram); ?>" class="instagram"><svg class="e-font-icon-svg e-fab-instagram" viewBox="0 0 448 512"><path d="M224.1 141c-63.6 0-114.9 51.3-114.9 114.9s51.3 114.9 114.9 114.9S339 319.5 339 255.9 287.7 141 224.1 141z"></path></svg></a></li>
+                                            <li class="elementor-repeater-item-9d2a925"><a href="<?php echo htmlspecialchars($footerFacebook); ?>" class="facebook"><i class="icon icon-facebook"></i></a></li>
+                                            <li class="elementor-repeater-item-c185241"><a href="<?php echo htmlspecialchars($footerTwitter); ?>" class="twitter"><svg class="e-font-icon-svg e-fab-x-twitter" viewBox="0 0 512 512"><path d="M389.2 48h70.6L305.6 224.2 487 464H345L233.7 318.6 106.5 464H35.8L200.7 275.5 26.8 48H172.4L272.9 180.9 389.2 48z"></path></svg></a></li>
+                                            <li class="elementor-repeater-item-d0581ab"><a href="<?php echo htmlspecialchars($footerLinkedin); ?>" class="in"><svg class="e-font-icon-svg e-fab-linkedin-in" viewBox="0 0 448 512"><path d="M100.28 448H7.4V148.9h92.88zM53.79 108.1C24.09 108.1 0 83.5 0 53.8a53.79 53.79 0 0 1 107.58 0c0 29.7-24.1 54.3-53.79 54.3zM447.9 448h-92.68V302.4c0-34.7-.7-79.2-48.29-79.2-48.29 0-55.69 37.7-55.69 76.7V448h-92.78V148.9h89.08v40.8h1.3c12.4-23.5 42.69-48.3 87.88-48.3 94 0 111.28 61.9 111.28 142.3V448z"></path></svg></a></li>
                                         </ul>
                                     </div>
                                 </div>
                             </div>
                             <div class="elementor-element elementor-element-9a0d627 elementor-widget elementor-widget-image" data-id="9a0d627" data-element_type="widget" data-widget_type="image.default">
                                 <div class="elementor-widget-container">
-                                    <img fetchpriority="high" decoding="async" width="301" height="420" src="../wp-content/uploads/2024/06/contact-info-img.png" class="attachment-full" alt="">
+                                    <img fetchpriority="high" decoding="async" width="301" height="420" src="<?php echo htmlspecialchars(tpv_asset_url($contactSidebarImage)); ?>" class="attachment-full" alt="">
                                 </div>
                             </div>
                         </div>
@@ -640,12 +663,13 @@ jQuery(document).ready(function($) {
     'use strict';
 
     // Location to map query mapping
-    const locationMapQueries = {
-        0: 'APDC+Building+Area+11+Abuja+Nigeria',
-        1: 'Federal+Poly+Express+Road+Ilaro+Ogun+State+Nigeria',
-        2: 'Keffi+Nasarawa+Nigeria',
-        3: 'Harmony+Enclave+Ikeja+Lagos+Nigeria'
-    };
+    const locationMapQueries = <?php
+        $contactMapQueries = [];
+        foreach ($contactLocations as $index => $location) {
+            $contactMapQueries[$index] = $location['map_query'];
+        }
+        echo json_encode($contactMapQueries, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
+    ?>;
 
     // Function to initialize the slider manually if needed
     function initLocationSlider() {
@@ -730,11 +754,11 @@ jQuery(document).ready(function($) {
 
     // Update map based on slide index
     function updateMapForSlide(index) {
-        const mapQuery = locationMapQueries[index] || 'Port+Harcourt+Rivers+Nigeria';
+        const mapQuery = locationMapQueries[index] || <?php echo json_encode($contactMapDefaultQuery); ?>;
         const mapIframe = document.getElementById('locationMap');
         
         if (mapIframe) {
-            const baseUrl = 'https://www.google.com/maps/embed/v1/place?key=AIzaSyBFw0Qbyq9zTFTd-tUY6dZWTgaQzuU17R8&q=';
+            const baseUrl = 'https://www.google.com/maps/embed/v1/place?key=' + <?php echo json_encode(rawurlencode($contactMapApiKey)); ?> + '&q=';
             mapIframe.src = baseUrl + mapQuery;
             console.log('Map updated to index:', index);
         }

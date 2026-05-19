@@ -45,6 +45,28 @@ $aboutIntroImage = $settings->get('about_intro_image', 'wp-content/uploads/2024/
 $aboutHistoryImage = $settings->get('about_history_image', 'wp-content/uploads/2024/06/company-history-img.jpg');
 $aboutVideoBackgroundImage = $settings->get('about_video_bg_image', 'wp-content/uploads/2024/06/video-bg.jpg');
 $aboutCtaImage = $settings->get('about_cta_image', 'wp-content/uploads/2024/06/cta-box-img.png');
+$contactHeroTitle = $settings->get('contact_hero_title', 'Contact Us');
+$contactFormEyebrow = $settings->get('contact_form_eyebrow', 'Contact us');
+$contactFormTitle = $settings->get('contact_form_title', "Get in touch with us");
+$contactFormBody = $settings->get('contact_form_body', 'Please fill out the form below, and a member of our team will get back to you as soon as possible.');
+$contactPhoneTitle = $settings->get('contact_phone_title', 'Call Our Head Office');
+$contactPhoneNote = $settings->get('contact_phone_note', 'Available Mon-Fri, 8am-6pm');
+$contactEmailTitle = $settings->get('contact_email_title', 'Write To Us');
+$contactEmailNote = $settings->get('contact_email_note', 'We reply within 24 hours');
+$contactSidebarHeading = $settings->get('contact_sidebar_heading', 'follow us');
+$contactSidebarImage = $settings->get('contact_sidebar_image', 'wp-content/uploads/2024/06/contact-info-img.png');
+$contactMapApiKey = $settings->get('contact_map_api_key', 'AIzaSyBFw0Qbyq9zTFTd-tUY6dZWTgaQzuU17R8');
+$contactMapDefaultQuery = $settings->get('contact_map_default_query', 'Port+Harcourt+Rivers+Nigeria');
+$contactSuccessMessage = $settings->get('contact_success_message', 'Your message has been sent successfully. We will get back to you within 24 hours.');
+$contactLocationsData = $settings->get('contact_locations_data', "Abuja Office|Area 11, Abuja|2nd Floor, Right Wing, APDC Building, Area 11, Abuja|09097128241|abuja@tpvconstruction.com.ng|APDC+Building+Area+11+Abuja+Nigeria\nOgun Office|Ilaro, Ogun State|Beside Aladey Hotel, Along Federal Poly Express Road, Ilaro, Ogun State|09097128241|ogun@tpvconstruction.com.ng|Federal+Poly+Express+Road+Ilaro+Ogun+State+Nigeria\nNasarawa Office|Keffi, Nasarawa|By New York Park and Gardens, Keffi, Nasarawa|08069418816|nasarawa@tpvconstruction.com.ng|Keffi+Nasarawa+Nigeria\nLagos Office|Ikeja, Lagos|10A, Onipinla Lane, Harmony Enclave, Off Adeniyi Jones Avenue, Ikeja, Lagos|08104830712|lagos@tpvconstruction.com.ng|Harmony+Enclave+Ikeja+Lagos+Nigeria");
+$mailDriver = $settings->get('mail_driver', 'phpmailer');
+$smtpHost = $settings->get('smtp_host', '');
+$smtpPort = $settings->get('smtp_port', '587');
+$smtpUsername = $settings->get('smtp_username', '');
+$smtpPassword = $settings->get('smtp_password', '');
+$smtpEncryption = $settings->get('smtp_encryption', 'tls');
+$smtpFromEmail = $settings->get('smtp_from_email', '');
+$smtpFromName = $settings->get('smtp_from_name', $companyName);
 
 $normalizationMap = [
     'company_name' => ['current' => $companyName, 'replacement' => 'TPV Construction and Services LTD'],
@@ -172,6 +194,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
             if ($uploadedAboutCtaImage) {
                 $settings->set('about_cta_image', $uploadedAboutCtaImage, 'content');
             }
+
+            $uploadedContactSidebarImage = handleAssetUpload('contact_sidebar_image_file', 'contact-sidebar-image', 'contact');
+            if ($uploadedContactSidebarImage) {
+                $settings->set('contact_sidebar_image', $uploadedContactSidebarImage, 'content');
+            }
             $_SESSION['toast_success'] = 'Settings updated successfully.';
         } elseif ($_POST['action'] === 'add') {
             $key = trim($_POST['setting_key']);
@@ -247,7 +274,29 @@ $managedSettingKeys = [
     'about_intro_image',
     'about_history_image',
     'about_video_bg_image',
-    'about_cta_image'
+    'about_cta_image',
+    'contact_hero_title',
+    'contact_form_eyebrow',
+    'contact_form_title',
+    'contact_form_body',
+    'contact_phone_title',
+    'contact_phone_note',
+    'contact_email_title',
+    'contact_email_note',
+    'contact_sidebar_heading',
+    'contact_sidebar_image',
+    'contact_map_api_key',
+    'contact_map_default_query',
+    'contact_success_message',
+    'contact_locations_data',
+    'mail_driver',
+    'smtp_host',
+    'smtp_port',
+    'smtp_username',
+    'smtp_password',
+    'smtp_encryption',
+    'smtp_from_email',
+    'smtp_from_name'
 ];
 foreach ($allSettings as $s) {
     if (in_array($s['setting_key'], $managedSettingKeys, true)) {
@@ -448,6 +497,162 @@ require 'inc/admin_header.php';
                                             <img src="<?php echo htmlspecialchars(tpv_asset_url($aboutCtaImage)); ?>" alt="About CTA preview" style="max-width: 180px; max-height: 140px; width: auto; height: auto;">
                                         </div>
                                         <input type="file" name="about_cta_image_file" class="form-control" accept=".png,.jpg,.jpeg,.svg,.webp">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card card-default mb-3">
+                            <div class="card-header">
+                                <div class="card-title d-flex align-items-center">
+                                    <i class="fas fa-phone-volume me-2"></i>
+                                    Contact Page Content
+                                </div>
+                            </div>
+                            <div class="card-body">
+                                <div class="row g-4">
+                                    <div class="col-md-6">
+                                        <label class="form-label fw-semibold">Hero Title</label>
+                                        <input type="hidden" name="groups[contact_hero_title]" value="content">
+                                        <input type="text" name="settings[contact_hero_title]" class="form-control" value="<?php echo htmlspecialchars($contactHeroTitle); ?>">
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label fw-semibold">Sidebar Heading</label>
+                                        <input type="hidden" name="groups[contact_sidebar_heading]" value="content">
+                                        <input type="text" name="settings[contact_sidebar_heading]" class="form-control" value="<?php echo htmlspecialchars($contactSidebarHeading); ?>">
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label fw-semibold">Form Eyebrow</label>
+                                        <input type="hidden" name="groups[contact_form_eyebrow]" value="content">
+                                        <input type="text" name="settings[contact_form_eyebrow]" class="form-control" value="<?php echo htmlspecialchars($contactFormEyebrow); ?>">
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label fw-semibold">Form Title</label>
+                                        <input type="hidden" name="groups[contact_form_title]" value="content">
+                                        <input type="text" name="settings[contact_form_title]" class="form-control" value="<?php echo htmlspecialchars($contactFormTitle); ?>">
+                                    </div>
+                                    <div class="col-12">
+                                        <label class="form-label fw-semibold">Form Intro Text</label>
+                                        <input type="hidden" name="groups[contact_form_body]" value="content">
+                                        <textarea name="settings[contact_form_body]" class="form-control" rows="3"><?php echo htmlspecialchars($contactFormBody); ?></textarea>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label fw-semibold">Phone Card Title</label>
+                                        <input type="hidden" name="groups[contact_phone_title]" value="content">
+                                        <input type="text" name="settings[contact_phone_title]" class="form-control" value="<?php echo htmlspecialchars($contactPhoneTitle); ?>">
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label fw-semibold">Phone Note</label>
+                                        <input type="hidden" name="groups[contact_phone_note]" value="content">
+                                        <input type="text" name="settings[contact_phone_note]" class="form-control" value="<?php echo htmlspecialchars($contactPhoneNote); ?>">
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label fw-semibold">Email Card Title</label>
+                                        <input type="hidden" name="groups[contact_email_title]" value="content">
+                                        <input type="text" name="settings[contact_email_title]" class="form-control" value="<?php echo htmlspecialchars($contactEmailTitle); ?>">
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label fw-semibold">Email Note</label>
+                                        <input type="hidden" name="groups[contact_email_note]" value="content">
+                                        <input type="text" name="settings[contact_email_note]" class="form-control" value="<?php echo htmlspecialchars($contactEmailNote); ?>">
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label fw-semibold">Map API Key</label>
+                                        <input type="hidden" name="groups[contact_map_api_key]" value="content">
+                                        <input type="text" name="settings[contact_map_api_key]" class="form-control" value="<?php echo htmlspecialchars($contactMapApiKey); ?>">
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label fw-semibold">Default Map Query</label>
+                                        <input type="hidden" name="groups[contact_map_default_query]" value="content">
+                                        <input type="text" name="settings[contact_map_default_query]" class="form-control" value="<?php echo htmlspecialchars($contactMapDefaultQuery); ?>">
+                                    </div>
+                                    <div class="col-12">
+                                        <label class="form-label fw-semibold">Success Message</label>
+                                        <input type="hidden" name="groups[contact_success_message]" value="content">
+                                        <input type="text" name="settings[contact_success_message]" class="form-control" value="<?php echo htmlspecialchars($contactSuccessMessage); ?>">
+                                    </div>
+                                    <div class="col-12">
+                                        <label class="form-label fw-semibold">Office Cards</label>
+                                        <input type="hidden" name="groups[contact_locations_data]" value="content">
+                                        <textarea name="settings[contact_locations_data]" class="form-control" rows="6"><?php echo htmlspecialchars($contactLocationsData); ?></textarea>
+                                        <div class="form-text">Use one office per line in this format: <code>Name|City|Address|Phone|Email|MapQuery</code></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card card-default mb-3">
+                            <div class="card-header">
+                                <div class="card-title d-flex align-items-center">
+                                    <i class="fas fa-photo-video me-2"></i>
+                                    Contact Page Images
+                                </div>
+                            </div>
+                            <div class="card-body">
+                                <div class="row g-4">
+                                    <div class="col-md-6">
+                                        <label class="form-label fw-semibold">Sidebar Image</label>
+                                        <div class="border rounded-3 p-3 bg-light mb-2 text-center">
+                                            <img src="<?php echo htmlspecialchars(tpv_asset_url($contactSidebarImage)); ?>" alt="Contact sidebar preview" style="max-width: 180px; max-height: 140px; width: auto; height: auto;">
+                                        </div>
+                                        <input type="file" name="contact_sidebar_image_file" class="form-control" accept=".png,.jpg,.jpeg,.svg,.webp">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card card-default mb-3">
+                            <div class="card-header">
+                                <div class="card-title d-flex align-items-center">
+                                    <i class="fas fa-envelope-open-text me-2"></i>
+                                    Mail Delivery
+                                </div>
+                            </div>
+                            <div class="card-body">
+                                <div class="row g-4">
+                                    <div class="col-md-4">
+                                        <label class="form-label fw-semibold">Mail Driver</label>
+                                        <input type="hidden" name="groups[mail_driver]" value="mail">
+                                        <select name="settings[mail_driver]" class="form-select">
+                                            <option value="phpmailer" <?php echo $mailDriver === 'phpmailer' ? 'selected' : ''; ?>>PHPMailer (Recommended)</option>
+                                            <option value="resend" <?php echo $mailDriver === 'resend' ? 'selected' : ''; ?>>Resend API</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <label class="form-label fw-semibold">SMTP Host</label>
+                                        <input type="hidden" name="groups[smtp_host]" value="mail">
+                                        <input type="text" name="settings[smtp_host]" class="form-control" value="<?php echo htmlspecialchars($smtpHost); ?>">
+                                    </div>
+                                    <div class="col-md-4">
+                                        <label class="form-label fw-semibold">SMTP Port</label>
+                                        <input type="hidden" name="groups[smtp_port]" value="mail">
+                                        <input type="text" name="settings[smtp_port]" class="form-control" value="<?php echo htmlspecialchars($smtpPort); ?>">
+                                    </div>
+                                    <div class="col-md-4">
+                                        <label class="form-label fw-semibold">SMTP Username</label>
+                                        <input type="hidden" name="groups[smtp_username]" value="mail">
+                                        <input type="text" name="settings[smtp_username]" class="form-control" value="<?php echo htmlspecialchars($smtpUsername); ?>">
+                                    </div>
+                                    <div class="col-md-4">
+                                        <label class="form-label fw-semibold">SMTP Password</label>
+                                        <input type="hidden" name="groups[smtp_password]" value="mail">
+                                        <input type="text" name="settings[smtp_password]" class="form-control" value="<?php echo htmlspecialchars($smtpPassword); ?>">
+                                    </div>
+                                    <div class="col-md-4">
+                                        <label class="form-label fw-semibold">Encryption</label>
+                                        <input type="hidden" name="groups[smtp_encryption]" value="mail">
+                                        <select name="settings[smtp_encryption]" class="form-select">
+                                            <option value="tls" <?php echo $smtpEncryption === 'tls' ? 'selected' : ''; ?>>TLS</option>
+                                            <option value="ssl" <?php echo $smtpEncryption === 'ssl' ? 'selected' : ''; ?>>SSL</option>
+                                            <option value="none" <?php echo $smtpEncryption === 'none' ? 'selected' : ''; ?>>None</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label fw-semibold">From Email</label>
+                                        <input type="hidden" name="groups[smtp_from_email]" value="mail">
+                                        <input type="email" name="settings[smtp_from_email]" class="form-control" value="<?php echo htmlspecialchars($smtpFromEmail); ?>">
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label fw-semibold">From Name</label>
+                                        <input type="hidden" name="groups[smtp_from_name]" value="mail">
+                                        <input type="text" name="settings[smtp_from_name]" class="form-control" value="<?php echo htmlspecialchars($smtpFromName); ?>">
                                     </div>
                                 </div>
                             </div>
