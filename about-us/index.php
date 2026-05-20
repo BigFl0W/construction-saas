@@ -11,13 +11,88 @@ $aboutFeatureTwo = trim((string) $pageSettings->get('about_feature_2', 'Advanced
 $aboutFeatureThree = trim((string) $pageSettings->get('about_feature_3', 'Transparent Communication'));
 $aboutQuoteButton = trim((string) $pageSettings->get('about_quote_button_text', 'Get Free Quote'));
 $aboutSupportLabel = trim((string) $pageSettings->get('about_support_label', 'call support center 24X7'));
+$aboutHistoryEyebrow = trim((string) $pageSettings->get('about_history_eyebrow', 'our history'));
 $aboutStoryTitle = trim((string) $pageSettings->get('about_story_title', 'TPV Construction and Services LTD'));
+$aboutHistoryHighlight = trim((string) $pageSettings->get('about_history_highlight', "Nigeria's Premier Construction Partner"));
 $aboutStoryBody = trim((string) $pageSettings->get('about_story_body', 'With over 15 years of experience and hundreds of successful projects across Nigeria, TPV Construction and Services LTD has established itself as a trusted name in the construction industry.'));
+$aboutHistoryExtraBody = trim((string) $pageSettings->get('about_history_extra_body', 'Our commitment to excellence, safety, and innovation has made us the preferred choice for residential, commercial, and industrial construction projects. From Lagos to Abuja, Port Harcourt to Kano, we deliver quality that stands the test of time.'));
+$aboutExperienceLabel = trim((string) $pageSettings->get('about_experience_label', 'Years Of Experience'));
+$aboutExperienceValue = trim((string) $pageSettings->get('about_experience_value', '15'));
+$aboutExperienceSuffix = trim((string) $pageSettings->get('about_experience_suffix', '+'));
+$aboutMissionTitle = trim((string) $pageSettings->get('about_mission_title', 'Our Mission'));
+$aboutMissionBody = trim((string) $pageSettings->get('about_mission_body', 'To provide excellent services to our clients by exceeding their expectations through safe, cost effective, efficient, timely and worldclass solutions in construction, engineering and real estate services.'));
+$aboutVisionTitle = trim((string) $pageSettings->get('about_vision_title', 'Our Vision'));
+$aboutVisionBody = trim((string) $pageSettings->get('about_vision_body', 'To become a household name in construction, engineering and real estate services among private individuals, corporate and government organizations, locally and internationally in the next decade.'));
+$aboutValuesTitle = trim((string) $pageSettings->get('about_values_title', 'Our Values'));
+$aboutValuesIntro = trim((string) $pageSettings->get('about_values_intro', 'OUR CORPORATE VALUES: (SERVE)'));
+$aboutValuesPointsRaw = (string) $pageSettings->get('about_values_points', "Stakeholders' satisfaction\nExcellent service delivery\nRespect and integrity\nValue creation\nExceeding expectations");
+$aboutValuesPoints = array_values(array_filter(array_map('trim', preg_split('/\r\n|\r|\n/', $aboutValuesPointsRaw))));
+$aboutWhatWeDoEyebrow = trim((string) $pageSettings->get('about_what_we_do_eyebrow', 'what we do'));
+$aboutWhatWeDoTitle = trim((string) $pageSettings->get('about_what_we_do_title', "Building Nigeria's future on a foundation of excellence"));
+$aboutWhatWeDoBody = trim((string) $pageSettings->get('about_what_we_do_body', 'We deliver comprehensive construction solutions across Nigeria — from residential homes in Lagos to commercial complexes in Abuja and industrial facilities in Port Harcourt. Every project reflects our commitment to quality, safety, and client satisfaction.'));
+$aboutStat1Title = trim((string) $pageSettings->get('about_stat_1_title', 'Regulatory Approval Rate'));
+$aboutStat1Value = trim((string) $pageSettings->get('about_stat_1_value', '100'));
+$aboutStat1Suffix = trim((string) $pageSettings->get('about_stat_1_suffix', '%'));
+$aboutStat2Title = trim((string) $pageSettings->get('about_stat_2_title', 'Active Projects Nationwide'));
+$aboutStat2Value = trim((string) $pageSettings->get('about_stat_2_value', '45'));
+$aboutStat2Suffix = trim((string) $pageSettings->get('about_stat_2_suffix', '+'));
+$aboutStat3Title = trim((string) $pageSettings->get('about_stat_3_title', 'Projects Completed Since 2008'));
+$aboutStat3Value = trim((string) $pageSettings->get('about_stat_3_value', '350'));
+$aboutStat3Suffix = trim((string) $pageSettings->get('about_stat_3_suffix', '+'));
+$aboutStat4Title = trim((string) $pageSettings->get('about_stat_4_title', 'Skilled Professionals & Workers'));
+$aboutStat4Value = trim((string) $pageSettings->get('about_stat_4_value', '250'));
+$aboutStat4Suffix = trim((string) $pageSettings->get('about_stat_4_suffix', '+'));
+$aboutCtaTitle = trim((string) $pageSettings->get('about_cta_title', 'Ready to build your dream project in Nigeria?'));
+$aboutCtaButtonText = trim((string) $pageSettings->get('about_cta_button_text', 'Get Your Free Quote'));
+$aboutTeamEyebrow = trim((string) $pageSettings->get('about_team_eyebrow', 'Team'));
+$aboutTeamTitle = trim((string) $pageSettings->get('about_team_title', 'Our team'));
+$aboutTeamBody = trim((string) $pageSettings->get('about_team_body', 'We specialize in a wide range of construction services, including residential, commercial, and industrial projects.'));
+$aboutTeamMember1Name = trim((string) $pageSettings->get('about_team_member_1_name', 'Benjamin Miller'));
+$aboutTeamMember1Role = trim((string) $pageSettings->get('about_team_member_1_role', 'Project Manager'));
+$aboutTeamMember1Bio = trim((string) $pageSettings->get('about_team_member_1_bio', 'A small river named Duden flows by their place and supplies it with the necessary'));
+$aboutTeamMember1Phone = trim((string) $pageSettings->get('about_team_member_1_phone', '+1 (859) 254-6589'));
+$aboutTeamMember1Email = trim((string) $pageSettings->get('about_team_member_1_email', 'info@example.com'));
+$aboutTeamMember1Facebook = trim((string) $pageSettings->get('about_team_member_1_facebook', 'https://facebook.com'));
+$aboutTeamMember1X = trim((string) $pageSettings->get('about_team_member_1_x', 'https://x.com'));
+$aboutTeamMember1Instagram = trim((string) $pageSettings->get('about_team_member_1_instagram', 'https://instagram.com'));
+$aboutTeamMember2Name = trim((string) $pageSettings->get('about_team_member_2_name', 'Jane Smith'));
+$aboutTeamMember2Role = trim((string) $pageSettings->get('about_team_member_2_role', 'Lead Architect'));
+$aboutTeamMember2Bio = trim((string) $pageSettings->get('about_team_member_2_bio', 'A small river named Duden flows by their place and supplies it with the necessary'));
+$aboutTeamMember2Phone = trim((string) $pageSettings->get('about_team_member_2_phone', '+1 (859) 254-6589'));
+$aboutTeamMember2Email = trim((string) $pageSettings->get('about_team_member_2_email', 'info@example.com'));
+$aboutTeamMember2Facebook = trim((string) $pageSettings->get('about_team_member_2_facebook', 'https://facebook.com'));
+$aboutTeamMember2X = trim((string) $pageSettings->get('about_team_member_2_x', 'https://x.com'));
+$aboutTeamMember2Instagram = trim((string) $pageSettings->get('about_team_member_2_instagram', 'https://instagram.com'));
+$aboutTeamMember3Name = trim((string) $pageSettings->get('about_team_member_3_name', 'Mike Johnson'));
+$aboutTeamMember3Role = trim((string) $pageSettings->get('about_team_member_3_role', 'Chief Engineer'));
+$aboutTeamMember3Bio = trim((string) $pageSettings->get('about_team_member_3_bio', 'A small river named Duden flows by their place and supplies it with the necessary'));
+$aboutTeamMember3Phone = trim((string) $pageSettings->get('about_team_member_3_phone', '+1 (859) 254-6589'));
+$aboutTeamMember3Email = trim((string) $pageSettings->get('about_team_member_3_email', 'info@example.com'));
+$aboutTeamMember3Facebook = trim((string) $pageSettings->get('about_team_member_3_facebook', 'https://facebook.com'));
+$aboutTeamMember3X = trim((string) $pageSettings->get('about_team_member_3_x', 'https://x.com'));
+$aboutTeamMember3Instagram = trim((string) $pageSettings->get('about_team_member_3_instagram', 'https://instagram.com'));
 $aboutBottomCtaBody = trim((string) $pageSettings->get('about_bottom_cta_body', "From residential homes in Lagos to commercial complexes in Abuja, TPV Construction and Services LTD delivers excellence across Nigeria. Let's bring your vision to life with quality craftsmanship and professional service."));
 $aboutIntroImage = trim((string) $pageSettings->get('about_intro_image', 'wp-content/uploads/2024/06/about-us-img.png'));
 $aboutHistoryImage = trim((string) $pageSettings->get('about_history_image', 'wp-content/uploads/2024/06/company-history-img.jpg'));
 $aboutVideoBackgroundImage = trim((string) $pageSettings->get('about_video_bg_image', 'wp-content/uploads/2024/06/video-bg.jpg'));
 $aboutCtaImage = trim((string) $pageSettings->get('about_cta_image', 'wp-content/uploads/2024/06/cta-box-img.png'));
+$aboutTeamMember1Image = trim((string) $pageSettings->get('about_team_member_1_image', 'wp-content/uploads/2024/06/team-1.jpg'));
+$aboutTeamMember2Image = trim((string) $pageSettings->get('about_team_member_2_image', 'wp-content/uploads/2024/06/team-2.jpg'));
+$aboutTeamMember3Image = trim((string) $pageSettings->get('about_team_member_3_image', 'wp-content/uploads/2024/06/team-3.jpg'));
+
+function aboutTeamPhoneHref($phone) {
+	$clean = preg_replace('/[^0-9+]/', '', (string) $phone);
+	return $clean ? 'tel:' . $clean : '';
+}
+
+function aboutRenderSocialIcon($href, $label, $iconClass) {
+	$href = trim((string) $href);
+	if ($href === '') {
+		return '';
+	}
+
+	return '<li><a href="' . htmlspecialchars($href) . '" target="_blank" rel="noopener noreferrer" aria-label="' . htmlspecialchars($label) . '"><i aria-hidden="true" class="' . htmlspecialchars($iconClass) . '"></i></a></li>';
+}
 ?>
 <!DOCTYPE html>
 <html lang="en-US">
@@ -758,12 +833,12 @@ $aboutCtaImage = trim((string) $pageSettings->get('about_cta_image', 'wp-content
 						data-widget_type="counter.default">
 						<div class="elementor-widget-container">
 							<div class="elementor-counter">
-								<div class="elementor-counter-title">Years Of Experience</div>
+								<div class="elementor-counter-title"><?php echo htmlspecialchars($aboutExperienceLabel); ?></div>
 								<div class="elementor-counter-number-wrapper">
 									<span class="elementor-counter-number-prefix"></span>
-									<span class="elementor-counter-number" data-duration="2000" data-to-value="15"
+									<span class="elementor-counter-number" data-duration="2000" data-to-value="<?php echo htmlspecialchars($aboutExperienceValue); ?>"
 										data-from-value="0" data-delimiter=",">0</span>
-									<span class="elementor-counter-number-suffix">+</span>
+									<span class="elementor-counter-number-suffix"><?php echo htmlspecialchars($aboutExperienceSuffix); ?></span>
 								</div>
 							</div>
 						</div>
@@ -780,7 +855,7 @@ $aboutCtaImage = trim((string) $pageSettings->get('about_cta_image', 'wp-content
 						data-settings="{&quot;_animation&quot;:&quot;fadeInUp&quot;,&quot;ekit_we_effect_on&quot;:&quot;none&quot;}"
 						data-widget_type="heading.default">
 						<div class="elementor-widget-container">
-							<h3 class="elementor-heading-title elementor-size-default">our history</h3>
+							<h3 class="elementor-heading-title elementor-size-default"><?php echo htmlspecialchars($aboutHistoryEyebrow); ?></h3>
 						</div>
 					</div>
 
@@ -800,9 +875,9 @@ $aboutCtaImage = trim((string) $pageSettings->get('about_cta_image', 'wp-content
 						data-settings="{&quot;_animation&quot;:&quot;fadeInUp&quot;,&quot;_animation_delay&quot;:100,&quot;ekit_we_effect_on&quot;:&quot;none&quot;}"
 						data-widget_type="text-editor.default">
 						<div class="elementor-widget-container">
-							<p class="wow fadeInUp" data-wow-delay="0.25s"><strong>Nigeria's Premier Construction Partner</strong></p>
+							<p class="wow fadeInUp" data-wow-delay="0.25s"><strong><?php echo htmlspecialchars($aboutHistoryHighlight); ?></strong></p>
 							<p class="wow fadeInUp" data-wow-delay="0.5s"><?php echo nl2br(htmlspecialchars($aboutStoryBody)); ?></p>
-							<p class="wow fadeInUp" data-wow-delay="0.75s">Our commitment to excellence, safety, and innovation has made us the preferred choice for residential, commercial, and industrial construction projects. From Lagos to Abuja, Port Harcourt to Kano, we deliver quality that stands the test of time.</p>
+							<p class="wow fadeInUp" data-wow-delay="0.75s"><?php echo nl2br(htmlspecialchars($aboutHistoryExtraBody)); ?></p>
 						</div>
 					</div>
 				</div>
@@ -837,10 +912,10 @@ $aboutCtaImage = trim((string) $pageSettings->get('about_cta_image', 'wp-content
 								</div>
 								<div class="elementor-icon-box-content">
 									<h3 class="elementor-icon-box-title">
-										<span>Our Mission</span>
+										<span><?php echo htmlspecialchars($aboutMissionTitle); ?></span>
 									</h3>
 									<p class="elementor-icon-box-description">
-										To provide excellent services to our clients by exceeding their expectations through safe, cost effective, efficient, timely and worldclass solutions in construction, engineering and real estate services.
+										<?php echo nl2br(htmlspecialchars($aboutMissionBody)); ?>
 									</p>
 								</div>
 							</div>
@@ -870,10 +945,10 @@ $aboutCtaImage = trim((string) $pageSettings->get('about_cta_image', 'wp-content
 								</div>
 								<div class="elementor-icon-box-content">
 									<h3 class="elementor-icon-box-title">
-										<span>Our Vision</span>
+										<span><?php echo htmlspecialchars($aboutVisionTitle); ?></span>
 									</h3>
 									<p class="elementor-icon-box-description">
-										To become a household name in construction, engineering and real estate services among private individuals, corporate and government organizations, locally and internationally in the next decade.
+										<?php echo nl2br(htmlspecialchars($aboutVisionBody)); ?>
 									</p>
 								</div>
 							</div>
@@ -903,17 +978,15 @@ $aboutCtaImage = trim((string) $pageSettings->get('about_cta_image', 'wp-content
 								</div>
 								<div class="elementor-icon-box-content">
 									<h3 class="elementor-icon-box-title">
-										<span>Our Values</span>
+										<span><?php echo htmlspecialchars($aboutValuesTitle); ?></span>
 									</h3>
 									<p class="elementor-icon-box-description">
-										OUR CORPORATE VALUES: (SERVE)
+										<?php echo htmlspecialchars($aboutValuesIntro); ?>
 									</p>
 									<div class="values-points">
-										<span class="value-point">• Stakeholders’ satisfaction</span>
-										<span class="value-point">• Excellent service delivery</span>
-										<span class="value-point">• Respect and integrity</span>
-										<span class="value-point">• Value creation</span>
-										<span class="value-point">• Exceeding expectations</span>
+										<?php foreach ($aboutValuesPoints as $aboutValuePoint): ?>
+										<span class="value-point"><?php echo htmlspecialchars($aboutValuePoint); ?></span>
+										<?php endforeach; ?>
 									</div>
 								</div>
 							</div>
@@ -972,7 +1045,7 @@ $aboutCtaImage = trim((string) $pageSettings->get('about_cta_image', 'wp-content
 							data-settings="{&quot;_animation&quot;:&quot;fadeInUp&quot;,&quot;ekit_we_effect_on&quot;:&quot;none&quot;}"
 							data-widget_type="heading.default">
 							<div class="elementor-widget-container">
-								<h3 class="elementor-heading-title elementor-size-default">what we do</h3>
+								<h3 class="elementor-heading-title elementor-size-default"><?php echo htmlspecialchars($aboutWhatWeDoEyebrow); ?></h3>
 							</div>
 						</div>
 						<div class="elementor-element elementor-element-a15bde3 elementor-widget-tablet__width-inherit elementor-widget-mobile__width-inherit at-heading-animation at-animation-heading-style-3 elementor-widget elementor-widget-heading"
@@ -980,7 +1053,7 @@ $aboutCtaImage = trim((string) $pageSettings->get('about_cta_image', 'wp-content
 							data-settings="{&quot;ekit_we_effect_on&quot;:&quot;none&quot;}"
 							data-widget_type="heading.default">
 							<div class="elementor-widget-container">
-								<h2 class="elementor-heading-title elementor-size-default">Building Nigeria's future on a foundation of excellence</h2>
+								<h2 class="elementor-heading-title elementor-size-default"><?php echo htmlspecialchars($aboutWhatWeDoTitle); ?></h2>
 							</div>
 						</div>
 						<div class="elementor-element elementor-element-8235bc5 elementor-invisible elementor-widget elementor-widget-text-editor"
@@ -988,7 +1061,7 @@ $aboutCtaImage = trim((string) $pageSettings->get('about_cta_image', 'wp-content
 							data-settings="{&quot;_animation&quot;:&quot;fadeInUp&quot;,&quot;_animation_delay&quot;:100,&quot;ekit_we_effect_on&quot;:&quot;none&quot;}"
 							data-widget_type="text-editor.default">
 							<div class="elementor-widget-container">
-								<p>We deliver comprehensive construction solutions across Nigeria — from residential homes in Lagos to commercial complexes in Abuja and industrial facilities in Port Harcourt. Every project reflects our commitment to quality, safety, and client satisfaction.</p>
+								<p><?php echo nl2br(htmlspecialchars($aboutWhatWeDoBody)); ?></p>
 							</div>
 						</div>
 					</div>
@@ -1007,12 +1080,12 @@ $aboutCtaImage = trim((string) $pageSettings->get('about_cta_image', 'wp-content
 							data-widget_type="counter.default">
 							<div class="elementor-widget-container">
 								<div class="elementor-counter">
-									<div class="elementor-counter-title">Regulatory Approval Rate</div>
+									<div class="elementor-counter-title"><?php echo htmlspecialchars($aboutStat1Title); ?></div>
 									<div class="elementor-counter-number-wrapper">
 										<span class="elementor-counter-number-prefix"></span>
-										<span class="elementor-counter-number" data-duration="2000" data-to-value="100"
+										<span class="elementor-counter-number" data-duration="2000" data-to-value="<?php echo htmlspecialchars($aboutStat1Value); ?>"
 											data-from-value="0" data-delimiter=",">0</span>
-										<span class="elementor-counter-number-suffix">%</span>
+										<span class="elementor-counter-number-suffix"><?php echo htmlspecialchars($aboutStat1Suffix); ?></span>
 									</div>
 								</div>
 							</div>
@@ -1029,12 +1102,12 @@ $aboutCtaImage = trim((string) $pageSettings->get('about_cta_image', 'wp-content
 							data-widget_type="counter.default">
 							<div class="elementor-widget-container">
 								<div class="elementor-counter">
-									<div class="elementor-counter-title">Active Projects Nationwide</div>
+									<div class="elementor-counter-title"><?php echo htmlspecialchars($aboutStat2Title); ?></div>
 									<div class="elementor-counter-number-wrapper">
 										<span class="elementor-counter-number-prefix"></span>
-										<span class="elementor-counter-number" data-duration="2000" data-to-value="45"
+										<span class="elementor-counter-number" data-duration="2000" data-to-value="<?php echo htmlspecialchars($aboutStat2Value); ?>"
 											data-from-value="0" data-delimiter=",">0</span>
-										<span class="elementor-counter-number-suffix">+</span>
+										<span class="elementor-counter-number-suffix"><?php echo htmlspecialchars($aboutStat2Suffix); ?></span>
 									</div>
 								</div>
 							</div>
@@ -1051,12 +1124,12 @@ $aboutCtaImage = trim((string) $pageSettings->get('about_cta_image', 'wp-content
 							data-widget_type="counter.default">
 							<div class="elementor-widget-container">
 								<div class="elementor-counter">
-									<div class="elementor-counter-title">Projects Completed Since 2008</div>
+									<div class="elementor-counter-title"><?php echo htmlspecialchars($aboutStat3Title); ?></div>
 									<div class="elementor-counter-number-wrapper">
 										<span class="elementor-counter-number-prefix"></span>
-										<span class="elementor-counter-number" data-duration="2000" data-to-value="350"
+										<span class="elementor-counter-number" data-duration="2000" data-to-value="<?php echo htmlspecialchars($aboutStat3Value); ?>"
 											data-from-value="0" data-delimiter=",">0</span>
-										<span class="elementor-counter-number-suffix">+</span>
+										<span class="elementor-counter-number-suffix"><?php echo htmlspecialchars($aboutStat3Suffix); ?></span>
 									</div>
 								</div>
 							</div>
@@ -1073,12 +1146,12 @@ $aboutCtaImage = trim((string) $pageSettings->get('about_cta_image', 'wp-content
 							data-widget_type="counter.default">
 							<div class="elementor-widget-container">
 								<div class="elementor-counter">
-									<div class="elementor-counter-title">Skilled Professionals & Workers</div>
+									<div class="elementor-counter-title"><?php echo htmlspecialchars($aboutStat4Title); ?></div>
 									<div class="elementor-counter-number-wrapper">
 										<span class="elementor-counter-number-prefix"></span>
-										<span class="elementor-counter-number" data-duration="2000" data-to-value="250"
+										<span class="elementor-counter-number" data-duration="2000" data-to-value="<?php echo htmlspecialchars($aboutStat4Value); ?>"
 											data-from-value="0" data-delimiter=",">0</span>
-										<span class="elementor-counter-number-suffix">+</span>
+										<span class="elementor-counter-number-suffix"><?php echo htmlspecialchars($aboutStat4Suffix); ?></span>
 									</div>
 								</div>
 							</div>
@@ -1102,7 +1175,7 @@ $aboutCtaImage = trim((string) $pageSettings->get('about_cta_image', 'wp-content
 						data-settings="{&quot;ekit_we_effect_on&quot;:&quot;none&quot;}"
 						data-widget_type="heading.default">
 						<div class="elementor-widget-container">
-							<h2 class="elementor-heading-title elementor-size-default">Ready to build your dream project in Nigeria?</h2>
+							<h2 class="elementor-heading-title elementor-size-default"><?php echo htmlspecialchars($aboutCtaTitle); ?></h2>
 						</div>
 					</div>
 
@@ -1135,7 +1208,7 @@ $aboutCtaImage = trim((string) $pageSettings->get('about_cta_image', 'wp-content
 													stroke-linejoin="round"></path>
 											</svg>
 										</span>
-										<span class="elementor-button-text">Get Your Free Quote</span>
+										<span class="elementor-button-text"><?php echo htmlspecialchars($aboutCtaButtonText); ?></span>
 									</span>
 								</a>
 							</div>
@@ -1173,7 +1246,7 @@ $aboutCtaImage = trim((string) $pageSettings->get('about_cta_image', 'wp-content
 							data-settings="{&quot;_animation&quot;:&quot;fadeInUp&quot;,&quot;ekit_we_effect_on&quot;:&quot;none&quot;}"
 							data-widget_type="heading.default">
 							<div class="elementor-widget-container">
-								<h3 class="elementor-heading-title elementor-size-default">Team</h3>
+								<h3 class="elementor-heading-title elementor-size-default"><?php echo htmlspecialchars($aboutTeamEyebrow); ?></h3>
 							</div>
 						</div>
 						<div class="elementor-element elementor-element-11776b2 elementor-widget-tablet__width-inherit elementor-widget-mobile__width-inherit at-heading-animation at-animation-heading-style-3 elementor-widget elementor-widget-heading"
@@ -1181,7 +1254,7 @@ $aboutCtaImage = trim((string) $pageSettings->get('about_cta_image', 'wp-content
 							data-settings="{&quot;ekit_we_effect_on&quot;:&quot;none&quot;}"
 							data-widget_type="heading.default">
 							<div class="elementor-widget-container">
-								<h2 class="elementor-heading-title elementor-size-default">Our team</h2>
+								<h2 class="elementor-heading-title elementor-size-default"><?php echo htmlspecialchars($aboutTeamTitle); ?></h2>
 							</div>
 						</div>
 						<div class="elementor-element elementor-element-e3a4679 elementor-invisible elementor-widget elementor-widget-text-editor"
@@ -1189,8 +1262,7 @@ $aboutCtaImage = trim((string) $pageSettings->get('about_cta_image', 'wp-content
 							data-settings="{&quot;_animation&quot;:&quot;fadeInUp&quot;,&quot;_animation_delay&quot;:100,&quot;ekit_we_effect_on&quot;:&quot;none&quot;}"
 							data-widget_type="text-editor.default">
 							<div class="elementor-widget-container">
-								<p>We specialize in a wide range of construction services, including residential,
-									commercial, and industrial projects.</p>
+								<p><?php echo nl2br(htmlspecialchars($aboutTeamBody)); ?></p>
 							</div>
 						</div>
 					</div>
@@ -1213,7 +1285,7 @@ $aboutCtaImage = trim((string) $pageSettings->get('about_cta_image', 'wp-content
 											<div class="profile-header ekit-team-img ekit-img-overlay ekit-team-img-block"
 												data-toggle="modal" data-target="ekit_team_modal_#c4c50ca_723">
 												<img loading="lazy" decoding="async" width="412" height="379"
-													src="../wp-content/uploads/2024/06/team-1.jpg"
+													src="<?php echo htmlspecialchars(tpv_asset_url($aboutTeamMember1Image)); ?>"
 													class="attachment-full size-full wp-image-413" alt="">
 											</div><!-- .profile-header END -->
 										</a>
@@ -1224,25 +1296,16 @@ $aboutCtaImage = trim((string) $pageSettings->get('about_cta_image', 'wp-content
 											<h2 class="profile-title">
 												<a aria-label="profile" href="javascript:void(0)"
 													data-mfp-src="#ekit_team_modal_c4c50ca_723" class="ekit-team-popup">
-													Benjamin Miller </a>
+													<?php echo htmlspecialchars($aboutTeamMember1Name); ?> </a>
 											</h2>
-											<p class="profile-designation">Project Manager</p>
+											<p class="profile-designation"><?php echo htmlspecialchars($aboutTeamMember1Role); ?></p>
 										</div><!-- .profile-body END -->
 
 										<div class="profile-footer">
 											<ul class="ekit-team-social-list">
-												<li class="elementor-repeater-item-e8d6be4">
-													<a href="#" aria-label="Facebook">
-														<i aria-hidden="true" class="icon icon-facebook"></i> </a>
-												</li>
-												<li class="elementor-repeater-item-45b3d13">
-													<a href="#" aria-label="twitter">
-														<i aria-hidden="true" class="icon icon-x-twitter"></i> </a>
-												</li>
-												<li class="elementor-repeater-item-8edd9a4">
-													<a href="https://facebook.com" aria-label="instagram">
-														<i aria-hidden="true" class="icon icon-instagram-1"></i> </a>
-												</li>
+												<?php echo aboutRenderSocialIcon($aboutTeamMember1Facebook, 'Facebook', 'icon icon-facebook'); ?>
+												<?php echo aboutRenderSocialIcon($aboutTeamMember1X, 'X', 'icon icon-x-twitter'); ?>
+												<?php echo aboutRenderSocialIcon($aboutTeamMember1Instagram, 'Instagram', 'icon icon-instagram-1'); ?>
 											</ul>
 										</div>
 									</div>
@@ -1263,44 +1326,35 @@ $aboutCtaImage = trim((string) $pageSettings->get('about_cta_image', 'wp-content
 												<div class="modal-body">
 													<div class="ekit-team-modal-img">
 														<img loading="lazy" decoding="async" width="412" height="379"
-															src="../wp-content/uploads/2024/06/team-1.jpg"
+															src="<?php echo htmlspecialchars(tpv_asset_url($aboutTeamMember1Image)); ?>"
 															class="attachment-full size-full wp-image-413" alt="">
 													</div>
 
 													<div class="ekit-team-modal-info has-img">
-														<h2 class="ekit-team-modal-title">Benjamin Miller</h2>
-														<p class="ekit-team-modal-position">Project Manager</p>
+														<h2 class="ekit-team-modal-title"><?php echo htmlspecialchars($aboutTeamMember1Name); ?></h2>
+														<p class="ekit-team-modal-position"><?php echo htmlspecialchars($aboutTeamMember1Role); ?></p>
 
 														<div class="ekit-team-modal-content">
-															A small river named Duden flows by their place and supplies
-															it with the necessary </div>
+															<?php echo nl2br(htmlspecialchars($aboutTeamMember1Bio)); ?> </div>
 
 														<ul class="ekit-team-modal-list">
+															<?php if ($aboutTeamMember1Phone !== ''): ?>
 															<li><strong>Phone:</strong><a
-																	href="tel:+1 (859) 254-6589">+1 (859) 254-6589</a>
+																	href="<?php echo htmlspecialchars(aboutTeamPhoneHref($aboutTeamMember1Phone)); ?>"><?php echo htmlspecialchars($aboutTeamMember1Phone); ?></a>
 															</li>
+															<?php endif; ?>
 
+															<?php if ($aboutTeamMember1Email !== ''): ?>
 															<li><strong>Email:</strong><a
-																	href="mailto:info@example.com">info@example.com</a>
+																	href="mailto:<?php echo htmlspecialchars($aboutTeamMember1Email); ?>"><?php echo htmlspecialchars($aboutTeamMember1Email); ?></a>
 															</li>
+															<?php endif; ?>
 														</ul>
 
 														<ul class="ekit-team-social-list">
-															<li class="elementor-repeater-item-e8d6be4">
-																<a href="#" aria-label="Facebook">
-																	<i aria-hidden="true"
-																		class="icon icon-facebook"></i> </a>
-															</li>
-															<li class="elementor-repeater-item-45b3d13">
-																<a href="#" aria-label="twitter">
-																	<i aria-hidden="true"
-																		class="icon icon-x-twitter"></i> </a>
-															</li>
-															<li class="elementor-repeater-item-8edd9a4">
-																<a href="https://facebook.com" aria-label="instagram">
-																	<i aria-hidden="true"
-																		class="icon icon-instagram-1"></i> </a>
-															</li>
+															<?php echo aboutRenderSocialIcon($aboutTeamMember1Facebook, 'Facebook', 'icon icon-facebook'); ?>
+															<?php echo aboutRenderSocialIcon($aboutTeamMember1X, 'X', 'icon icon-x-twitter'); ?>
+															<?php echo aboutRenderSocialIcon($aboutTeamMember1Instagram, 'Instagram', 'icon icon-instagram-1'); ?>
 														</ul>
 													</div>
 												</div>
@@ -1327,7 +1381,7 @@ $aboutCtaImage = trim((string) $pageSettings->get('about_cta_image', 'wp-content
 											<div class="profile-header ekit-team-img ekit-img-overlay ekit-team-img-block"
 												data-toggle="modal" data-target="ekit_team_modal_#e516d59_723">
 												<img loading="lazy" decoding="async" width="412" height="379"
-													src="../wp-content/uploads/2024/06/team-2.jpg"
+													src="<?php echo htmlspecialchars(tpv_asset_url($aboutTeamMember2Image)); ?>"
 													class="attachment-full size-full wp-image-414" alt="">
 											</div><!-- .profile-header END -->
 										</a>
@@ -1338,25 +1392,16 @@ $aboutCtaImage = trim((string) $pageSettings->get('about_cta_image', 'wp-content
 											<h2 class="profile-title">
 												<a aria-label="profile" href="javascript:void(0)"
 													data-mfp-src="#ekit_team_modal_e516d59_723" class="ekit-team-popup">
-													Jane Smith </a>
+													<?php echo htmlspecialchars($aboutTeamMember2Name); ?> </a>
 											</h2>
-											<p class="profile-designation">Lead Architect</p>
+											<p class="profile-designation"><?php echo htmlspecialchars($aboutTeamMember2Role); ?></p>
 										</div><!-- .profile-body END -->
 
 										<div class="profile-footer">
 											<ul class="ekit-team-social-list">
-												<li class="elementor-repeater-item-e8d6be4">
-													<a href="#" aria-label="Facebook">
-														<i aria-hidden="true" class="icon icon-facebook"></i> </a>
-												</li>
-												<li class="elementor-repeater-item-45b3d13">
-													<a href="#" aria-label="twitter">
-														<i aria-hidden="true" class="icon icon-x-twitter"></i> </a>
-												</li>
-												<li class="elementor-repeater-item-8edd9a4">
-													<a href="https://facebook.com" aria-label="instagram">
-														<i aria-hidden="true" class="icon icon-instagram-1"></i> </a>
-												</li>
+												<?php echo aboutRenderSocialIcon($aboutTeamMember2Facebook, 'Facebook', 'icon icon-facebook'); ?>
+												<?php echo aboutRenderSocialIcon($aboutTeamMember2X, 'X', 'icon icon-x-twitter'); ?>
+												<?php echo aboutRenderSocialIcon($aboutTeamMember2Instagram, 'Instagram', 'icon icon-instagram-1'); ?>
 											</ul>
 										</div>
 									</div>
@@ -1377,44 +1422,35 @@ $aboutCtaImage = trim((string) $pageSettings->get('about_cta_image', 'wp-content
 												<div class="modal-body">
 													<div class="ekit-team-modal-img">
 														<img loading="lazy" decoding="async" width="412" height="379"
-															src="../wp-content/uploads/2024/06/team-2.jpg"
+															src="<?php echo htmlspecialchars(tpv_asset_url($aboutTeamMember2Image)); ?>"
 															class="attachment-full size-full wp-image-414" alt="">
 													</div>
 
 													<div class="ekit-team-modal-info has-img">
-														<h2 class="ekit-team-modal-title">Jane Smith</h2>
-														<p class="ekit-team-modal-position">Lead Architect</p>
+														<h2 class="ekit-team-modal-title"><?php echo htmlspecialchars($aboutTeamMember2Name); ?></h2>
+														<p class="ekit-team-modal-position"><?php echo htmlspecialchars($aboutTeamMember2Role); ?></p>
 
 														<div class="ekit-team-modal-content">
-															A small river named Duden flows by their place and supplies
-															it with the necessary </div>
+															<?php echo nl2br(htmlspecialchars($aboutTeamMember2Bio)); ?> </div>
 
 														<ul class="ekit-team-modal-list">
+															<?php if ($aboutTeamMember2Phone !== ''): ?>
 															<li><strong>Phone:</strong><a
-																	href="tel:+1 (859) 254-6589">+1 (859) 254-6589</a>
+																	href="<?php echo htmlspecialchars(aboutTeamPhoneHref($aboutTeamMember2Phone)); ?>"><?php echo htmlspecialchars($aboutTeamMember2Phone); ?></a>
 															</li>
+															<?php endif; ?>
 
+															<?php if ($aboutTeamMember2Email !== ''): ?>
 															<li><strong>Email:</strong><a
-																	href="mailto:info@example.com">info@example.com</a>
+																	href="mailto:<?php echo htmlspecialchars($aboutTeamMember2Email); ?>"><?php echo htmlspecialchars($aboutTeamMember2Email); ?></a>
 															</li>
+															<?php endif; ?>
 														</ul>
 
 														<ul class="ekit-team-social-list">
-															<li class="elementor-repeater-item-e8d6be4">
-																<a href="#" aria-label="Facebook">
-																	<i aria-hidden="true"
-																		class="icon icon-facebook"></i> </a>
-															</li>
-															<li class="elementor-repeater-item-45b3d13">
-																<a href="#" aria-label="twitter">
-																	<i aria-hidden="true"
-																		class="icon icon-x-twitter"></i> </a>
-															</li>
-															<li class="elementor-repeater-item-8edd9a4">
-																<a href="https://facebook.com" aria-label="instagram">
-																	<i aria-hidden="true"
-																		class="icon icon-instagram-1"></i> </a>
-															</li>
+															<?php echo aboutRenderSocialIcon($aboutTeamMember2Facebook, 'Facebook', 'icon icon-facebook'); ?>
+															<?php echo aboutRenderSocialIcon($aboutTeamMember2X, 'X', 'icon icon-x-twitter'); ?>
+															<?php echo aboutRenderSocialIcon($aboutTeamMember2Instagram, 'Instagram', 'icon icon-instagram-1'); ?>
 														</ul>
 													</div>
 												</div>
@@ -1441,7 +1477,7 @@ $aboutCtaImage = trim((string) $pageSettings->get('about_cta_image', 'wp-content
 											<div class="profile-header ekit-team-img ekit-img-overlay ekit-team-img-block"
 												data-toggle="modal" data-target="ekit_team_modal_#f905512_723">
 												<img loading="lazy" decoding="async" width="412" height="379"
-													src="../wp-content/uploads/2024/06/team-3.jpg"
+													src="<?php echo htmlspecialchars(tpv_asset_url($aboutTeamMember3Image)); ?>"
 													class="attachment-full size-full wp-image-415" alt="">
 											</div><!-- .profile-header END -->
 										</a>
@@ -1452,25 +1488,16 @@ $aboutCtaImage = trim((string) $pageSettings->get('about_cta_image', 'wp-content
 											<h2 class="profile-title">
 												<a aria-label="profile" href="javascript:void(0)"
 													data-mfp-src="#ekit_team_modal_f905512_723" class="ekit-team-popup">
-													Mike Johnson </a>
+													<?php echo htmlspecialchars($aboutTeamMember3Name); ?> </a>
 											</h2>
-											<p class="profile-designation">Chief Engineer</p>
+											<p class="profile-designation"><?php echo htmlspecialchars($aboutTeamMember3Role); ?></p>
 										</div><!-- .profile-body END -->
 
 										<div class="profile-footer">
 											<ul class="ekit-team-social-list">
-												<li class="elementor-repeater-item-e8d6be4">
-													<a href="#" aria-label="Facebook">
-														<i aria-hidden="true" class="icon icon-facebook"></i> </a>
-												</li>
-												<li class="elementor-repeater-item-45b3d13">
-													<a href="#" aria-label="twitter">
-														<i aria-hidden="true" class="icon icon-x-twitter"></i> </a>
-												</li>
-												<li class="elementor-repeater-item-8edd9a4">
-													<a href="https://facebook.com" aria-label="instagram">
-														<i aria-hidden="true" class="icon icon-instagram-1"></i> </a>
-												</li>
+												<?php echo aboutRenderSocialIcon($aboutTeamMember3Facebook, 'Facebook', 'icon icon-facebook'); ?>
+												<?php echo aboutRenderSocialIcon($aboutTeamMember3X, 'X', 'icon icon-x-twitter'); ?>
+												<?php echo aboutRenderSocialIcon($aboutTeamMember3Instagram, 'Instagram', 'icon icon-instagram-1'); ?>
 											</ul>
 										</div>
 									</div>
@@ -1491,44 +1518,35 @@ $aboutCtaImage = trim((string) $pageSettings->get('about_cta_image', 'wp-content
 												<div class="modal-body">
 													<div class="ekit-team-modal-img">
 														<img loading="lazy" decoding="async" width="412" height="379"
-															src="../wp-content/uploads/2024/06/team-3.jpg"
+															src="<?php echo htmlspecialchars(tpv_asset_url($aboutTeamMember3Image)); ?>"
 															class="attachment-full size-full wp-image-415" alt="">
 													</div>
 
 													<div class="ekit-team-modal-info has-img">
-														<h2 class="ekit-team-modal-title">Mike Johnson</h2>
-														<p class="ekit-team-modal-position">Chief Engineer</p>
+														<h2 class="ekit-team-modal-title"><?php echo htmlspecialchars($aboutTeamMember3Name); ?></h2>
+														<p class="ekit-team-modal-position"><?php echo htmlspecialchars($aboutTeamMember3Role); ?></p>
 
 														<div class="ekit-team-modal-content">
-															A small river named Duden flows by their place and supplies
-															it with the necessary </div>
+															<?php echo nl2br(htmlspecialchars($aboutTeamMember3Bio)); ?> </div>
 
 														<ul class="ekit-team-modal-list">
+															<?php if ($aboutTeamMember3Phone !== ''): ?>
 															<li><strong>Phone:</strong><a
-																	href="tel:+1 (859) 254-6589">+1 (859) 254-6589</a>
+																	href="<?php echo htmlspecialchars(aboutTeamPhoneHref($aboutTeamMember3Phone)); ?>"><?php echo htmlspecialchars($aboutTeamMember3Phone); ?></a>
 															</li>
+															<?php endif; ?>
 
+															<?php if ($aboutTeamMember3Email !== ''): ?>
 															<li><strong>Email:</strong><a
-																	href="mailto:info@example.com">info@example.com</a>
+																	href="mailto:<?php echo htmlspecialchars($aboutTeamMember3Email); ?>"><?php echo htmlspecialchars($aboutTeamMember3Email); ?></a>
 															</li>
+															<?php endif; ?>
 														</ul>
 
 														<ul class="ekit-team-social-list">
-															<li class="elementor-repeater-item-e8d6be4">
-																<a href="#" aria-label="Facebook">
-																	<i aria-hidden="true"
-																		class="icon icon-facebook"></i> </a>
-															</li>
-															<li class="elementor-repeater-item-45b3d13">
-																<a href="#" aria-label="twitter">
-																	<i aria-hidden="true"
-																		class="icon icon-x-twitter"></i> </a>
-															</li>
-															<li class="elementor-repeater-item-8edd9a4">
-																<a href="https://facebook.com" aria-label="instagram">
-																	<i aria-hidden="true"
-																		class="icon icon-instagram-1"></i> </a>
-															</li>
+															<?php echo aboutRenderSocialIcon($aboutTeamMember3Facebook, 'Facebook', 'icon icon-facebook'); ?>
+															<?php echo aboutRenderSocialIcon($aboutTeamMember3X, 'X', 'icon icon-x-twitter'); ?>
+															<?php echo aboutRenderSocialIcon($aboutTeamMember3Instagram, 'Instagram', 'icon icon-instagram-1'); ?>
 														</ul>
 													</div>
 												</div>

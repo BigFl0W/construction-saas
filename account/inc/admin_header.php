@@ -1100,6 +1100,12 @@ try {
                     <span class="title">Homepage</span>
                 </a>
             </li>
+            <li class="<?php echo navActive('about_page_settings'); ?>">
+                <a href="about_page_settings.php">
+                    <span class="icon-thumbnail"><i class="fas fa-address-card"></i></span>
+                    <span class="title">About Page</span>
+                </a>
+            </li>
             <li class="<?php echo navActive('settings'); ?>">
                 <a href="settings.php">
                     <span class="icon-thumbnail"><i class="fas fa-cog"></i></span>
