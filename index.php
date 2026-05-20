@@ -6,6 +6,46 @@ $db = Database::getInstance();
 $pageSettings = new Settings();
 $supportPhone = trim((string) $pageSettings->get('company_phone', '+234 701 234 5678'));
 $supportPhoneHref = 'tel:' . preg_replace('/[^0-9+]/', '', $supportPhone);
+$homeHeroEyebrow = $pageSettings->get('home_hero_eyebrow', 'Welcome to TPV Construction and Services LTD');
+$homeHeroTitle = $pageSettings->get('home_hero_title', 'Building dreams with precision and excellence');
+$homeHeroBody = $pageSettings->get('home_hero_body', 'we specialize in turning visions into reality with exceptional craftsmanship and meticulous attention to detail. With years of experience and a commitment to quality.');
+$homeHeroPrimaryText = $pageSettings->get('home_hero_primary_text', 'get started');
+$homeHeroPrimaryLink = $pageSettings->get('home_hero_primary_link', 'contact-us/');
+$homeHeroSecondaryText = $pageSettings->get('home_hero_secondary_text', 'view Projects');
+$homeHeroSecondaryLink = $pageSettings->get('home_hero_secondary_link', 'projects/');
+$homeHeroBgImage = $pageSettings->get('home_hero_bg_image', 'wp-content/uploads/2024/06/hero-bg.jpg');
+$homeHeroBgStyle = "background-image: url('" . htmlspecialchars(tpv_asset_url($homeHeroBgImage), ENT_QUOTES, 'UTF-8') . "');";
+
+$homeIntroImage = $pageSettings->get('home_intro_image', 'wp-content/uploads/2024/06/about-us-img.png');
+$homeIntroEyebrow = $pageSettings->get('home_intro_eyebrow', 'Welcome to TPV');
+$homeIntroTitle = $pageSettings->get('home_intro_title', 'TPV Construction and Services LTD');
+$homeIntroBody = $pageSettings->get('home_intro_body', "Serving Nigeria's construction needs since 2008 with excellence and innovation. TPV Construction and Services LTD has established itself as a trusted name in Nigeria's construction industry, delivering exceptional projects across residential, commercial, and industrial sectors. Our commitment to quality, safety, and sustainable building practices has made us the preferred choice for discerning clients throughout Nigeria.");
+$homeIntroFeature1 = $pageSettings->get('home_intro_feature_1', 'Comprehensive Services');
+$homeIntroFeature2 = $pageSettings->get('home_intro_feature_2', 'Advanced Technology');
+$homeIntroFeature3 = $pageSettings->get('home_intro_feature_3', 'Transparent Communication');
+$homeIntroButtonText = $pageSettings->get('home_intro_button_text', 'Get Free Quote');
+$homeIntroButtonLink = $pageSettings->get('home_intro_button_link', 'quote/');
+
+$homeWhy1Title = $pageSettings->get('home_why_1_title', 'Innovative Solutions');
+$homeWhy1Body = $pageSettings->get('home_why_1_body', 'We combine modern construction technology with innovative approaches to deliver projects that exceed expectations while optimizing costs and timelines.');
+$homeWhy1Image = $pageSettings->get('home_why_1_image', 'wp-content/uploads/2024/06/why-choose-img-1.jpg');
+$homeWhy1CounterTitle = $pageSettings->get('home_why_1_counter_title', 'Projects Completed');
+$homeWhy1CounterValue = $pageSettings->get('home_why_1_counter_value', '450');
+$homeWhy1CounterSuffix = $pageSettings->get('home_why_1_counter_suffix', '+');
+
+$homeWhy2Title = $pageSettings->get('home_why_2_title', 'Quality Craftsmanship');
+$homeWhy2Body = $pageSettings->get('home_why_2_body', 'Our skilled craftsmen take pride in their work, ensuring every detail meets the highest standards of Nigerian and international construction quality.');
+$homeWhy2Image = $pageSettings->get('home_why_2_image', 'wp-content/uploads/2024/06/why-choose-img-2.jpg');
+$homeWhy2CounterTitle = $pageSettings->get('home_why_2_counter_title', 'Projects Completed');
+$homeWhy2CounterValue = $pageSettings->get('home_why_2_counter_value', '450');
+$homeWhy2CounterSuffix = $pageSettings->get('home_why_2_counter_suffix', '+');
+
+$homeWhy3Title = $pageSettings->get('home_why_3_title', 'Expertise And Experience');
+$homeWhy3Body = $pageSettings->get('home_why_3_body', 'With over a decade of experience in the Nigerian construction industry, our team brings deep local knowledge and proven expertise to every project.');
+$homeWhy3Image = $pageSettings->get('home_why_3_image', 'wp-content/uploads/2024/06/why-choose-img-3.jpg');
+$homeWhy3CounterTitle = $pageSettings->get('home_why_3_counter_title', 'Projects Completed');
+$homeWhy3CounterValue = $pageSettings->get('home_why_3_counter_value', '450');
+$homeWhy3CounterSuffix = $pageSettings->get('home_why_3_counter_suffix', '+');
 
 // Fetch latest 3 published blog posts
 $sql = "SELECT p.id, p.title, p.slug, p.excerpt, p.published_at,
@@ -814,7 +854,7 @@ $latestPosts = $stmt->fetchAll();
 			<div data-ekitparallax="{&quot;ekit_section_parallax_bg&quot;:&quot;yes&quot;,&quot;ekit_section_parallax_bg_speed&quot;:0.5,&quot;elementor_lazy_load&quot;:&quot;1&quot;}"
 				class="elementor-element elementor-element-fe91c30 e-flex e-con-boxed e-con e-child" data-id="fe91c30"
 				data-element_type="container" data-e-type="container"
-				data-settings="{&quot;background_background&quot;:&quot;classic&quot;}">
+				data-settings="{&quot;background_background&quot;:&quot;classic&quot;}" style="<?php echo $homeHeroBgStyle; ?>">
 				<div class="e-con-inner">
 					<div class="elementor-element elementor-element-5f24818 e-con-full e-flex e-con e-child"
 						data-id="5f24818" data-element_type="container" data-e-type="container">
@@ -823,7 +863,7 @@ $latestPosts = $stmt->fetchAll();
 							data-settings="{&quot;_animation&quot;:&quot;fadeInUp&quot;,&quot;ekit_we_effect_on&quot;:&quot;none&quot;}"
 							data-widget_type="heading.default">
 							<div class="elementor-widget-container">
-								<h3 class="elementor-heading-title elementor-size-default">Welcome to TPV Construction and Services LTD</h3>
+								<h3 class="elementor-heading-title elementor-size-default"><?php echo htmlspecialchars($homeHeroEyebrow); ?></h3>
 							</div>
 						</div>
 						<div class="elementor-element elementor-element-f3f7de9 at-heading-animation at-animation-heading-style-3 elementor-widget elementor-widget-heading"
@@ -831,8 +871,7 @@ $latestPosts = $stmt->fetchAll();
 							data-settings="{&quot;ekit_we_effect_on&quot;:&quot;none&quot;}"
 							data-widget_type="heading.default">
 							<div class="elementor-widget-container">
-								<h1 class="elementor-heading-title elementor-size-default">Building dreams with
-									precision and excellence</h1>
+								<h1 class="elementor-heading-title elementor-size-default"><?php echo nl2br(htmlspecialchars($homeHeroTitle)); ?></h1>
 							</div>
 						</div>
 						<div class="elementor-element elementor-element-09bd4ae elementor-invisible elementor-widget elementor-widget-text-editor"
@@ -840,9 +879,7 @@ $latestPosts = $stmt->fetchAll();
 							data-settings="{&quot;_animation&quot;:&quot;fadeInUp&quot;,&quot;_animation_delay&quot;:100,&quot;ekit_we_effect_on&quot;:&quot;none&quot;}"
 							data-widget_type="text-editor.default">
 							<div class="elementor-widget-container">
-								<p>we specialize in turning visions into reality with exceptional craftsmanship and
-									meticulous attention to detail. With years of experience and a commitment to
-									quality.</p>
+								<p><?php echo nl2br(htmlspecialchars($homeHeroBody)); ?></p>
 							</div>
 						</div>
 						<div class="elementor-element elementor-element-f877922 e-con-full e-flex elementor-invisible e-con e-child"
@@ -855,7 +892,7 @@ $latestPosts = $stmt->fetchAll();
 								<div class="elementor-widget-container">
 									<div class="elementor-button-wrapper">
 										<a class="elementor-button elementor-button-link elementor-size-sm"
-											href="contact-us/">
+											href="<?php echo htmlspecialchars($homeHeroPrimaryLink); ?>">
 											<span class="elementor-button-content-wrapper">
 												<span class="elementor-button-icon">
 													<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
@@ -865,7 +902,7 @@ $latestPosts = $stmt->fetchAll();
 															stroke="white" stroke-width="1.5" stroke-linecap="round"
 															stroke-linejoin="round"></path>
 													</svg> </span>
-												<span class="elementor-button-text">get started</span>
+												<span class="elementor-button-text"><?php echo htmlspecialchars($homeHeroPrimaryText); ?></span>
 											</span>
 										</a>
 									</div>
@@ -878,7 +915,7 @@ $latestPosts = $stmt->fetchAll();
 								<div class="elementor-widget-container">
 									<div class="elementor-button-wrapper">
 										<a class="elementor-button elementor-button-link elementor-size-sm"
-											href="projects/">
+											href="<?php echo htmlspecialchars($homeHeroSecondaryLink); ?>">
 											<span class="elementor-button-content-wrapper">
 												<span class="elementor-button-icon">
 													<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
@@ -888,7 +925,7 @@ $latestPosts = $stmt->fetchAll();
 															stroke="white" stroke-width="1.5" stroke-linecap="round"
 															stroke-linejoin="round"></path>
 													</svg> </span>
-												<span class="elementor-button-text">view Projects</span>
+												<span class="elementor-button-text"><?php echo htmlspecialchars($homeHeroSecondaryText); ?></span>
 											</span>
 										</a>
 									</div>
@@ -911,7 +948,7 @@ $latestPosts = $stmt->fetchAll();
 						data-widget_type="image.default">
 						<div class="elementor-widget-container">
 							<img fetchpriority="high" decoding="async" width="574" height="659"
-								src="wp-content/uploads/2024/06/about-us-img.png"
+								src="<?php echo htmlspecialchars(tpv_asset_url($homeIntroImage)); ?>"
 								class="attachment-full size-full wp-image-872" alt="">
 						</div>
 					</div>
@@ -923,7 +960,7 @@ $latestPosts = $stmt->fetchAll();
 						data-settings="{&quot;_animation&quot;:&quot;fadeInUp&quot;,&quot;ekit_we_effect_on&quot;:&quot;none&quot;}"
 						data-widget_type="heading.default">
 						<div class="elementor-widget-container">
-							<h3 class="elementor-heading-title elementor-size-default">Welcome to TPV</h3>
+							<h3 class="elementor-heading-title elementor-size-default"><?php echo htmlspecialchars($homeIntroEyebrow); ?></h3>
 						</div>
 					</div>
 					<div class="elementor-element elementor-element-2261fd2 at-heading-animation at-animation-heading-style-3 elementor-widget elementor-widget-heading"
@@ -931,7 +968,7 @@ $latestPosts = $stmt->fetchAll();
 						data-settings="{&quot;ekit_we_effect_on&quot;:&quot;none&quot;}"
 						data-widget_type="heading.default">
 						<div class="elementor-widget-container">
-							<h2 class="elementor-heading-title elementor-size-default">TPV Construction and Services LTD</h2>
+							<h2 class="elementor-heading-title elementor-size-default"><?php echo htmlspecialchars($homeIntroTitle); ?></h2>
 						</div>
 					</div>
 					<div class="elementor-element elementor-element-8fbf117 elementor-invisible elementor-widget elementor-widget-text-editor"
@@ -939,7 +976,7 @@ $latestPosts = $stmt->fetchAll();
 						data-settings="{&quot;_animation&quot;:&quot;fadeInUp&quot;,&quot;_animation_delay&quot;:100,&quot;ekit_we_effect_on&quot;:&quot;none&quot;}"
 						data-widget_type="text-editor.default">
 						<div class="elementor-widget-container">
-							<p>Serving Nigeria's construction needs since 2008 with excellence and innovation. TPV Construction and Services LTD has established itself as a trusted name in Nigeria's construction industry, delivering exceptional projects across residential, commercial, and industrial sectors. Our commitment to quality, safety, and sustainable building practices has made us the preferred choice for discerning clients throughout Nigeria.</p>
+							<p><?php echo nl2br(htmlspecialchars($homeIntroBody)); ?></p>
 						</div>
 					</div>
 					<div class="elementor-element elementor-element-b3ae5c3 e-con-full e-flex elementor-invisible e-con e-child"
@@ -959,7 +996,7 @@ $latestPosts = $stmt->fetchAll();
 													d="M504 256c0 136.967-111.033 248-248 248S8 392.967 8 256 119.033 8 256 8s248 111.033 248 248zM227.314 387.314l184-184c6.248-6.248 6.248-16.379 0-22.627l-22.627-22.627c-6.248-6.249-16.379-6.249-22.628 0L216 308.118l-70.059-70.059c-6.248-6.248-16.379-6.248-22.628 0l-22.627 22.627c-6.248 6.248-6.248 16.379 0 22.627l104 104c6.249 6.249 16.379 6.249 22.628.001z">
 												</path>
 											</svg> </span>
-										<span class="elementor-icon-list-text">Comprehensive Services</span>
+										<span class="elementor-icon-list-text"><?php echo htmlspecialchars($homeIntroFeature1); ?></span>
 									</li>
 									<li class="elementor-icon-list-item">
 										<span class="elementor-icon-list-icon">
@@ -969,7 +1006,7 @@ $latestPosts = $stmt->fetchAll();
 													d="M504 256c0 136.967-111.033 248-248 248S8 392.967 8 256 119.033 8 256 8s248 111.033 248 248zM227.314 387.314l184-184c6.248-6.248 6.248-16.379 0-22.627l-22.627-22.627c-6.248-6.249-16.379-6.249-22.628 0L216 308.118l-70.059-70.059c-6.248-6.248-16.379-6.248-22.628 0l-22.627 22.627c-6.248 6.248-6.248 16.379 0 22.627l104 104c6.249 6.249 16.379 6.249 22.628.001z">
 												</path>
 											</svg> </span>
-										<span class="elementor-icon-list-text">Advanced Technology</span>
+										<span class="elementor-icon-list-text"><?php echo htmlspecialchars($homeIntroFeature2); ?></span>
 									</li>
 									<li class="elementor-icon-list-item">
 										<span class="elementor-icon-list-icon">
@@ -979,7 +1016,7 @@ $latestPosts = $stmt->fetchAll();
 													d="M504 256c0 136.967-111.033 248-248 248S8 392.967 8 256 119.033 8 256 8s248 111.033 248 248zM227.314 387.314l184-184c6.248-6.248 6.248-16.379 0-22.627l-22.627-22.627c-6.248-6.249-16.379-6.249-22.628 0L216 308.118l-70.059-70.059c-6.248-6.248-16.379-6.248-22.628 0l-22.627 22.627c-6.248 6.248-6.248 16.379 0 22.627l104 104c6.249 6.249 16.379 6.249 22.628.001z">
 												</path>
 											</svg> </span>
-										<span class="elementor-icon-list-text">Transparent Communication</span>
+										<span class="elementor-icon-list-text"><?php echo htmlspecialchars($homeIntroFeature3); ?></span>
 									</li>
 								</ul>
 							</div>
@@ -995,7 +1032,7 @@ $latestPosts = $stmt->fetchAll();
 							<div class="elementor-widget-container">
 								<div class="elementor-button-wrapper">
 									<a class="elementor-button elementor-button-link elementor-size-sm"
-										href="quote/">
+										href="<?php echo htmlspecialchars($homeIntroButtonLink); ?>">
 										<span class="elementor-button-content-wrapper">
 											<span class="elementor-button-icon">
 												<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
@@ -1005,7 +1042,7 @@ $latestPosts = $stmt->fetchAll();
 														stroke="white" stroke-width="1.5" stroke-linecap="round"
 														stroke-linejoin="round"></path>
 												</svg> </span>
-											<span class="elementor-button-text">Get Free Quote</span>
+											<span class="elementor-button-text"><?php echo htmlspecialchars($homeIntroButtonText); ?></span>
 										</span>
 									</a>
 								</div>
@@ -1383,10 +1420,10 @@ $latestPosts = $stmt->fetchAll();
 									</div>
 									<div class="elementor-icon-box-content">
 										<h3 class="elementor-icon-box-title">
-											<span>Innovative Solutions</span>
+											<span><?php echo htmlspecialchars($homeWhy1Title); ?></span>
 										</h3>
 										<p class="elementor-icon-box-description">
-											We combine modern construction technology with innovative approaches to deliver projects that exceed expectations while optimizing costs and timelines.
+											<?php echo htmlspecialchars($homeWhy1Body); ?>
 										</p>
 									</div>
 								</div>
@@ -1398,12 +1435,12 @@ $latestPosts = $stmt->fetchAll();
 							data-widget_type="counter.default">
 							<div class="elementor-widget-container">
 								<div class="elementor-counter">
-									<p class="elementor-counter-title">Projects Completed</p>
+									<p class="elementor-counter-title"><?php echo htmlspecialchars($homeWhy1CounterTitle); ?></p>
 									<div class="elementor-counter-number-wrapper">
 										<span class="elementor-counter-number-prefix"></span>
-										<span class="elementor-counter-number" data-duration="3000" data-to-value="450"
+										<span class="elementor-counter-number" data-duration="3000" data-to-value="<?php echo htmlspecialchars($homeWhy1CounterValue); ?>"
 											data-from-value="0" data-delimiter=",">0</span>
-										<span class="elementor-counter-number-suffix">+</span>
+										<span class="elementor-counter-number-suffix"><?php echo htmlspecialchars($homeWhy1CounterSuffix); ?></span>
 									</div>
 								</div>
 							</div>
@@ -1418,7 +1455,7 @@ $latestPosts = $stmt->fetchAll();
 							data-widget_type="image.default">
 							<div class="elementor-widget-container">
 								<img loading="lazy" decoding="async" width="413" height="461"
-									src="wp-content/uploads/2024/06/why-choose-img-1.jpg"
+									src="<?php echo htmlspecialchars(tpv_asset_url($homeWhy1Image)); ?>"
 									class="attachment-full size-full wp-image-1087" alt="">
 							</div>
 						</div>
@@ -1444,10 +1481,10 @@ $latestPosts = $stmt->fetchAll();
 									</div>
 									<div class="elementor-icon-box-content">
 										<h3 class="elementor-icon-box-title">
-											<span>Quality Craftsmanship</span>
+											<span><?php echo htmlspecialchars($homeWhy2Title); ?></span>
 										</h3>
 										<p class="elementor-icon-box-description">
-											Our skilled craftsmen take pride in their work, ensuring every detail meets the highest standards of Nigerian and international construction quality.
+											<?php echo htmlspecialchars($homeWhy2Body); ?>
 										</p>
 									</div>
 								</div>
@@ -1459,12 +1496,12 @@ $latestPosts = $stmt->fetchAll();
 							data-widget_type="counter.default">
 							<div class="elementor-widget-container">
 								<div class="elementor-counter">
-									<p class="elementor-counter-title">Projects Completed</p>
+									<p class="elementor-counter-title"><?php echo htmlspecialchars($homeWhy2CounterTitle); ?></p>
 									<div class="elementor-counter-number-wrapper">
 										<span class="elementor-counter-number-prefix"></span>
-										<span class="elementor-counter-number" data-duration="3000" data-to-value="450"
+										<span class="elementor-counter-number" data-duration="3000" data-to-value="<?php echo htmlspecialchars($homeWhy2CounterValue); ?>"
 											data-from-value="0" data-delimiter=",">0</span>
-										<span class="elementor-counter-number-suffix">+</span>
+										<span class="elementor-counter-number-suffix"><?php echo htmlspecialchars($homeWhy2CounterSuffix); ?></span>
 									</div>
 								</div>
 							</div>
@@ -1479,7 +1516,7 @@ $latestPosts = $stmt->fetchAll();
 							data-widget_type="image.default">
 							<div class="elementor-widget-container">
 								<img loading="lazy" decoding="async" width="413" height="461"
-									src="wp-content/uploads/2024/06/why-choose-img-2.jpg"
+									src="<?php echo htmlspecialchars(tpv_asset_url($homeWhy2Image)); ?>"
 									class="attachment-full size-full wp-image-1085" alt="">
 							</div>
 						</div>
@@ -1505,10 +1542,10 @@ $latestPosts = $stmt->fetchAll();
 									</div>
 									<div class="elementor-icon-box-content">
 										<h3 class="elementor-icon-box-title">
-											<span>Expertise And Experience</span>
+											<span><?php echo htmlspecialchars($homeWhy3Title); ?></span>
 										</h3>
 										<p class="elementor-icon-box-description">
-											With over a decade of experience in the Nigerian construction industry, our team brings deep local knowledge and proven expertise to every project.
+											<?php echo htmlspecialchars($homeWhy3Body); ?>
 										</p>
 									</div>
 								</div>
@@ -1520,12 +1557,12 @@ $latestPosts = $stmt->fetchAll();
 							data-widget_type="counter.default">
 							<div class="elementor-widget-container">
 								<div class="elementor-counter">
-									<p class="elementor-counter-title">Projects Completed</p>
+									<p class="elementor-counter-title"><?php echo htmlspecialchars($homeWhy3CounterTitle); ?></p>
 									<div class="elementor-counter-number-wrapper">
 										<span class="elementor-counter-number-prefix"></span>
-										<span class="elementor-counter-number" data-duration="3000" data-to-value="450"
+										<span class="elementor-counter-number" data-duration="3000" data-to-value="<?php echo htmlspecialchars($homeWhy3CounterValue); ?>"
 											data-from-value="0" data-delimiter=",">0</span>
-										<span class="elementor-counter-number-suffix">+</span>
+										<span class="elementor-counter-number-suffix"><?php echo htmlspecialchars($homeWhy3CounterSuffix); ?></span>
 									</div>
 								</div>
 							</div>
@@ -1540,7 +1577,7 @@ $latestPosts = $stmt->fetchAll();
 							data-widget_type="image.default">
 							<div class="elementor-widget-container">
 								<img loading="lazy" decoding="async" width="413" height="461"
-									src="wp-content/uploads/2024/06/why-choose-img-3.jpg"
+									src="<?php echo htmlspecialchars(tpv_asset_url($homeWhy3Image)); ?>"
 									class="attachment-full size-full wp-image-1086" alt="">
 							</div>
 						</div>

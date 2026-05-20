@@ -1094,6 +1094,12 @@ try {
                     <span class="title">Admin Users</span>
                 </a>
             </li>
+            <li class="<?php echo navActive('homepage_settings'); ?>">
+                <a href="homepage_settings.php">
+                    <span class="icon-thumbnail"><i class="fas fa-house"></i></span>
+                    <span class="title">Homepage</span>
+                </a>
+            </li>
             <li class="<?php echo navActive('settings'); ?>">
                 <a href="settings.php">
                     <span class="icon-thumbnail"><i class="fas fa-cog"></i></span>
