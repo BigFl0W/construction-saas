@@ -16,6 +16,16 @@ if ($headerCsrfToken === '' && isset($auth) && method_exists($auth, 'generateCSR
     $headerCsrfToken = $auth->generateCSRF();
 }
 
+$adminBrandLogo = 'assets/img/logo.png';
+try {
+    if (class_exists('Settings')) {
+        $headerSettings = new Settings();
+        $adminBrandLogo = tpv_setting_asset_url('site_logo', 'wp-content/uploads/2024/06/logo.png');
+    }
+} catch (Throwable $e) {
+    $adminBrandLogo = 'assets/img/logo.png';
+}
+
 $unreadContactNotifications = 0;
 $recentContactNotifications = [];
 try {
@@ -98,11 +108,17 @@ try {
             transition: transform 0.3s ease;
         }
         .sidebar-header {
-            padding: 18px 20px;
+            padding: 16px 20px;
             border-bottom: 1px solid rgba(255,255,255,0.06);
             flex-shrink: 0;
         }
-        .sidebar-header .brand { max-height: 36px; }
+        .sidebar-header .brand {
+            width: auto;
+            max-width: 170px;
+            max-height: 56px;
+            object-fit: contain;
+            object-position: left center;
+        }
         .sidebar-menu { flex: 1; overflow-y: auto; padding: 8px 0; }
         .sidebar-menu::-webkit-scrollbar { width: 4px; }
         .sidebar-menu::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.15); border-radius: 4px; }
@@ -194,7 +210,13 @@ try {
             padding: 4px 8px;
             cursor: pointer;
         }
-        .header .brand { display: none; }
+        .header .brand {
+            display: none;
+            width: auto;
+            max-width: 120px;
+            max-height: 40px;
+            object-fit: contain;
+        }
         .header .profile-dropdown-toggle {
             background: none; border: none; padding: 0; cursor: pointer;
         }
@@ -931,7 +953,7 @@ try {
 
 <nav class="page-sidebar" id="mainSidebar">
     <div class="sidebar-header">
-        <img src="assets/img/logo.png" alt="TPV Construction and Services LTD" class="brand" style="max-height:36px;" />
+        <img src="<?php echo htmlspecialchars($adminBrandLogo); ?>" alt="TPV Construction and Services LTD" class="brand" />
     </div>
     <div class="sidebar-menu">
         <ul class="menu-items">
@@ -1051,7 +1073,7 @@ try {
 <div class="page-container">
     <div class="header">
         <button class="toggle-sidebar" onclick="toggleSidebar()" aria-label="Toggle sidebar"><i class="fas fa-bars"></i></button>
-        <div class="brand"><img src="assets/img/logo.png" width="78" /></div>
+        <div class="brand"><img src="<?php echo htmlspecialchars($adminBrandLogo); ?>" alt="TPV Construction and Services LTD" /></div>
         <a href="projects.php?action=new" class="btn btn-primary btn-sm d-none d-lg-inline-flex"><i class="fas fa-plus me-1"></i> New project</a>
         <div class="ms-auto d-flex align-items-center gap-2">
             <div class="dropdown">
