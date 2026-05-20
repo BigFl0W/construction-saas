@@ -3,6 +3,7 @@
 require_once '../config/config.php';
 require_once '../classes/Auth.php';
 require_once '../classes/Functions.php';
+require_once '../classes/QuoteRequest.php';
 
 // Initialize authentication
 $auth = new Auth();
@@ -13,6 +14,7 @@ $currentUser = $auth->getUserData();
 
 // Initialize functions class
 $functions = Functions::getInstance();
+$quoteRequests = new QuoteRequest();
 
 // Get database connection
 $db = Database::getInstance();
@@ -143,6 +145,15 @@ try {
          ORDER BY created_at DESC
          LIMIT 5"
     )->fetchAll();
+
+    // Quote request stats
+    $unreadQuoteCount = $db->query("SELECT COUNT(*) FROM quote_requests WHERE status = 'unread'")->fetchColumn();
+    $recentQuoteMessages = $db->query(
+        "SELECT id, first_name, last_name, email, phone, project_type, project_location, description, created_at, status
+         FROM quote_requests
+         ORDER BY created_at DESC
+         LIMIT 5"
+    )->fetchAll();
     
 } catch (Exception $e) {
     error_log("Dashboard data fetch error: " . $e->getMessage());
@@ -165,6 +176,8 @@ try {
     $recentComments = [];
     $unreadContactCount = 0;
     $recentContactMessages = [];
+    $unreadQuoteCount = 0;
+    $recentQuoteMessages = [];
 }
 
 // Get user's first name for greeting
@@ -902,9 +915,9 @@ body {
         </div>
     </div> <!-- /row -->
 
-    <!-- Contact Messages -->
+    <!-- Enquiries -->
     <div class="row mt-2">
-        <div class="col-lg-12">
+        <div class="col-lg-6">
             <div class="modern-card">
                 <div class="modern-card-header">
                     <h3 class="modern-card-title"><i class="fas fa-inbox text-muted"></i> Contact Messages
@@ -952,6 +965,59 @@ body {
                         <div class="text-center p-5 text-muted">
                             <i class="far fa-inbox fs-1 mb-3 text-light"></i>
                             <p>No contact messages yet.</p>
+                        </div>
+                    <?php endif; ?>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-6 mt-4 mt-lg-0">
+            <div class="modern-card">
+                <div class="modern-card-header">
+                    <h3 class="modern-card-title"><i class="fas fa-calculator text-muted"></i> Quote Requests
+                        <?php if ($unreadQuoteCount > 0): ?>
+                            <span class="badge-modern danger ms-2"><?php echo $unreadQuoteCount; ?> unread</span>
+                        <?php endif; ?>
+                    </h3>
+                    <a href="quote_requests.php" class="text-primary small fw-semibold text-decoration-none">
+                        View All <i class="fas fa-arrow-right ms-1"></i>
+                    </a>
+                </div>
+                <div class="modern-card-body">
+                    <?php if (!empty($recentQuoteMessages)): ?>
+                        <div class="d-flex flex-column gap-3">
+                        <?php foreach ($recentQuoteMessages as $qr): ?>
+                            <a href="quote_requests.php?status=<?php echo $qr['status']; ?>&focus=<?php echo (int) $qr['id']; ?>#quote-request-<?php echo (int) $qr['id']; ?>" style="text-decoration:none;color:inherit;">
+                                <div class="d-flex p-3 rounded align-items-start" style="background: <?php echo $qr['status'] === 'unread' ? '#fff8f8' : '#f8fafc'; ?>; border: 1px solid <?php echo $qr['status'] === 'unread' ? '#fecaca' : '#f1f5f9'; ?>; border-left: 3px solid <?php echo $qr['status'] === 'unread' ? '#dc2626' : '#e2e8f0'; ?>; transition: all 0.2s;" onmouseover="this.style.background='#f1f5f9';" onmouseout="this.style.background='<?php echo $qr['status'] === 'unread' ? '#fff8f8' : '#f8fafc'; ?>';">
+                                    <div class="me-3">
+                                        <div style="width: 40px; height: 40px; border-radius: 50%; background: <?php echo $qr['status'] === 'unread' ? '#dc2626' : '#e2e8f0'; ?>; display: flex; align-items: center; justify-content: center; color: <?php echo $qr['status'] === 'unread' ? '#fff' : '#64748b'; ?>; font-size: 14px; font-weight: bold;">
+                                            <?php echo strtoupper(substr($qr['first_name'] ?: '?', 0, 1)); ?>
+                                        </div>
+                                    </div>
+                                    <div style="flex:1;min-width:0;">
+                                        <div class="d-flex justify-content-between align-items-center mb-1">
+                                            <div class="fw-bold text-dark" style="font-size: 0.9rem;">
+                                                <?php echo htmlspecialchars(trim(($qr['first_name'] ?? '') . ' ' . ($qr['last_name'] ?? ''))); ?>
+                                                <?php if ($qr['status'] === 'unread'): ?>
+                                                    <span style="display:inline-block;width:7px;height:7px;background:#dc2626;border-radius:50%;margin-left:6px;"></span>
+                                                <?php endif; ?>
+                                            </div>
+                                            <div class="text-muted small" style="font-size: 0.75rem;white-space:nowrap;margin-left:8px;">
+                                                <?php echo $functions->timeAgo($qr['created_at']); ?>
+                                            </div>
+                                        </div>
+                                        <div class="text-muted small mb-1"><?php echo htmlspecialchars($qr['email']); ?> &middot; <span class="fw-medium"><?php echo htmlspecialchars($functions->truncateText($qr['project_type'], 34)); ?></span></div>
+                                        <div class="text-dark" style="font-size: 0.85rem; line-height: 1.4; display:-webkit-box;-webkit-line-clamp:1;-webkit-box-orient:vertical;overflow:hidden;">
+                                            <?php echo htmlspecialchars($functions->truncateText($qr['project_location'] . ' · ' . $qr['description'], 90)); ?>
+                                        </div>
+                                    </div>
+                                </div>
+                            </a>
+                        <?php endforeach; ?>
+                        </div>
+                    <?php else: ?>
+                        <div class="text-center p-5 text-muted">
+                            <i class="far fa-file-lines fs-1 mb-3 text-light"></i>
+                            <p>No quote requests yet.</p>
                         </div>
                     <?php endif; ?>
                 </div>

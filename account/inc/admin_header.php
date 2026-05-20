@@ -16,6 +16,8 @@ if ($headerCsrfToken === '' && isset($auth) && method_exists($auth, 'generateCSR
     $headerCsrfToken = $auth->generateCSRF();
 }
 
+require_once dirname(__DIR__, 2) . '/classes/QuoteRequest.php';
+
 $adminBrandLogo = 'assets/img/logo.png';
 try {
     if (class_exists('Settings')) {
@@ -28,8 +30,13 @@ try {
 
 $unreadContactNotifications = 0;
 $recentContactNotifications = [];
+$unreadQuoteNotifications = 0;
+$recentQuoteNotifications = [];
+$recentEnquiryNotifications = [];
+$totalEnquiryNotifications = 0;
 try {
     $headerDb = Database::getInstance();
+    $quoteRequestManager = new QuoteRequest();
     $contactTableExists = $headerDb->query("SHOW TABLES LIKE 'contact_submissions'")->fetchColumn();
     if ($contactTableExists) {
         $unreadContactNotifications = (int) $headerDb->query("SELECT COUNT(*) FROM contact_submissions WHERE status = 'unread'")->fetchColumn();
@@ -41,9 +48,47 @@ try {
              LIMIT 5"
         )->fetchAll();
     }
+    $unreadQuoteNotifications = $quoteRequestManager->getUnreadCount();
+    $recentQuoteNotifications = $quoteRequestManager->getRecentUnread(5);
+
+    foreach ($recentContactNotifications as $notification) {
+        $recentEnquiryNotifications[] = [
+            'kind' => 'contact',
+            'id' => (int) $notification['id'],
+            'name' => $notification['name'] ?: 'New contact',
+            'email' => $notification['email'],
+            'subject' => $notification['subject'] ?: 'Website enquiry',
+            'meta' => 'Contact form enquiry',
+            'created_at' => $notification['created_at'],
+            'href' => 'contact_messages.php?status=unread&focus=' . (int) $notification['id'] . '#message-' . (int) $notification['id']
+        ];
+    }
+
+    foreach ($recentQuoteNotifications as $notification) {
+        $recentEnquiryNotifications[] = [
+            'kind' => 'quote',
+            'id' => (int) $notification['id'],
+            'name' => trim(($notification['first_name'] ?? '') . ' ' . ($notification['last_name'] ?? '')) ?: 'New quote request',
+            'email' => $notification['email'] ?? '',
+            'subject' => $notification['project_type'] ?: 'Quote request',
+            'meta' => 'Quote request · ' . ($notification['project_location'] ?: 'Location not specified'),
+            'created_at' => $notification['created_at'],
+            'href' => 'quote_requests.php?status=unread&focus=' . (int) $notification['id'] . '#quote-request-' . (int) $notification['id']
+        ];
+    }
+
+    usort($recentEnquiryNotifications, function ($a, $b) {
+        return strtotime($b['created_at']) <=> strtotime($a['created_at']);
+    });
+    $recentEnquiryNotifications = array_slice($recentEnquiryNotifications, 0, 8);
+    $totalEnquiryNotifications = $unreadContactNotifications + $unreadQuoteNotifications;
 } catch (Exception $e) {
     $unreadContactNotifications = 0;
     $recentContactNotifications = [];
+    $unreadQuoteNotifications = 0;
+    $recentQuoteNotifications = [];
+    $recentEnquiryNotifications = [];
+    $totalEnquiryNotifications = 0;
 }
 ?>
 <!doctype html>
@@ -1088,6 +1133,15 @@ try {
                     <?php endif; ?>
                 </a>
             </li>
+            <li class="<?php echo navActive('quote_requests'); ?>">
+                <a href="quote_requests.php">
+                    <span class="icon-thumbnail"><i class="fas fa-calculator"></i></span>
+                    <span class="title">Quote Requests</span>
+                    <?php if ($unreadQuoteNotifications > 0): ?>
+                        <span class="nav-pill-badge"><?php echo $unreadQuoteNotifications > 99 ? '99+' : $unreadQuoteNotifications; ?></span>
+                    <?php endif; ?>
+                </a>
+            </li>
             <li class="<?php echo navActive('admin_users'); ?>">
                 <a href="admin_users.php">
                     <span class="icon-thumbnail"><i class="fas fa-user-shield"></i></span>
@@ -1123,33 +1177,34 @@ try {
         <a href="projects.php?action=new" class="btn btn-primary btn-sm d-none d-lg-inline-flex"><i class="fas fa-plus me-1"></i> New project</a>
         <div class="ms-auto d-flex align-items-center gap-2">
             <div class="dropdown">
-                <button class="notification-bell" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="View contact notifications">
+                <button class="notification-bell" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="View enquiry notifications">
                     <i class="fas fa-bell"></i>
-                    <?php if ($unreadContactNotifications > 0): ?>
-                        <span class="notification-badge"><?php echo $unreadContactNotifications > 99 ? '99+' : $unreadContactNotifications; ?></span>
+                    <?php if ($totalEnquiryNotifications > 0): ?>
+                        <span class="notification-badge"><?php echo $totalEnquiryNotifications > 99 ? '99+' : $totalEnquiryNotifications; ?></span>
                     <?php endif; ?>
                 </button>
                 <div class="dropdown-menu dropdown-menu-end notification-dropdown">
                     <div class="notification-dropdown-header">
                         <h6>New Enquiries</h6>
                         <p>
-                            <?php if ($unreadContactNotifications > 0): ?>
-                                You have <?php echo $unreadContactNotifications; ?> unread contact <?php echo $unreadContactNotifications === 1 ? 'message' : 'messages'; ?>.
+                            <?php if ($totalEnquiryNotifications > 0): ?>
+                                You have <?php echo $totalEnquiryNotifications; ?> unread enquiries.
                             <?php else: ?>
-                                No new contact messages right now.
+                                No new enquiries right now.
                             <?php endif; ?>
                         </p>
                     </div>
                     <div class="notification-dropdown-body">
-                        <?php if (!empty($recentContactNotifications)): ?>
-                            <?php foreach ($recentContactNotifications as $notification): ?>
-                                <a class="notification-item" href="contact_messages.php?status=unread&focus=<?php echo (int) $notification['id']; ?>#message-<?php echo (int) $notification['id']; ?>">
+                        <?php if (!empty($recentEnquiryNotifications)): ?>
+                            <?php foreach ($recentEnquiryNotifications as $notification): ?>
+                                <a class="notification-item" href="<?php echo htmlspecialchars($notification['href']); ?>">
                                     <div class="notification-item-title">
-                                        <strong><?php echo htmlspecialchars($notification['name'] ?: 'New contact'); ?></strong>
+                                        <strong><?php echo htmlspecialchars($notification['name']); ?></strong>
                                         <span class="notification-item-time"><?php echo htmlspecialchars(date('d M, H:i', strtotime($notification['created_at']))); ?></span>
                                     </div>
                                     <p class="notification-item-meta"><?php echo htmlspecialchars($notification['email']); ?></p>
-                                    <p class="notification-item-subject"><?php echo htmlspecialchars(mb_strimwidth((string) ($notification['subject'] ?: 'Website enquiry'), 0, 70, '...')); ?></p>
+                                    <p class="notification-item-subject"><?php echo htmlspecialchars(mb_strimwidth((string) $notification['meta'], 0, 70, '...')); ?></p>
+                                    <p class="notification-item-subject"><strong><?php echo htmlspecialchars(mb_strimwidth((string) $notification['subject'], 0, 70, '...')); ?></strong></p>
                                 </a>
                             <?php endforeach; ?>
                         <?php else: ?>
@@ -1160,21 +1215,24 @@ try {
                         <?php endif; ?>
                     </div>
                     <div class="notification-dropdown-footer">
-                        <?php if ($unreadContactNotifications > 0): ?>
+                        <?php if ($totalEnquiryNotifications > 0): ?>
                         <div class="notification-actions">
-                            <form method="post" action="contact_messages.php">
+                            <form method="post" action="notifications_actions.php">
                                 <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($headerCsrfToken); ?>">
                                 <input type="hidden" name="action" value="mark_all_read">
                                 <button type="submit" class="btn btn-light">Mark all read</button>
                             </form>
-                            <form method="post" action="contact_messages.php" onsubmit="return confirm('Clear all unread notifications from the bell?');">
+                            <form method="post" action="notifications_actions.php" onsubmit="return confirm('Clear all unread notifications from the bell?');">
                                 <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($headerCsrfToken); ?>">
                                 <input type="hidden" name="action" value="clear_notifications">
                                 <button type="submit" class="btn btn-outline-danger">Clear all</button>
                             </form>
                         </div>
                         <?php endif; ?>
-                        <a href="contact_messages.php" class="notification-open-link">Open Contact Messages</a>
+                        <div class="d-flex flex-column gap-2">
+                            <a href="contact_messages.php" class="notification-open-link">Open Contact Messages</a>
+                            <a href="quote_requests.php" class="notification-open-link">Open Quote Requests</a>
+                        </div>
                     </div>
                 </div>
             </div>

@@ -2,9 +2,11 @@
 require_once '../config/config.php';
 require_once '../classes/Mailer.php';
 require_once '../classes/Functions.php';
+require_once '../classes/QuoteRequest.php';
 
 $db = Database::getInstance();
 $functions = Functions::getInstance();
+$quoteRequests = new QuoteRequest();
 $quoteSuccess = isset($_GET['quote_sent']);
 $quoteError = '';
 
@@ -142,12 +144,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['quote_submit'])) {
     } else {
         try {
             $attachments = saveQuoteAttachments($_FILES['attachments'] ?? []);
+            $quoteData['attachments'] = $attachments;
+            $quoteData['ip_address'] = $_SERVER['REMOTE_ADDR'] ?? null;
+            $quoteData['user_agent'] = $_SERVER['HTTP_USER_AGENT'] ?? null;
             $message = buildQuoteMessage($quoteData, $attachments);
             $subject = 'Quote Request: ' . $quoteData['project_type'] . ' - ' . $quoteData['first_name'] . ' ' . $quoteData['last_name'];
             $companyEmail = $functions->getSetting('company_email', 'info@tpvconstruction.com.ng');
             if (!$companyEmail || strpos($companyEmail, 'ironbridge') !== false) {
                 $companyEmail = 'info@tpvconstruction.com.ng';
             }
+
+            $quoteRequestId = $quoteRequests->create($quoteData);
 
             $db->query(
                 "INSERT INTO communications (uuid, direction, type, subject, content, communication_date, attachments, created_at, updated_at)
@@ -156,7 +163,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['quote_submit'])) {
                     'uuid' => $functions->generateUUID(),
                     'subject' => $subject,
                     'content' => $message,
-                    'attachments' => json_encode($attachments)
+                    'attachments' => json_encode([
+                        'quote_request_id' => $quoteRequestId,
+                        'files' => $attachments
+                    ])
                 ]
             );
 
@@ -342,29 +352,36 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['quote_submit'])) {
         .tpv-breadcrumb li { color: #64748b; font-size: 13px; }
         .tpv-breadcrumb a { color: #94a3b8; text-decoration: none; }
         .tpv-breadcrumb a:hover { color: #E5363D; }
+        @media(max-width:768px){
+            .tpv-quote-hero { padding: 74px 16px 46px; }
+            .tpv-hero-stats { gap: 24px; margin-top: 24px; padding-top: 24px; }
+            .tpv-hero-stat-num { font-size: 1.7rem; }
+            .tpv-quote-hero p { font-size: 1rem; }
+        }
 
         /* ── Layout ── */
         .tpv-quote-wrap {
-            max-width: 1220px;
+            max-width: 1180px;
             margin: 0 auto;
-            padding: 56px 24px 80px;
+            padding: 40px 20px 72px;
             display: grid;
-            grid-template-columns: 1fr 350px;
-            gap: 36px;
+            grid-template-columns: minmax(0, 1fr) 320px;
+            gap: 28px;
             align-items: start;
         }
-        @media(max-width:1060px){ .tpv-quote-wrap{ grid-template-columns:1fr; } }
+        @media(max-width:1120px){ .tpv-quote-wrap{ grid-template-columns:1fr; } }
+        @media(max-width:640px){ .tpv-quote-wrap{ padding:28px 14px 56px; gap:20px; } }
 
         /* ── Form Card ── */
         .tpv-form-card {
             background: #ffffff;
             border-radius: 28px;
-            padding: 44px 40px;
+            padding: 38px 32px;
             box-shadow: 0 20px 60px -20px rgba(0,0,0,0.08), 0 0 0 1px rgba(0,0,0,0.04);
         }
-        @media(max-width:600px){ .tpv-form-card{ padding:26px 18px; } }
+        @media(max-width:600px){ .tpv-form-card{ padding:24px 16px; border-radius:22px; } }
         .tpv-form-card h2 { font-size: 1.5rem; font-weight: 800; color: #0f172a; margin-bottom: 6px; letter-spacing: -0.5px; }
-        .tpv-form-card > p { font-size: 14px; color: #64748b; margin-bottom: 32px; line-height: 1.6; }
+        .tpv-form-card > p { font-size: 14px; color: #64748b; margin-bottom: 28px; line-height: 1.6; }
 
         .tpv-divider {
             font-size: 11px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase;
@@ -374,7 +391,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['quote_submit'])) {
         .tpv-divider::after { content: ''; flex: 1; height: 1px; background: linear-gradient(90deg,#fde8e9,transparent); }
 
         .tpv-row { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
-        @media(max-width:580px){ .tpv-row{ grid-template-columns:1fr; } }
+        @media(max-width:640px){ .tpv-row{ grid-template-columns:1fr; gap: 0 14px; } }
         .tpv-fg { margin-bottom: 20px; }
         .tpv-label {
             display: block; font-size: 13px; font-weight: 600; color: #374151; margin-bottom: 7px;
@@ -387,6 +404,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['quote_submit'])) {
             transition: all 0.25s ease; outline: none; appearance: none;
             box-sizing: border-box;
         }
+        @media(max-width:640px){ .tpv-input{ border-radius: 11px; padding: 11px 14px; } }
         .tpv-input:focus { background: #fff; border-color: #E5363D; box-shadow: 0 0 0 4px rgba(229,54,61,0.08); }
         .tpv-input::placeholder { color: #94a3b8; }
         textarea.tpv-input { min-height: 130px; resize: vertical; line-height: 1.6; }
@@ -397,8 +415,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['quote_submit'])) {
 
         /* Service grid */
         .tpv-svc-grid {
-            display: grid; grid-template-columns: repeat(auto-fill,minmax(155px,1fr)); gap: 10px; margin-bottom: 4px;
+            display: grid; grid-template-columns: repeat(auto-fill,minmax(135px,1fr)); gap: 10px; margin-bottom: 4px;
         }
+        @media(max-width:640px){ .tpv-svc-grid{ grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; } }
+        @media(max-width:420px){ .tpv-svc-grid{ grid-template-columns: 1fr; } }
         .tpv-svc-cb { display: none; }
         .tpv-svc-lbl {
             display: flex; flex-direction: column; align-items: center; justify-content: center;
@@ -407,6 +427,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['quote_submit'])) {
             cursor: pointer; font-size: 12px; font-weight: 600; color: #374151;
             min-height: 82px; transition: all 0.22s ease;
         }
+        @media(max-width:640px){ .tpv-svc-lbl{ min-height: 94px; font-size: 11px; padding: 12px 9px; } }
         .tpv-svc-lbl .ico { font-size: 22px; line-height: 1; }
         .tpv-svc-cb:checked + .tpv-svc-lbl { border-color: #E5363D; background: #fff5f5; color: #E5363D; box-shadow: 0 4px 14px rgba(229,54,61,0.15); }
         .tpv-svc-lbl:hover { border-color: #fca5a5; background: #fff8f8; }
@@ -479,14 +500,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['quote_submit'])) {
         }
 
         /* ── Sidebar ── */
-        .tpv-sidebar { display: flex; flex-direction: column; gap: 22px; }
-        @media(max-width:1060px){ .tpv-sidebar{ display: grid; grid-template-columns: 1fr 1fr; } }
-        @media(max-width:580px){ .tpv-sidebar{ grid-template-columns:1fr; } }
+        .tpv-sidebar { display: flex; flex-direction: column; gap: 18px; }
+        @media(max-width:1120px){ .tpv-sidebar{ display: grid; grid-template-columns: 1fr; } }
 
         .tpv-card {
-            background: #fff; border-radius: 22px; padding: 26px 24px;
+            background: #fff; border-radius: 22px; padding: 24px 22px;
             box-shadow: 0 8px 30px -10px rgba(0,0,0,0.08), 0 0 0 1px rgba(0,0,0,0.04);
         }
+        @media(max-width:640px){ .tpv-card{ padding: 20px 18px; border-radius: 18px; } }
         .tpv-card-title {
             font-size: 15px; font-weight: 800; color: #0f172a; margin-bottom: 16px;
             display: flex; align-items: center; gap: 10px;
@@ -512,7 +533,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['quote_submit'])) {
 
         .tpv-contact-card {
             background: linear-gradient(135deg, #E5363D 0%, #b91c1c 100%);
-            border-radius: 18px; padding: 22px 20px; color: #fff;
+            border-radius: 18px; padding: 20px 18px; color: #fff;
         }
         .tpv-contact-card h4 { font-size: 15px; font-weight: 800; margin-bottom: 14px; }
         .tpv-contact-item { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; font-size: 13px; }

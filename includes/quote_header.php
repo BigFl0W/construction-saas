@@ -26,11 +26,11 @@ $isQuote = strpos($uri, '/quote') !== false ? 'is-active' : '';
     .tpv-site-header__inner {
         max-width: 1220px;
         margin: 0 auto;
-        padding: 16px 24px;
+        padding: 12px 24px;
         display: grid;
         grid-template-columns: auto 1fr auto;
         align-items: center;
-        gap: 24px;
+        gap: 18px;
     }
 
     .tpv-site-header__brand {
@@ -41,7 +41,9 @@ $isQuote = strpos($uri, '/quote') !== false ? 'is-active' : '';
     }
 
     .tpv-site-header__brand img {
-        width: 136px;
+        width: auto;
+        max-width: 104px;
+        max-height: 72px;
         height: auto;
         display: block;
     }
@@ -55,7 +57,7 @@ $isQuote = strpos($uri, '/quote') !== false ? 'is-active' : '';
         display: flex;
         align-items: center;
         justify-content: center;
-        gap: 10px;
+        gap: 6px;
         list-style: none;
         margin: 0;
         padding: 0;
@@ -66,11 +68,11 @@ $isQuote = strpos($uri, '/quote') !== false ? 'is-active' : '';
         display: inline-flex;
         align-items: center;
         justify-content: center;
-        padding: 10px 16px;
+        padding: 9px 14px;
         border-radius: 999px;
         text-decoration: none;
         color: #1e293b;
-        font-size: 15px;
+        font-size: 14px;
         font-weight: 600;
         transition: background-color 0.2s ease, color 0.2s ease, transform 0.2s ease;
     }
@@ -92,13 +94,13 @@ $isQuote = strpos($uri, '/quote') !== false ? 'is-active' : '';
         display: inline-flex;
         align-items: center;
         justify-content: center;
-        min-width: 180px;
-        padding: 13px 22px;
+        min-width: 156px;
+        padding: 11px 18px;
         border-radius: 999px;
         background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
         color: #ffffff;
         text-decoration: none;
-        font-size: 14px;
+        font-size: 13px;
         font-weight: 700;
         letter-spacing: 0.01em;
         box-shadow: 0 18px 30px -20px rgba(220, 38, 38, 0.75);
@@ -150,6 +152,7 @@ $isQuote = strpos($uri, '/quote') !== false ? 'is-active' : '';
         .tpv-site-header__inner {
             grid-template-columns: auto auto;
             justify-content: space-between;
+            padding: 12px 18px;
         }
 
         .tpv-site-header__menu-button {
@@ -197,7 +200,7 @@ $isQuote = strpos($uri, '/quote') !== false ? 'is-active' : '';
         .tpv-site-header__nav-link {
             justify-content: flex-start;
             border-radius: 16px;
-            padding: 13px 16px;
+            padding: 12px 15px;
             background: #f8fafc;
         }
 
@@ -214,12 +217,19 @@ $isQuote = strpos($uri, '/quote') !== false ? 'is-active' : '';
 
     @media (max-width: 680px) {
         .tpv-site-header__inner {
-            padding: 14px 16px;
-            gap: 16px;
+            padding: 10px 14px;
+            gap: 12px;
         }
 
         .tpv-site-header__brand img {
-            width: 108px;
+            max-width: 82px;
+            max-height: 56px;
+        }
+
+        .tpv-site-header__menu-button {
+            width: 42px;
+            height: 42px;
+            border-radius: 12px;
         }
     }
 </style>
