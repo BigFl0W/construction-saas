@@ -703,7 +703,7 @@ try {
         body {
             font-family: 'Outfit', sans-serif !important;
             background-color: #f4f7fb !important;
-            font-size: 0.95rem;
+            font-size: 0.875rem;
         }
 
         /* Sidebar Enchancements */
@@ -712,7 +712,7 @@ try {
             border-right: 1px solid rgba(255,255,255,0.05);
         }
         .menu-items > li > a {
-            font-size: 0.9rem !important;
+            font-size: 0.84rem !important;
             font-weight: 500;
         }
         .menu-items > li > a:hover, .menu-items > li.active > a, .menu-items > li.open > a {
@@ -742,11 +742,11 @@ try {
         }
         .card-title {
             font-weight: 700 !important;
-            font-size: 1.15rem !important;
+            font-size: 1rem !important;
             color: #0f172a !important;
         }
         .card-body {
-            padding: 24px !important;
+            padding: 20px !important;
         }
 
         /* Modern Tables */
@@ -774,8 +774,8 @@ try {
         .table tbody td {
             background: #f8fafc !important;
             border: none !important;
-            padding: 16px !important;
-            font-size: 0.95rem !important;
+            padding: 14px !important;
+            font-size: 0.86rem !important;
             font-weight: 500 !important;
             color: #334155 !important;
             vertical-align: middle !important;
@@ -791,10 +791,11 @@ try {
         .btn {
             border-radius: 8px !important;
             font-weight: 600 !important;
-            padding: 0.55rem 1.2rem !important;
+            padding: 0.48rem 1rem !important;
+            font-size: 0.8rem !important;
             transition: all 0.2s ease !important;
         }
-        .btn-sm { padding: 0.4rem 0.8rem !important; font-size: 0.85rem !important; }
+        .btn-sm { padding: 0.34rem 0.72rem !important; font-size: 0.76rem !important; }
         .btn-primary {
             background: var(--accent) !important;
             border: none !important;
@@ -828,8 +829,8 @@ try {
         .form-control, .form-select, .select2-selection {
             border-radius: 10px !important;
             border: 1px solid #cbd5e1 !important;
-            padding: 0.75rem 1rem !important;
-            font-size: 0.95rem !important;
+            padding: 0.62rem 0.9rem !important;
+            font-size: 0.86rem !important;
         }
         .form-control:focus, .form-select:focus {
             border-color: var(--accent) !important;
@@ -839,10 +840,10 @@ try {
 
         /* Page Headers */
         .breadcrumb {
-            font-size: 0.85rem !important;
+            font-size: 0.78rem !important;
             font-weight: 500 !important;
             background: #e2e8f0;
-            padding: 8px 16px;
+            padding: 7px 14px;
             border-radius: 20px;
             display: inline-flex;
         }
@@ -858,20 +859,29 @@ try {
 
         /* Responsive Flow Enforcements */
         @media (max-width: 991px) {
+            body { font-size: 0.84rem; }
             .card-header {
                 flex-direction: column !important;
                 align-items: flex-start !important;
                 gap: 12px;
             }
             .card-header > div { width: 100%; display: flex; justify-content: flex-end; }
+            .page-sidebar { width: min(82vw, 300px); }
         }
 
         @media (max-width: 768px) {
             .page-content-wrapper { padding: 12px 8px !important; }
             .card { margin-bottom: 16px !important; border-radius: 12px !important; }
-            .card-body { padding: 16px !important; }
-            .table tbody td { padding: 12px !important; font-size: 0.85rem !important; }
-            .btn { padding: 0.5rem 1rem !important; font-size: 0.85rem !important; }
+            .card-header { padding: 14px 16px !important; }
+            .card-title { font-size: 0.94rem !important; }
+            .card-body { padding: 14px !important; }
+            .table tbody td { padding: 10px !important; font-size: 0.8rem !important; }
+            .btn { padding: 0.44rem 0.88rem !important; font-size: 0.78rem !important; }
+            .btn-sm { padding: 0.32rem 0.66rem !important; font-size: 0.72rem !important; }
+            .form-control, .form-select, .select2-selection {
+                padding: 0.56rem 0.8rem !important;
+                font-size: 0.82rem !important;
+            }
             
             /* Responsive table scaling ensures no hidden cells */
             .table-responsive-wrapper {
@@ -884,6 +894,30 @@ try {
             
             /* Top Navigation Tweak for mobile */
             .breadcrumb { width: 100%; white-space: nowrap; overflow-x: auto; font-size: 0.75rem !important; }
+        }
+
+        @media (max-width: 575.98px) {
+            .header {
+                height: 56px;
+                padding: 0 8px;
+            }
+            .header .brand img,
+            .header .brand {
+                max-height: 32px !important;
+                max-width: 92px !important;
+            }
+            .notification-bell {
+                width: 36px;
+                height: 36px;
+                border-radius: 10px;
+            }
+            .notification-dropdown {
+                width: min(92vw, 360px);
+            }
+            .breadcrumb {
+                padding: 6px 12px;
+                font-size: 0.72rem !important;
+            }
         }
 
         /* Specific Blog Professional View Styles */

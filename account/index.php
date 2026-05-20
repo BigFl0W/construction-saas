@@ -186,10 +186,10 @@ body {
 /* Hero Section */
 .dash-hero {
     background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
-    border-radius: 20px;
-    padding: 30px;
+    border-radius: 18px;
+    padding: 24px 26px;
     color: white;
-    margin-bottom: 24px;
+    margin-bottom: 20px;
     box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
     position: relative;
     overflow: hidden;
@@ -212,21 +212,21 @@ body {
 .dash-hero h2 {
     font-weight: 700;
     margin-bottom: 6px;
-    font-size: 1.8rem;
+    font-size: 1.55rem;
     letter-spacing: -0.5px;
 }
 
 .dash-hero p {
     color: #cbd5e1;
-    font-weight: 300;
-    font-size: 1.05rem;
+    font-weight: 400;
+    font-size: 0.96rem;
 }
 
 /* Modern Metric Tiles */
 .modern-metric {
     background: #ffffff;
-    border-radius: 16px;
-    padding: 24px;
+    border-radius: 14px;
+    padding: 18px 20px;
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -235,7 +235,7 @@ body {
     border: 1px solid rgba(226, 232, 240, 0.6);
     position: relative;
     overflow: hidden;
-    margin-bottom: 20px;
+    margin-bottom: 16px;
 }
 
 .modern-metric:hover {
@@ -260,13 +260,13 @@ body {
 }
 
 .mm-icon {
-    width: 56px;
-    height: 56px;
-    border-radius: 12px;
+    width: 48px;
+    height: 48px;
+    border-radius: 11px;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 24px;
+    font-size: 20px;
 }
 
 .mm-icon.blue { background: rgba(59, 130, 246, 0.1); color: #3b82f6; }
@@ -279,7 +279,7 @@ body {
 }
 
 .mm-value {
-    font-size: 1.85rem;
+    font-size: 1.65rem;
     font-weight: 700;
     color: #0f172a;
     line-height: 1.2;
@@ -287,7 +287,7 @@ body {
 }
 
 .mm-label {
-    font-size: 0.85rem;
+    font-size: 0.77rem;
     color: #64748b;
     font-weight: 500;
     text-transform: uppercase;
@@ -297,12 +297,12 @@ body {
 /* Modern Cards */
 .modern-card {
     background: #ffffff;
-    border-radius: 16px;
+    border-radius: 14px;
     border: 1px solid rgba(226, 232, 240, 0.8);
     box-shadow: 0 4px 6px -1px rgba(0,0,0,0.02);
-    margin-bottom: 24px;
+    margin-bottom: 20px;
     transition: box-shadow 0.2s ease;
-    height: calc(100% - 24px);
+    height: calc(100% - 20px);
 }
 
 .modern-card:hover {
@@ -310,7 +310,7 @@ body {
 }
 
 .modern-card-header {
-    padding: 20px 24px;
+    padding: 16px 18px;
     border-bottom: 1px solid rgba(226, 232, 240, 0.8);
     display: flex;
     align-items: center;
@@ -319,7 +319,7 @@ body {
 
 .modern-card-title {
     font-weight: 600;
-    font-size: 1.1rem;
+    font-size: 0.98rem;
     color: #0f172a;
     margin: 0;
     display: flex;
@@ -328,7 +328,7 @@ body {
 }
 
 .modern-card-body {
-    padding: 24px;
+    padding: 18px;
 }
 
 /* Beautiful Lists & Tables */
@@ -342,7 +342,7 @@ body {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 12px 0;
+    padding: 10px 0;
     border-bottom: 1px dashed #e2e8f0;
 }
 
@@ -365,14 +365,14 @@ body {
     font-size: 0.75rem;
     text-transform: uppercase;
     letter-spacing: 0.5px;
-    padding: 8px 16px;
+    padding: 8px 12px;
 }
 
 .modern-table td {
     background: #f8fafc;
     border: none;
-    padding: 14px 16px;
-    font-size: 0.9rem;
+    padding: 12px 12px;
+    font-size: 0.84rem;
     font-weight: 500;
     color: #334155;
     transition: background 0.2s;
@@ -389,7 +389,7 @@ body {
 .chart-container {
     background: #f8fafc;
     border-radius: 12px;
-    padding: 24px;
+    padding: 18px;
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -426,9 +426,9 @@ body {
 
 /* Badges */
 .badge-modern {
-    padding: 6px 12px;
+    padding: 5px 10px;
     border-radius: 20px;
-    font-size: 0.75rem;
+    font-size: 0.7rem;
     font-weight: 600;
     display: inline-flex;
     align-items: center;
@@ -441,20 +441,120 @@ body {
 
 /* Layout refinements */
 .dashboard-container {
-    padding: 24px;
-    max-width: 1400px;
+    padding: 20px;
+    max-width: 1320px;
     margin: 0 auto;
 }
 
-@media (max-width: 768px) {
+@media (max-width: 1199px) {
+    .dash-hero h2 {
+        font-size: 1.42rem;
+    }
+    .mm-value {
+        font-size: 1.45rem;
+    }
+}
+
+@media (max-width: 991px) {
     .dashboard-container {
         padding: 16px;
     }
     .dash-hero {
         padding: 20px;
+        border-radius: 16px;
     }
     .dash-hero h2 {
-        font-size: 1.4rem;
+        font-size: 1.28rem;
+    }
+    .dash-hero p {
+        font-size: 0.88rem;
+    }
+    .modern-metric {
+        padding: 16px;
+    }
+    .mm-icon {
+        width: 42px;
+        height: 42px;
+        font-size: 18px;
+    }
+    .mm-value {
+        font-size: 1.3rem;
+    }
+    .mm-label {
+        font-size: 0.71rem;
+    }
+}
+
+@media (max-width: 768px) {
+    .dashboard-container {
+        padding: 12px;
+    }
+    .dash-hero {
+        padding: 16px 16px 18px;
+        margin-bottom: 16px;
+    }
+    .dash-hero h2 {
+        font-size: 1.12rem;
+        line-height: 1.3;
+    }
+    .dash-hero p {
+        font-size: 0.82rem;
+        margin-bottom: 0;
+    }
+    .modern-card-header {
+        padding: 14px 14px;
+    }
+    .modern-card-title {
+        font-size: 0.9rem;
+    }
+    .modern-card-body {
+        padding: 14px;
+    }
+    .modern-table td,
+    .modern-table th {
+        font-size: 0.78rem;
+    }
+    .badge-modern {
+        font-size: 0.66rem;
+    }
+}
+
+@media (max-width: 575px) {
+    .dashboard-container {
+        padding: 10px;
+    }
+    .dash-hero {
+        border-radius: 14px;
+        padding: 14px;
+    }
+    .dash-hero h2 {
+        font-size: 1rem;
+    }
+    .dash-hero p {
+        font-size: 0.78rem;
+    }
+    .modern-metric {
+        padding: 14px;
+        border-radius: 12px;
+    }
+    .mm-content {
+        text-align: left;
+    }
+    .mm-value {
+        font-size: 1.18rem;
+    }
+    .mm-label {
+        font-size: 0.67rem;
+    }
+    .modern-card {
+        border-radius: 12px;
+        margin-bottom: 16px;
+        height: auto;
+    }
+    .modern-card-header,
+    .modern-card-body {
+        padding-left: 12px;
+        padding-right: 12px;
     }
     .modern-table {
         display: block;
