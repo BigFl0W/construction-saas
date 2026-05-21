@@ -1,10 +1,79 @@
+<?php
+require_once '../../config/config.php';
+require_once '../../classes/Settings.php';
+
+$settings = new Settings();
+
+$serviceTitle = $settings->get('service_bc_page_title', 'Building Construction');
+$serviceOverviewTitle = $settings->get('service_bc_overview_title', 'Building Construction');
+$serviceOverviewBody = $settings->get('service_bc_overview_body', 'Simple actions make a difference. It starts and ends with each employee striving to work safer every single day so they can return.');
+$serviceHighlight2Title = $settings->get('service_bc_highlight_2_title', 'Contractor Service');
+$serviceHighlight2Body = $settings->get('service_bc_highlight_2_body', 'Simple actions make a difference. It starts and ends with each employee striving to work safer every single day so they can return.');
+$serviceHighlight3Title = $settings->get('service_bc_highlight_3_title', 'Onsite Supervision');
+$serviceHighlight3Body = $settings->get('service_bc_highlight_3_body', 'Simple actions make a difference. It starts and ends with each employee striving to work safer every single day so they can return.');
+$serviceContentBody = $settings->get('service_bc_content_body', "There are many variations of passages of Lorem Ipsum available, but the majority have suffered alteration in some form, by injected humour, or randomised words which don't look even slightly believable. If you are going to use a passage of Lorem Ipsum, you need t.variations of passages of Lorem Ipsum available, but the majority have suffered alteration in some form, by injected humour, or randomised words which don't look even slightly believable. If you are going");
+$serviceFeature1 = $settings->get('service_bc_feature_1', '100 Satisfaction Guarantee');
+$serviceFeature2 = $settings->get('service_bc_feature_2', 'Export And Profession Enginers');
+$serviceFeature3 = $settings->get('service_bc_feature_3', 'We Are Award Winning Company');
+$serviceFeature4 = $settings->get('service_bc_feature_4', 'Full Satisfaction Guarantee');
+$serviceFeature5 = $settings->get('service_bc_feature_5', 'Professional Qualified');
+$serviceSustainableTitle = $settings->get('service_bc_sustainable_title', 'The future of sustainable building practices');
+$serviceSustainableBody1 = $settings->get('service_bc_sustainable_body_1', "There are many variations of passages of Lorem Ipsum available, but the majority have suffered alteration in some form, by injected humour, or randomised words which don't look even slightly believable. If you are going to use a passage.");
+$serviceSustainableBody2 = $settings->get('service_bc_sustainable_body_2', "of Lorem Ipsum, you need t.variations of passages of Lorem Ipsum available, but the majority have suffered alteration in some form, by injected humour, or randomised words which don't look even slightly believable. If you are going");
+$serviceProcessEyebrow = $settings->get('service_bc_process_eyebrow', 'Better process');
+$serviceProcessTitle = $settings->get('service_bc_process_title', 'The process of working with us');
+$serviceProcessBody = $settings->get('service_bc_process_body', 'We specialize in a wide range of construction services, including residential, commercial, and industrial projects. From initial design to final inspection, we work closely with our clients to understand their unique needs and vision.');
+$serviceStep1Title = $settings->get('service_bc_step_1_title', 'Leave A Request');
+$serviceStep1Body = $settings->get('service_bc_step_1_body', 'Simple actions make a difference. It starts and ends with each employee striving to work safer every single day so they can return.');
+$serviceStep2Title = $settings->get('service_bc_step_2_title', 'Cost Calculation');
+$serviceStep2Body = $settings->get('service_bc_step_2_body', 'Simple actions make a difference. It starts and ends with each employee striving to work safer every single day so they can return.');
+$serviceStep3Title = $settings->get('service_bc_step_3_title', 'Signing Of A Contract');
+$serviceStep3Body = $settings->get('service_bc_step_3_body', 'Simple actions make a difference. It starts and ends with each employee striving to work safer every single day so they can return.');
+$serviceCtaTitle = $settings->get('service_bc_cta_title', "Let's bulid something great together!");
+$serviceCtaBody = $settings->get('service_bc_cta_body', "Don't wait any longer to bring your construction dreams to life. Partner with TPV Construction and Services LTD and experience unparalleled service and quality.");
+$serviceCtaButtonText = $settings->get('service_bc_cta_button_text', 'Get Free Quote');
+$serviceCtaButtonLink = trim((string) $settings->get('service_bc_cta_button_link', 'contact-us/'));
+$serviceSupportTitle = $settings->get('service_bc_support_title', 'You Still Have A Question');
+$serviceSupportBody = $settings->get('service_bc_support_body', 'if you cannot find answer to your question our FAQ, you can alwas contact us. web will answer you shortly!');
+$servicePhoneLabel = $settings->get('service_bc_phone_label', 'Call Support Center 24/7');
+$serviceEmailLabel = $settings->get('service_bc_email_label', 'Write To Us');
+$serviceContactEyebrow = $settings->get('service_bc_contact_eyebrow', 'Contact us');
+$serviceContactTitle = $settings->get('service_bc_contact_title', 'Get in touch with us');
+
+$serviceGallery1 = $settings->get('service_bc_gallery_1', 'wp-content/uploads/2024/06/service-img-1.jpg');
+$serviceGallery2 = $settings->get('service_bc_gallery_2', 'wp-content/uploads/2024/06/service-img-2.jpg');
+$serviceGallery3 = $settings->get('service_bc_gallery_3', 'wp-content/uploads/2024/06/service-img-3.png');
+$serviceGallery4 = $settings->get('service_bc_gallery_4', 'wp-content/uploads/2024/06/service-img-4.png');
+$serviceGallery5 = $settings->get('service_bc_gallery_5', 'wp-content/uploads/2024/06/service-img-5.jpg');
+$serviceGallery6 = $settings->get('service_bc_gallery_6', 'wp-content/uploads/2024/06/service-img-6.jpg');
+$serviceSustainableImage1 = $settings->get('service_bc_sustainable_image_1', 'wp-content/uploads/2024/06/company-history-img.jpg');
+$serviceSustainableImage2 = $settings->get('service_bc_sustainable_image_2', 'wp-content/uploads/2024/06/service-suitabilities-img-2.jpg');
+$serviceCtaImage = $settings->get('service_bc_cta_image', 'wp-content/uploads/2024/06/cta-box-img.png');
+$serviceContactImage = $settings->get('service_bc_contact_image', 'wp-content/uploads/2024/06/contact-info-img.png');
+
+$companyPhone = trim((string) $settings->get('company_phone', '+234 701 234 5678'));
+$companyEmail = trim((string) $settings->get('company_email', 'info@tpvconstruction.com.ng'));
+$supportPhone = $companyPhone !== '' ? $companyPhone : '+234 701 234 5678';
+$supportEmail = $companyEmail !== '' ? $companyEmail : 'info@tpvconstruction.com.ng';
+$supportPhoneHref = 'tel:' . preg_replace('/[^0-9+]/', '', $supportPhone);
+$supportEmailHref = 'mailto:' . $supportEmail;
+
+$serviceCtaHref = '../../contact-us/';
+if ($serviceCtaButtonLink !== '') {
+    if (preg_match('#^(https?:)?//#i', $serviceCtaButtonLink) || str_starts_with($serviceCtaButtonLink, '/')) {
+        $serviceCtaHref = $serviceCtaButtonLink;
+    } else {
+        $serviceCtaHref = '../../' . ltrim($serviceCtaButtonLink, '/');
+    }
+}
+?>
 <!DOCTYPE html>
 <html lang="en-US">
 
 <head>
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<title>Building Construction &#8211; TPV Construction and Services LTD</title>
+	<title><?php echo htmlspecialchars($serviceTitle); ?> &#8211; TPV Construction and Services LTD</title>
 	<meta name='robots' content='max-image-preview:large'>
 	<link rel='dns-prefetch' href='//fonts.googleapis.com'>
 	<link rel="alternate" type="application/rss+xml" title="TPV Construction and Services LTD &raquo; Feed" href="../../feed/">
@@ -461,6 +530,13 @@
 		Skip to content </a>
 
 
+	<div class="tpv-service-shared-header"><?php include '../../includes/header.php'; ?></div>
+	<style>
+		.tpv-service-shared-header ~ .ekit-template-content-header,
+		.tpv-service-shared-footer ~ .ekit-template-content-footer {
+			display: none !important;
+		}
+	</style>
 	<div class="ekit-template-content-markup ekit-template-content-header ekit-template-content-theme-support">
 		<div data-elementor-type="wp-post" data-elementor-id="225" class="elementor elementor-225">
 			<div class="elementor-element elementor-element-3c0e001 e-con-full e-flex e-con e-parent" data-id="3c0e001" data-element_type="container" data-e-type="container">
@@ -555,14 +631,14 @@
 					<div class="e-con-inner">
 						<div class="elementor-element elementor-element-a4aee21 at-heading-animation at-animation-heading-style-3 elementor-widget elementor-widget-heading" data-id="a4aee21" data-element_type="widget" data-e-type="widget" data-settings="{&quot;ekit_we_effect_on&quot;:&quot;none&quot;}" data-widget_type="heading.default">
 							<div class="elementor-widget-container">
-								<h1 class="elementor-heading-title elementor-size-default">Building Construction</h1>
+								<h1 class="elementor-heading-title elementor-size-default"><?php echo htmlspecialchars($serviceTitle); ?></h1>
 							</div>
 						</div>
 						<div class="elementor-element elementor-element-ee2e9fe elementor-invisible elementor-widget elementor-widget-elementskit-breadcrumb" data-id="ee2e9fe" data-element_type="widget" data-e-type="widget" data-settings="{&quot;_animation_mobile&quot;:&quot;fadeInUp&quot;,&quot;_animation&quot;:&quot;fadeInUp&quot;,&quot;ekit_we_effect_on&quot;:&quot;none&quot;}" data-widget_type="elementskit-breadcrumb.default">
 							<div class="elementor-widget-container">
 								<div class="ekit-wid-con">
 									<ol class="ekit-breadcrumb">
-										<li class="ekit_breadcrumbs_start"><a href="https://tpvconstrcution.com.ng/">Home</a></li>
+										<li class="ekit_breadcrumbs_start"><a href="<?php echo htmlspecialchars(SITE_URL); ?>">Home</a></li>
 										<li class="brd_sep"><span class="separate_icon"><svg xmlns="http://www.w3.org/2000/svg" width="7" height="12" viewbox="0 0 7 12">
 													<path d="M0.283883 11.68L4.95988 0.129999H6.70988L2.03388 11.68H0.283883Z" fill="white"></path>
 												</svg></span></li>
@@ -570,7 +646,7 @@
 										<li class="brd_sep"><span class="separate_icon"><svg xmlns="http://www.w3.org/2000/svg" width="7" height="12" viewbox="0 0 7 12">
 													<path d="M0.283883 11.68L4.95988 0.129999H6.70988L2.03388 11.68H0.283883Z" fill="white"></path>
 												</svg></span></li>
-										<li>Building Construction</li>
+										<li><?php echo htmlspecialchars($serviceTitle); ?></li>
 									</ol>
 								</div>
 							</div>
@@ -675,7 +751,7 @@
 												<div class="elementor-element elementor-element-729bc45 cta-contact-item ekit-equal-height-disable elementor-widget elementor-widget-elementskit-icon-box" data-id="729bc45" data-element_type="widget" data-e-type="widget" data-settings="{&quot;ekit_we_effect_on&quot;:&quot;none&quot;}" data-widget_type="elementskit-icon-box.default">
 													<div class="elementor-widget-container">
 														<div class="ekit-wid-con"> <!-- link opening -->
-															<a href="mailto:info@tpvconstruction.com.ng" class="ekit_global_links">
+															<a href="<?php echo htmlspecialchars($supportEmailHref); ?>" class="ekit_global_links">
 																<!-- end link opening -->
 
 																<div class="elementskit-infobox text-left text-left icon-lef-right-aligin elementor-animation- media  ">
@@ -688,7 +764,7 @@
 																	</div>
 																	<div class="box-body">
 																		<h3 class="elementskit-info-box-title">
-																			info@tpvconstruction.com.ng </h3>
+																			<?php echo htmlspecialchars($supportEmail); ?> </h3>
 																	</div>
 
 
@@ -744,22 +820,22 @@
 								<div class="elementor-image-carousel-wrapper swiper" role="region" aria-roledescription="carousel" aria-label="Image Carousel" dir="ltr">
 									<div class="elementor-image-carousel swiper-wrapper" aria-live="off">
 										<div class="swiper-slide" role="group" aria-roledescription="slide" aria-label="1 of 6">
-											<figure class="swiper-slide-inner"><img decoding="async" class="swiper-slide-image" src="../../wp-content/uploads/2024/06/service-img-1.jpg" alt="service-img-1"></figure>
+											<figure class="swiper-slide-inner"><img decoding="async" class="swiper-slide-image" src="<?php echo htmlspecialchars(tpv_asset_url($serviceGallery1)); ?>" alt="service-img-1"></figure>
 										</div>
 										<div class="swiper-slide" role="group" aria-roledescription="slide" aria-label="2 of 6">
-											<figure class="swiper-slide-inner"><img decoding="async" class="swiper-slide-image" src="../../wp-content/uploads/2024/06/service-img-2.jpg" alt="service-img-2"></figure>
+											<figure class="swiper-slide-inner"><img decoding="async" class="swiper-slide-image" src="<?php echo htmlspecialchars(tpv_asset_url($serviceGallery2)); ?>" alt="service-img-2"></figure>
 										</div>
 										<div class="swiper-slide" role="group" aria-roledescription="slide" aria-label="3 of 6">
-											<figure class="swiper-slide-inner"><img decoding="async" class="swiper-slide-image" src="../../wp-content/uploads/2024/06/service-img-3.png" alt="service-img-3"></figure>
+											<figure class="swiper-slide-inner"><img decoding="async" class="swiper-slide-image" src="<?php echo htmlspecialchars(tpv_asset_url($serviceGallery3)); ?>" alt="service-img-3"></figure>
 										</div>
 										<div class="swiper-slide" role="group" aria-roledescription="slide" aria-label="4 of 6">
-											<figure class="swiper-slide-inner"><img decoding="async" class="swiper-slide-image" src="../../wp-content/uploads/2024/06/service-img-4.png" alt="service-img-4"></figure>
+											<figure class="swiper-slide-inner"><img decoding="async" class="swiper-slide-image" src="<?php echo htmlspecialchars(tpv_asset_url($serviceGallery4)); ?>" alt="service-img-4"></figure>
 										</div>
 										<div class="swiper-slide" role="group" aria-roledescription="slide" aria-label="5 of 6">
-											<figure class="swiper-slide-inner"><img decoding="async" class="swiper-slide-image" src="../../wp-content/uploads/2024/06/service-img-5.jpg" alt="service-img-5"></figure>
+											<figure class="swiper-slide-inner"><img decoding="async" class="swiper-slide-image" src="<?php echo htmlspecialchars(tpv_asset_url($serviceGallery5)); ?>" alt="service-img-5"></figure>
 										</div>
 										<div class="swiper-slide" role="group" aria-roledescription="slide" aria-label="6 of 6">
-											<figure class="swiper-slide-inner"><img decoding="async" class="swiper-slide-image" src="../../wp-content/uploads/2024/06/service-img-6.jpg" alt="service-img-6"></figure>
+											<figure class="swiper-slide-inner"><img decoding="async" class="swiper-slide-image" src="<?php echo htmlspecialchars(tpv_asset_url($serviceGallery6)); ?>" alt="service-img-6"></figure>
 										</div>
 									</div>
 									<div class="elementor-swiper-button elementor-swiper-button-prev" role="button" tabindex="0">
@@ -780,7 +856,7 @@
 					<div class="elementor-element elementor-element-f16147c e-con-full e-flex e-con e-child" data-id="f16147c" data-element_type="container" data-e-type="container">
 						<div class="elementor-element elementor-element-5d0c6f1 elementor-invisible elementor-widget elementor-widget-text-editor" data-id="5d0c6f1" data-element_type="widget" data-e-type="widget" data-settings="{&quot;_animation&quot;:&quot;fadeInUp&quot;,&quot;ekit_we_effect_on&quot;:&quot;none&quot;}" data-widget_type="text-editor.default">
 							<div class="elementor-widget-container">
-								<p>There are many variations of passages of Lorem Ipsum available, but the majority have suffered alteration in some form, by injected humour, or randomised words which don&#8217;t look even slightly believable. If you are going to use a passage of Lorem Ipsum, you need t.variations of passages of Lorem Ipsum available, but the majority have suffered alteration in some form, by injected humour, or randomised words which don&#8217;t look even slightly believable. If you are going</p>
+								<p><?php echo nl2br(htmlspecialchars($serviceContentBody)); ?></p>
 							</div>
 						</div>
 						<div class="elementor-element elementor-element-98bb2a6 column-2 elementor-align-start elementor-icon-list--layout-traditional elementor-list-item-link-full_width elementor-invisible elementor-widget elementor-widget-icon-list" data-id="98bb2a6" data-element_type="widget" data-e-type="widget" data-settings="{&quot;_animation&quot;:&quot;fadeInUp&quot;,&quot;_animation_delay&quot;:100,&quot;ekit_we_effect_on&quot;:&quot;none&quot;}" data-widget_type="icon-list.default">
@@ -791,35 +867,35 @@
 											<svg aria-hidden="true" class="e-font-icon-svg e-fas-check-circle" viewbox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
 												<path d="M504 256c0 136.967-111.033 248-248 248S8 392.967 8 256 119.033 8 256 8s248 111.033 248 248zM227.314 387.314l184-184c6.248-6.248 6.248-16.379 0-22.627l-22.627-22.627c-6.248-6.249-16.379-6.249-22.628 0L216 308.118l-70.059-70.059c-6.248-6.248-16.379-6.248-22.628 0l-22.627 22.627c-6.248 6.248-6.248 16.379 0 22.627l104 104c6.249 6.249 16.379 6.249 22.628.001z"></path>
 											</svg> </span>
-										<span class="elementor-icon-list-text">100 Satisfaction Guarantee</span>
+										<span class="elementor-icon-list-text"><?php echo htmlspecialchars($serviceFeature1); ?></span>
 									</li>
 									<li class="elementor-icon-list-item">
 										<span class="elementor-icon-list-icon">
 											<svg aria-hidden="true" class="e-font-icon-svg e-fas-check-circle" viewbox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
 												<path d="M504 256c0 136.967-111.033 248-248 248S8 392.967 8 256 119.033 8 256 8s248 111.033 248 248zM227.314 387.314l184-184c6.248-6.248 6.248-16.379 0-22.627l-22.627-22.627c-6.248-6.249-16.379-6.249-22.628 0L216 308.118l-70.059-70.059c-6.248-6.248-16.379-6.248-22.628 0l-22.627 22.627c-6.248 6.248-6.248 16.379 0 22.627l104 104c6.249 6.249 16.379 6.249 22.628.001z"></path>
 											</svg> </span>
-										<span class="elementor-icon-list-text">Export And Profession Enginers</span>
+										<span class="elementor-icon-list-text"><?php echo htmlspecialchars($serviceFeature2); ?></span>
 									</li>
 									<li class="elementor-icon-list-item">
 										<span class="elementor-icon-list-icon">
 											<svg aria-hidden="true" class="e-font-icon-svg e-fas-check-circle" viewbox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
 												<path d="M504 256c0 136.967-111.033 248-248 248S8 392.967 8 256 119.033 8 256 8s248 111.033 248 248zM227.314 387.314l184-184c6.248-6.248 6.248-16.379 0-22.627l-22.627-22.627c-6.248-6.249-16.379-6.249-22.628 0L216 308.118l-70.059-70.059c-6.248-6.248-16.379-6.248-22.628 0l-22.627 22.627c-6.248 6.248-6.248 16.379 0 22.627l104 104c6.249 6.249 16.379 6.249 22.628.001z"></path>
 											</svg> </span>
-										<span class="elementor-icon-list-text">We Are Award Winning Company</span>
+										<span class="elementor-icon-list-text"><?php echo htmlspecialchars($serviceFeature3); ?></span>
 									</li>
 									<li class="elementor-icon-list-item">
 										<span class="elementor-icon-list-icon">
 											<svg aria-hidden="true" class="e-font-icon-svg e-fas-check-circle" viewbox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
 												<path d="M504 256c0 136.967-111.033 248-248 248S8 392.967 8 256 119.033 8 256 8s248 111.033 248 248zM227.314 387.314l184-184c6.248-6.248 6.248-16.379 0-22.627l-22.627-22.627c-6.248-6.249-16.379-6.249-22.628 0L216 308.118l-70.059-70.059c-6.248-6.248-16.379-6.248-22.628 0l-22.627 22.627c-6.248 6.248-6.248 16.379 0 22.627l104 104c6.249 6.249 16.379 6.249 22.628.001z"></path>
 											</svg> </span>
-										<span class="elementor-icon-list-text">Full Satisfaction Guarantee</span>
+										<span class="elementor-icon-list-text"><?php echo htmlspecialchars($serviceFeature4); ?></span>
 									</li>
 									<li class="elementor-icon-list-item">
 										<span class="elementor-icon-list-icon">
 											<svg aria-hidden="true" class="e-font-icon-svg e-fas-check-circle" viewbox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
 												<path d="M504 256c0 136.967-111.033 248-248 248S8 392.967 8 256 119.033 8 256 8s248 111.033 248 248zM227.314 387.314l184-184c6.248-6.248 6.248-16.379 0-22.627l-22.627-22.627c-6.248-6.249-16.379-6.249-22.628 0L216 308.118l-70.059-70.059c-6.248-6.248-16.379-6.248-22.628 0l-22.627 22.627c-6.248 6.248-6.248 16.379 0 22.627l104 104c6.249 6.249 16.379 6.249 22.628.001z"></path>
 											</svg> </span>
-										<span class="elementor-icon-list-text">Professional Qualified</span>
+										<span class="elementor-icon-list-text"><?php echo htmlspecialchars($serviceFeature5); ?></span>
 									</li>
 								</ul>
 							</div>
@@ -828,25 +904,25 @@
 					<div class="elementor-element elementor-element-d3368d7 e-con-full e-flex elementor-invisible e-con e-child" data-id="d3368d7" data-element_type="container" data-e-type="container" data-settings="{&quot;animation&quot;:&quot;fadeInUp&quot;,&quot;animation_delay&quot;:200}">
 						<div class="elementor-element elementor-element-d8ec33f service-sustainable-img image-anime elementor-widget__width-initial at-image-animation at-animation-image-style-1 elementor-widget elementor-widget-image" data-id="d8ec33f" data-element_type="widget" data-e-type="widget" data-settings="{&quot;ekit_we_effect_on&quot;:&quot;none&quot;}" data-widget_type="image.default">
 							<div class="elementor-widget-container">
-								<img fetchpriority="high" decoding="async" width="555" height="468" src="../../wp-content/uploads/2024/06/company-history-img.jpg" class="attachment-full size-full wp-image-1116" alt="">
+								<img fetchpriority="high" decoding="async" width="555" height="468" src="<?php echo htmlspecialchars(tpv_asset_url($serviceSustainableImage1)); ?>" class="attachment-full size-full wp-image-1116" alt="">
 							</div>
 						</div>
 						<div class="elementor-element elementor-element-fd3399e service-sustainable-img image-anime elementor-widget__width-initial at-image-animation at-animation-image-style-1 elementor-widget elementor-widget-image" data-id="fd3399e" data-element_type="widget" data-e-type="widget" data-settings="{&quot;ekit_we_effect_on&quot;:&quot;none&quot;}" data-widget_type="image.default">
 							<div class="elementor-widget-container">
-								<img decoding="async" width="435" height="358" src="../../wp-content/uploads/2024/06/service-suitabilities-img-2.jpg" class="attachment-full size-full wp-image-2738" alt="">
+								<img decoding="async" width="435" height="358" src="<?php echo htmlspecialchars(tpv_asset_url($serviceSustainableImage2)); ?>" class="attachment-full size-full wp-image-2738" alt="">
 							</div>
 						</div>
 					</div>
 					<div class="elementor-element elementor-element-55f7ac4 e-con-full e-flex e-con e-child" data-id="55f7ac4" data-element_type="container" data-e-type="container">
 						<div class="elementor-element elementor-element-2422eff at-heading-animation at-animation-heading-none elementor-invisible elementor-widget elementor-widget-heading" data-id="2422eff" data-element_type="widget" data-e-type="widget" data-settings="{&quot;_animation&quot;:&quot;fadeInUp&quot;,&quot;ekit_we_effect_on&quot;:&quot;none&quot;}" data-widget_type="heading.default">
 							<div class="elementor-widget-container">
-								<h3 class="elementor-heading-title elementor-size-default">The future of sustainable building practices</h3>
+								<h3 class="elementor-heading-title elementor-size-default"><?php echo htmlspecialchars($serviceSustainableTitle); ?></h3>
 							</div>
 						</div>
 						<div class="elementor-element elementor-element-301fd08 elementor-invisible elementor-widget elementor-widget-text-editor" data-id="301fd08" data-element_type="widget" data-e-type="widget" data-settings="{&quot;_animation&quot;:&quot;fadeInUp&quot;,&quot;_animation_delay&quot;:200,&quot;ekit_we_effect_on&quot;:&quot;none&quot;}" data-widget_type="text-editor.default">
 							<div class="elementor-widget-container">
-								<p>There are many variations of passages of Lorem Ipsum available, but the majority have suffered alteration in some form, by injected humour, or randomised words which don&#8217;t look even slightly believable. If you are going to use a passage.</p>
-								<p>of Lorem Ipsum, you need t.variations of passages of Lorem Ipsum available, but the majority have suffered alteration in some form, by injected humour, or randomised words which don&#8217;t look even slightly believable. If you are going</p>
+								<p><?php echo nl2br(htmlspecialchars($serviceSustainableBody1)); ?></p>
+								<p><?php echo nl2br(htmlspecialchars($serviceSustainableBody2)); ?></p>
 							</div>
 						</div>
 					</div>
@@ -872,11 +948,11 @@
 
 										<h3 class="elementor-icon-box-title">
 											<span>
-												Contractor Service </span>
+												<?php echo htmlspecialchars($serviceHighlight2Title); ?> </span>
 										</h3>
 
 										<p class="elementor-icon-box-description">
-											Simple actions make a difference. It starts and ends with each employee striving to work safer every single day so they can return. </p>
+											<?php echo htmlspecialchars($serviceHighlight2Body); ?> </p>
 
 									</div>
 
@@ -900,11 +976,11 @@
 
 										<h3 class="elementor-icon-box-title">
 											<span>
-												Onsite Supervision </span>
+												<?php echo htmlspecialchars($serviceHighlight3Title); ?> </span>
 										</h3>
 
 										<p class="elementor-icon-box-description">
-											Simple actions make a difference. It starts and ends with each employee striving to work safer every single day so they can return. </p>
+											<?php echo htmlspecialchars($serviceHighlight3Body); ?> </p>
 
 									</div>
 
@@ -928,11 +1004,11 @@
 
 										<h3 class="elementor-icon-box-title">
 											<span>
-												Building Construction </span>
+												<?php echo htmlspecialchars($serviceOverviewTitle); ?> </span>
 										</h3>
 
 										<p class="elementor-icon-box-description">
-											Simple actions make a difference. It starts and ends with each employee striving to work safer every single day so they can return. </p>
+											<?php echo htmlspecialchars($serviceOverviewBody); ?> </p>
 
 									</div>
 
@@ -948,17 +1024,17 @@
 				<div class="elementor-element elementor-element-7f03635 e-con-full e-flex e-con e-child" data-id="7f03635" data-element_type="container" data-e-type="container">
 					<div class="elementor-element elementor-element-ba580bc at-heading-animation at-animation-heading-none elementor-invisible elementor-widget elementor-widget-heading" data-id="ba580bc" data-element_type="widget" data-e-type="widget" data-settings="{&quot;_animation&quot;:&quot;fadeInUp&quot;,&quot;ekit_we_effect_on&quot;:&quot;none&quot;}" data-widget_type="heading.default">
 						<div class="elementor-widget-container">
-							<h3 class="elementor-heading-title elementor-size-default">Better process</h3>
+							<h3 class="elementor-heading-title elementor-size-default"><?php echo htmlspecialchars($serviceProcessEyebrow); ?></h3>
 						</div>
 					</div>
 					<div class="elementor-element elementor-element-41fa485 at-heading-animation at-animation-heading-style-3 elementor-widget elementor-widget-heading" data-id="41fa485" data-element_type="widget" data-e-type="widget" data-settings="{&quot;ekit_we_effect_on&quot;:&quot;none&quot;}" data-widget_type="heading.default">
 						<div class="elementor-widget-container">
-							<h2 class="elementor-heading-title elementor-size-default">The process of working with us</h2>
+							<h2 class="elementor-heading-title elementor-size-default"><?php echo htmlspecialchars($serviceProcessTitle); ?></h2>
 						</div>
 					</div>
 					<div class="elementor-element elementor-element-e7d31aa elementor-widget__width-initial elementor-invisible elementor-widget elementor-widget-text-editor" data-id="e7d31aa" data-element_type="widget" data-e-type="widget" data-settings="{&quot;_animation&quot;:&quot;fadeInUp&quot;,&quot;_animation_delay&quot;:100,&quot;ekit_we_effect_on&quot;:&quot;none&quot;}" data-widget_type="text-editor.default">
 						<div class="elementor-widget-container">
-							<p>We specialize in a wide range of construction services, including residential, commercial, and industrial projects. From initial design to final inspection, we work closely with our clients to understand their unique needs and vision.</p>
+							<p><?php echo nl2br(htmlspecialchars($serviceProcessBody)); ?></p>
 						</div>
 					</div>
 				</div>
@@ -973,8 +1049,8 @@
 							<div class="elementor-widget-container">
 								<div class="elementor-image-box-wrapper">
 									<div class="elementor-image-box-content">
-										<h3 class="elementor-image-box-title">Leave A Request</h3>
-										<p class="elementor-image-box-description">Simple actions make a difference. It starts and ends with each employee striving to work safer every single day so they can return.</p>
+										<h3 class="elementor-image-box-title"><?php echo htmlspecialchars($serviceStep1Title); ?></h3>
+										<p class="elementor-image-box-description"><?php echo htmlspecialchars($serviceStep1Body); ?></p>
 									</div>
 								</div>
 							</div>
@@ -990,8 +1066,8 @@
 							<div class="elementor-widget-container">
 								<div class="elementor-image-box-wrapper">
 									<div class="elementor-image-box-content">
-										<h3 class="elementor-image-box-title">Cost Calculation</h3>
-										<p class="elementor-image-box-description">Simple actions make a difference. It starts and ends with each employee striving to work safer every single day so they can return.</p>
+										<h3 class="elementor-image-box-title"><?php echo htmlspecialchars($serviceStep2Title); ?></h3>
+										<p class="elementor-image-box-description"><?php echo htmlspecialchars($serviceStep2Body); ?></p>
 									</div>
 								</div>
 							</div>
@@ -1007,8 +1083,8 @@
 							<div class="elementor-widget-container">
 								<div class="elementor-image-box-wrapper">
 									<div class="elementor-image-box-content">
-										<h3 class="elementor-image-box-title">Signing Of A Contract</h3>
-										<p class="elementor-image-box-description">Simple actions make a difference. It starts and ends with each employee striving to work safer every single day so they can return.</p>
+										<h3 class="elementor-image-box-title"><?php echo htmlspecialchars($serviceStep3Title); ?></h3>
+										<p class="elementor-image-box-description"><?php echo htmlspecialchars($serviceStep3Body); ?></p>
 									</div>
 								</div>
 							</div>
@@ -1022,24 +1098,24 @@
 				<div class="elementor-element elementor-element-108c75e e-con-full e-flex e-con e-child" data-id="108c75e" data-element_type="container" data-e-type="container" data-settings="{&quot;background_background&quot;:&quot;classic&quot;}">
 					<div class="elementor-element elementor-element-1f344b0 at-heading-animation at-animation-heading-style-3 elementor-widget elementor-widget-heading" data-id="1f344b0" data-element_type="widget" data-e-type="widget" data-settings="{&quot;ekit_we_effect_on&quot;:&quot;none&quot;}" data-widget_type="heading.default">
 						<div class="elementor-widget-container">
-							<h2 class="elementor-heading-title elementor-size-default">Let's bulid something great together!</h2>
+							<h2 class="elementor-heading-title elementor-size-default"><?php echo nl2br(htmlspecialchars($serviceCtaTitle)); ?></h2>
 						</div>
 					</div>
 					<div class="elementor-element elementor-element-7c155ee elementor-invisible elementor-widget elementor-widget-text-editor" data-id="7c155ee" data-element_type="widget" data-e-type="widget" data-settings="{&quot;_animation&quot;:&quot;fadeInUp&quot;,&quot;_animation_delay&quot;:100,&quot;ekit_we_effect_on&quot;:&quot;none&quot;}" data-widget_type="text-editor.default">
 						<div class="elementor-widget-container">
-							<p>Don&#8217;t wait any longer to bring your construction dreams to life. Partner with TPV Construction and Services LTD and experience unparalleled service and quality.</p>
+							<p><?php echo nl2br(htmlspecialchars($serviceCtaBody)); ?></p>
 						</div>
 					</div>
 					<div class="elementor-element elementor-element-f3df212 btn-transparent elementor-invisible elementor-widget elementor-widget-button" data-id="f3df212" data-element_type="widget" data-e-type="widget" data-settings="{&quot;_animation&quot;:&quot;fadeInUp&quot;,&quot;_animation_delay&quot;:200,&quot;ekit_we_effect_on&quot;:&quot;none&quot;}" data-widget_type="button.default">
 						<div class="elementor-widget-container">
 							<div class="elementor-button-wrapper">
-								<a class="elementor-button elementor-button-link elementor-size-sm" href="../../contact-us/">
+								<a class="elementor-button elementor-button-link elementor-size-sm" href="<?php echo htmlspecialchars($serviceCtaHref); ?>">
 									<span class="elementor-button-content-wrapper">
 										<span class="elementor-button-icon">
 											<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewbox="0 0 24 24" fill="none">
 												<path d="M12.75 15L15.75 12M15.75 12L12.75 9M15.75 12H8.25M21 12C21 13.1819 20.7672 14.3522 20.3149 15.4442C19.8626 16.5361 19.1997 17.5282 18.364 18.364C17.5282 19.1997 16.5361 19.8626 15.4442 20.3149C14.3522 20.7672 13.1819 21 12 21C10.8181 21 9.64778 20.7672 8.55585 20.3149C7.46392 19.8626 6.47177 19.1997 5.63604 18.364C4.80031 17.5282 4.13738 16.5361 3.68508 15.4442C3.23279 14.3522 3 13.1819 3 12C3 9.61305 3.94821 7.32387 5.63604 5.63604C7.32387 3.94821 9.61305 3 12 3C14.3869 3 16.6761 3.94821 18.364 5.63604C20.0518 7.32387 21 9.61305 21 12Z" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
 											</svg> </span>
-										<span class="elementor-button-text">Get Free Quote</span>
+										<span class="elementor-button-text"><?php echo htmlspecialchars($serviceCtaButtonText); ?></span>
 									</span>
 								</a>
 							</div>
@@ -1049,7 +1125,7 @@
 				<div class="elementor-element elementor-element-37eb797 e-con-full e-flex e-con e-child" data-id="37eb797" data-element_type="container" data-e-type="container">
 					<div class="elementor-element elementor-element-adbd00d at-image-animation at-animation-image-none elementor-widget elementor-widget-image" data-id="adbd00d" data-element_type="widget" data-e-type="widget" data-settings="{&quot;ekit_we_effect_on&quot;:&quot;none&quot;}" data-widget_type="image.default">
 						<div class="elementor-widget-container">
-							<img decoding="async" width="483" height="455" src="../../wp-content/uploads/2024/06/cta-box-img.png" class="attachment-large size-large wp-image-1251" alt="">
+							<img decoding="async" width="483" height="455" src="<?php echo htmlspecialchars(tpv_asset_url($serviceCtaImage)); ?>" class="attachment-large size-large wp-image-1251" alt="">
 						</div>
 					</div>
 				</div>
@@ -1082,8 +1158,8 @@
 											</div>
 											<div class="box-body">
 												<h3 class="elementskit-info-box-title">
-													Call Support Center 24/7 </h3>
-												<p><a href="tel:+1 809 120 6705">+1 809 120 6705 </a></p>
+													<?php echo htmlspecialchars($servicePhoneLabel); ?> </h3>
+												<p><a href="<?php echo htmlspecialchars($supportPhoneHref); ?>"><?php echo htmlspecialchars($supportPhone); ?> </a></p>
 											</div>
 
 
@@ -1113,8 +1189,8 @@
 											</div>
 											<div class="box-body">
 												<h3 class="elementskit-info-box-title">
-													Write To Us </h3>
-												<p><a href="mailto:info@tpvconstruction.com.ng">info@tpvconstruction.com.ng</a></p>
+													<?php echo htmlspecialchars($serviceEmailLabel); ?> </h3>
+												<p><a href="<?php echo htmlspecialchars($supportEmailHref); ?>"><?php echo htmlspecialchars($supportEmail); ?></a></p>
 											</div>
 
 
@@ -1124,7 +1200,7 @@
 							</div>
 							<div class="elementor-element elementor-element-7dd5f0f at-image-animation at-animation-image-none elementor-widget elementor-widget-image" data-id="7dd5f0f" data-element_type="widget" data-e-type="widget" data-settings="{&quot;ekit_we_effect_on&quot;:&quot;none&quot;}" data-widget_type="image.default">
 								<div class="elementor-widget-container">
-									<img loading="lazy" decoding="async" width="301" height="420" src="../../wp-content/uploads/2024/06/contact-info-img.png" class="attachment-full size-full wp-image-1857" alt="">
+									<img loading="lazy" decoding="async" width="301" height="420" src="<?php echo htmlspecialchars(tpv_asset_url($serviceContactImage)); ?>" class="attachment-full size-full wp-image-1857" alt="">
 								</div>
 							</div>
 						</div>
@@ -1132,12 +1208,12 @@
 					<div class="elementor-element elementor-element-2f1fa89 e-con-full e-flex elementor-invisible e-con e-child" data-id="2f1fa89" data-element_type="container" data-e-type="container" data-settings="{&quot;background_background&quot;:&quot;classic&quot;,&quot;animation&quot;:&quot;fadeInUp&quot;,&quot;animation_delay&quot;:100}">
 						<div class="elementor-element elementor-element-f04bd54 at-heading-animation at-animation-heading-none elementor-invisible elementor-widget elementor-widget-heading" data-id="f04bd54" data-element_type="widget" data-e-type="widget" data-settings="{&quot;_animation&quot;:&quot;fadeInUp&quot;,&quot;ekit_we_effect_on&quot;:&quot;none&quot;}" data-widget_type="heading.default">
 							<div class="elementor-widget-container">
-								<h3 class="elementor-heading-title elementor-size-default">Contact us</h3>
+								<h3 class="elementor-heading-title elementor-size-default"><?php echo htmlspecialchars($serviceContactEyebrow); ?></h3>
 							</div>
 						</div>
 						<div class="elementor-element elementor-element-81de5cb at-heading-animation at-animation-heading-style-3 elementor-widget elementor-widget-heading" data-id="81de5cb" data-element_type="widget" data-e-type="widget" data-settings="{&quot;ekit_we_effect_on&quot;:&quot;none&quot;}" data-widget_type="heading.default">
 							<div class="elementor-widget-container">
-								<h2 class="elementor-heading-title elementor-size-default">Get in touch with us</h2>
+								<h2 class="elementor-heading-title elementor-size-default"><?php echo htmlspecialchars($serviceContactTitle); ?></h2>
 							</div>
 						</div>
 						<div class="elementor-element elementor-element-3e99949 contact-form elementor-widget elementor-widget-elementskit-contact-form7" data-id="3e99949" data-element_type="widget" data-e-type="widget" data-settings="{&quot;ekit_we_effect_on&quot;:&quot;none&quot;}" data-widget_type="elementskit-contact-form7.default">
@@ -1190,6 +1266,7 @@
 			</div>
 		</div>
 	</div>
+	<div class="tpv-service-shared-footer"><?php include '../../includes/footer.php'; ?></div>
 	<div class="ekit-template-content-markup ekit-template-content-footer ekit-template-content-theme-support">
 		<div data-elementor-type="wp-post" data-elementor-id="1688" class="elementor elementor-1688">
 			<div class="elementor-element elementor-element-aac5742 e-flex e-con-boxed e-con e-parent" data-id="aac5742" data-element_type="container" data-e-type="container" data-settings="{&quot;background_background&quot;:&quot;classic&quot;}">
@@ -1284,7 +1361,7 @@
 													</div>
 													<div class="box-body">
 														<h3 class="elementskit-info-box-title">
-															+1 809 120 6705 </h3>
+															<?php echo htmlspecialchars($supportPhone); ?> </h3>
 													</div>
 
 
@@ -1296,7 +1373,7 @@
 								<div class="elementor-element elementor-element-dbea2a3 footer-info-box ekit-equal-height-disable elementor-widget elementor-widget-elementskit-icon-box" data-id="dbea2a3" data-element_type="widget" data-e-type="widget" data-settings="{&quot;ekit_we_effect_on&quot;:&quot;none&quot;}" data-widget_type="elementskit-icon-box.default">
 									<div class="elementor-widget-container">
 										<div class="ekit-wid-con"> <!-- link opening -->
-											<a href="mailto:info@tpvconstruction.com.ng" class="ekit_global_links">
+											<a href="<?php echo htmlspecialchars($supportEmailHref); ?>" class="ekit_global_links">
 												<!-- end link opening -->
 
 												<div class="elementskit-infobox text-left text-left icon-lef-right-aligin elementor-animation- media  ">
@@ -1316,7 +1393,7 @@
 													</div>
 													<div class="box-body">
 														<h3 class="elementskit-info-box-title">
-															info@tpvconstruction.com.ng </h3>
+															<?php echo htmlspecialchars($supportEmail); ?> </h3>
 													</div>
 
 

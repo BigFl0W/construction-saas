@@ -35,8 +35,9 @@ $serviceLinks = [
     ['label' => 'Building Construction', 'href' => SITE_URL . 'services/building-construction/'],
     ['label' => 'Architecture Design', 'href' => SITE_URL . 'services/architecture-design/'],
     ['label' => 'Building Renovation', 'href' => SITE_URL . 'services/building-renovation/'],
-    ['label' => 'Flooring & Roofing', 'href' => SITE_URL . 'services/flooring-roofing/'],
-    ['label' => 'Building Maintenance', 'href' => SITE_URL . 'services/building-maintenance/'],
+    ['label' => 'Interior / Exterior', 'href' => SITE_URL . 'services/interior-exterior/'],
+    ['label' => 'Project Management', 'href' => SITE_URL . 'services/project-management/'],
+    ['label' => 'Steel & Fabrication', 'href' => SITE_URL . 'services/steel-and-fabrication/'],
 ];
 
 $companyLinks = [

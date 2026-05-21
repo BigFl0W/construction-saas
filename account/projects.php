@@ -69,6 +69,137 @@ $pageTitle = 'TPV Construction and Services LTD · Projects';
 require 'inc/admin_header.php';
 ?>
 
+<style>
+.projects-page .projects-card {
+    border: 1px solid #e4e9f0;
+    border-radius: 24px;
+    box-shadow: 0 12px 28px rgba(15, 23, 42, 0.05);
+    overflow: hidden;
+}
+.projects-page .projects-card .card-header {
+    background: #fff;
+    border-bottom: 1px solid #edf2f7;
+}
+.projects-page .metric-tile {
+    background: #fff;
+    border: 1px solid #e4e9f0;
+    border-radius: 22px;
+    padding: 1.1rem 1.2rem;
+    box-shadow: 0 10px 24px rgba(15, 23, 42, 0.04);
+}
+.projects-page .metric-tile .value {
+    font-size: 1.7rem;
+    font-weight: 700;
+    line-height: 1;
+    color: #0f172a;
+}
+.projects-page .metric-tile .label {
+    margin-top: 0.25rem;
+    font-size: 0.82rem;
+    color: #6b7a8f;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+}
+.projects-page .budget-icon {
+    width: 32px;
+    height: 32px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 10px;
+    background: rgba(212, 161, 62, 0.12);
+    color: #d4a13e;
+    font-size: 1.1rem;
+    font-weight: 800;
+}
+.projects-page .projects-toolbar {
+    display: grid;
+    grid-template-columns: minmax(0, 1.25fr) minmax(220px, 0.6fr);
+    gap: 1rem;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+.projects-page .projects-toolbar .form-control,
+.projects-page .projects-toolbar .form-select {
+    height: 48px;
+}
+.projects-page .table-controls-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 1rem;
+    flex-wrap: wrap;
+}
+.projects-page .table-controls-row .dataTables_length,
+.projects-page .table-controls-row .dataTables_filter {
+    margin: 0;
+}
+.projects-page .table-controls-row .dataTables_length label,
+.projects-page .table-controls-row .dataTables_filter label {
+    margin: 0;
+    color: #475569;
+    font-weight: 500;
+}
+.projects-page .table-controls-row select,
+.projects-page .table-controls-row input {
+    border-radius: 14px !important;
+    min-height: 44px;
+    border-color: #d8e0ea;
+    box-shadow: none !important;
+}
+.projects-page .table-responsive-wrapper {
+    overflow-x: auto;
+}
+.projects-page #projectsTable th,
+.projects-page #projectsTable td {
+    vertical-align: middle;
+}
+.projects-page #projectsTable th {
+    white-space: nowrap;
+}
+@media (max-width: 991.98px) {
+    .projects-page .projects-toolbar {
+        grid-template-columns: 1fr;
+    }
+}
+@media (max-width: 767.98px) {
+    .projects-page .metric-tile {
+        padding: 1rem;
+        border-radius: 18px;
+    }
+    .projects-page .metric-tile .value {
+        font-size: 1.4rem;
+    }
+    .projects-page .projects-card {
+        border-radius: 20px;
+    }
+    .projects-page .projects-card .card-header,
+    .projects-page .projects-card .card-body {
+        padding-left: 1rem !important;
+        padding-right: 1rem !important;
+    }
+    .projects-page .projects-toolbar .form-control,
+    .projects-page .projects-toolbar .form-select {
+        height: 44px;
+    }
+    .projects-page .table-controls-row {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    .projects-page .table-controls-row .dataTables_filter,
+    .projects-page .table-controls-row .dataTables_filter label,
+    .projects-page .table-controls-row .dataTables_filter input,
+    .projects-page .table-controls-row .dataTables_length,
+    .projects-page .table-controls-row .dataTables_length label,
+    .projects-page .table-controls-row .dataTables_length select {
+        width: 100% !important;
+    }
+}
+</style>
+
+<div class="projects-page">
+
                 <div data-pages="parallax">
                     <div class="container-fluid p-l-25 p-r-25 sm-p-l-0 sm-p-r-0">
                         <div class="inner">
@@ -102,7 +233,7 @@ require 'inc/admin_header.php';
                         </div>
                         <div class="col-md-3 col-sm-6">
                             <div class="metric-tile d-flex align-items-center justify-content-between">
-                                <div><i class="fas fa-dollar-sign" style="width: 32px; height: 32px; stroke: #d4a13e"></i></div>
+                                <div><span class="budget-icon">&#8358;</span></div>
                                 <div class="text-end">
                                     <div class="value"><?php echo $functions->formatCurrency($totalBudget); ?></div>
                                     <div class="label">Total budget</div>
@@ -122,7 +253,7 @@ require 'inc/admin_header.php';
                 </div>
 
                 <div class="container-fluid p-l-25 p-r-25 p-t-0 p-b-25">
-                    <div class="card">
+                    <div class="card projects-card">
                         <div class="card-header d-flex flex-wrap justify-content-between align-items-center py-3 px-4">
                             <div class="card-title fw-bold fs-5 mb-0">
                                 <i class="fas fa-helmet-safety me-2" style="width:20px;height:20px"></i> Construction projects
@@ -134,11 +265,11 @@ require 'inc/admin_header.php';
                             </div>
                         </div>
                         <div class="card-body p-4">
-                            <div class="row mb-3">
-                                <div class="col-md-5">
+                            <div class="projects-toolbar">
+                                <div>
                                     <input type="text" class="form-control rounded-pill" id="searchProjects" placeholder="Search project name, number, client...">
                                 </div>
-                                <div class="col-md-3">
+                                <div>
                                     <select class="form-select rounded-pill" id="statusFilter">
                                         <option value="">All statuses</option>
                                         <option value="planning">Planning</option>
@@ -148,6 +279,10 @@ require 'inc/admin_header.php';
                                         <option value="cancelled">Cancelled</option>
                                     </select>
                                 </div>
+                            </div>
+                            <div class="table-controls-row">
+                                <div id="projectsLengthMount"></div>
+                                <div id="projectsFilterMount"></div>
                             </div>
                             <div class="table-responsive-wrapper">
                                 <table class="table table-hover" data-table id="projectsTable">
@@ -209,7 +344,7 @@ require 'inc/admin_header.php';
                 </div>
 
                 <div class="container-fluid p-l-25 p-r-25 p-t-0 p-b-25">
-                    <div class="card">
+                    <div class="card projects-card">
                         <div class="card-header d-flex justify-content-between align-items-center py-3 px-4">
                             <div class="card-title fw-bold fs-5 mb-0">
                                 <i class="fas fa-layer-group me-2" style="width:20px;height:20px"></i> Project details
@@ -357,4 +492,26 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 </script>
 <?php endif; ?>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  var projectsTable = document.getElementById('projectsTable');
+  if (!projectsTable) return;
+
+  var wrapper = projectsTable.closest('.dataTables_wrapper');
+  if (!wrapper) return;
+
+  var lengthWrapper = wrapper.querySelector('.dataTables_length');
+  var filterWrapper = wrapper.querySelector('.dataTables_filter');
+  var lengthMount = document.getElementById('projectsLengthMount');
+  var filterMount = document.getElementById('projectsFilterMount');
+
+  if (lengthWrapper && lengthMount) {
+    lengthMount.appendChild(lengthWrapper);
+  }
+  if (filterWrapper && filterMount) {
+    filterMount.appendChild(filterWrapper);
+  }
+});
+</script>
 <?php require 'inc/admin_footer.php'; ?>
+</div>

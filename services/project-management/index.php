@@ -492,6 +492,13 @@
 		Skip to content </a>
 
 
+	<div class="tpv-service-shared-header"><?php include '../../includes/header.php'; ?></div>
+	<style>
+		.tpv-service-shared-header ~ .ekit-template-content-header,
+		.tpv-service-shared-footer ~ .ekit-template-content-footer {
+			display: none !important;
+		}
+	</style>
 	<div class="ekit-template-content-markup ekit-template-content-header ekit-template-content-theme-support">
 		<div data-elementor-type="wp-post" data-elementor-id="225" class="elementor elementor-225">
 			<div class="elementor-element elementor-element-3c0e001 e-con-full e-flex e-con e-parent" data-id="3c0e001"
@@ -1702,6 +1709,7 @@
 			</div>
 		</div>
 	</div>
+	<div class="tpv-service-shared-footer"><?php include '../../includes/footer.php'; ?></div>
 	<div class="ekit-template-content-markup ekit-template-content-footer ekit-template-content-theme-support">
 		<div data-elementor-type="wp-post" data-elementor-id="1688" class="elementor elementor-1688">
 			<div class="elementor-element elementor-element-aac5742 e-flex e-con-boxed e-con e-parent" data-id="aac5742"

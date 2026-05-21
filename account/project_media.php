@@ -8,6 +8,30 @@ $currentUser = $auth->getUserData();
 $functions = Functions::getInstance();
 $db = Database::getInstance();
 
+function ensureProjectMediaTable($db) {
+    $db->query(
+        "CREATE TABLE IF NOT EXISTS project_media (
+            id INT AUTO_INCREMENT PRIMARY KEY,
+            service VARCHAR(150) NOT NULL,
+            title VARCHAR(255) DEFAULT NULL,
+            description TEXT DEFAULT NULL,
+            file_path VARCHAR(255) NOT NULL,
+            file_type ENUM('image', 'video') NOT NULL DEFAULT 'image',
+            mime_type VARCHAR(150) DEFAULT NULL,
+            file_size BIGINT DEFAULT NULL,
+            featured TINYINT(1) NOT NULL DEFAULT 0,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+            INDEX idx_project_media_service (service),
+            INDEX idx_project_media_type (file_type),
+            INDEX idx_project_media_featured (featured),
+            INDEX idx_project_media_created (created_at)
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci"
+    );
+}
+
+ensureProjectMediaTable($db);
+
 function mediaUrl($path) {
     if (!$path) return '';
     if (strpos($path, '/') === 0) {
@@ -196,6 +220,134 @@ $pageTitle = 'TPV Construction and Services LTD · Project Media';
 require 'inc/admin_header.php';
 ?>
 
+<style>
+.project-media-page .metric-tile {
+    background: #fff;
+    border: 1px solid #e4e9f0;
+    border-radius: 22px;
+    padding: 1.1rem 1.2rem;
+    box-shadow: 0 10px 24px rgba(15, 23, 42, 0.04);
+}
+.project-media-page .metric-tile .value {
+    font-size: 1.65rem;
+    font-weight: 700;
+    line-height: 1;
+    color: #0f172a;
+}
+.project-media-page .metric-tile .label {
+    margin-top: 0.25rem;
+    font-size: 0.82rem;
+    color: #6b7a8f;
+}
+.project-media-page .media-card {
+    border: 1px solid #e4e9f0;
+    border-radius: 24px;
+    box-shadow: 0 12px 28px rgba(15, 23, 42, 0.05);
+    overflow: hidden;
+}
+.project-media-page .media-card .card-header {
+    background: #fff;
+    border-bottom: 1px solid #edf2f7;
+}
+.project-media-page .media-toolbar {
+    display: grid;
+    grid-template-columns: minmax(0, 320px) auto;
+    gap: 1rem;
+    align-items: end;
+    margin-bottom: 1.5rem;
+}
+.project-media-page .media-filter-form {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+.project-media-page .media-filter-form .form-select { min-width: 240px; }
+.project-media-page .media-empty {
+    border: 1px dashed #d7dee8;
+    border-radius: 22px;
+    background: linear-gradient(180deg, #fbfcfe 0%, #f5f7fb 100%);
+    padding: 3rem 1.5rem;
+}
+.project-media-page .pm-service-badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.38rem 0.7rem;
+    border-radius: 999px;
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    color: #334155;
+    font-size: 0.76rem;
+    font-weight: 600;
+}
+.project-media-page .pm-type-badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.36rem 0.65rem;
+    border-radius: 999px;
+    font-size: 0.74rem;
+    font-weight: 700;
+    text-transform: capitalize;
+}
+.project-media-page .pm-type-badge.image { background: rgba(22, 163, 74, 0.12); color: #15803d; }
+.project-media-page .pm-type-badge.video { background: rgba(2, 132, 199, 0.12); color: #0369a1; }
+.project-media-page .pm-icon-btn {
+    width: 34px;
+    height: 34px;
+    border-radius: 10px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+.project-media-page .pm-action-group {
+    display: flex;
+    gap: 0.4rem;
+}
+.project-media-page .pm-drop-area {
+    cursor: pointer;
+    border: 2px dashed #d1d9e6 !important;
+    transition: all 0.2s ease;
+    border-radius: 18px !important;
+    background: linear-gradient(180deg, #fbfcfe 0%, #f5f7fb 100%) !important;
+}
+.project-media-page .pm-drop-area:hover {
+    border-color: rgba(212, 161, 62, 0.6) !important;
+    background: #fffdf7 !important;
+}
+.project-media-page .pm-modal .modal-content {
+    border: 1px solid #e4e9f0;
+    border-radius: 22px;
+    box-shadow: 0 22px 50px rgba(15, 23, 42, 0.12);
+}
+.project-media-page .pm-modal .modal-body,
+.project-media-page .pm-modal .modal-header,
+.project-media-page .pm-modal .modal-footer {
+    padding-left: 1.5rem;
+    padding-right: 1.5rem;
+}
+@media (max-width: 991.98px) {
+    .project-media-page .media-toolbar { grid-template-columns: 1fr; }
+}
+@media (max-width: 767.98px) {
+    .project-media-page .metric-tile {
+        padding: 1rem;
+        border-radius: 18px;
+    }
+    .project-media-page .metric-tile .value { font-size: 1.35rem; }
+    .project-media-page .media-card { border-radius: 20px; }
+    .project-media-page .media-filter-form {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    .project-media-page .media-filter-form .form-select,
+    .project-media-page .media-filter-form .btn {
+        width: 100%;
+        min-width: 0;
+    }
+    .project-media-page .pm-action-group { flex-wrap: wrap; }
+}
+</style>
+
+<div class="project-media-page">
 <div data-pages="parallax">
     <div class="container-fluid p-l-25 p-r-25 sm-p-l-0 sm-p-r-0">
         <div class="inner">
@@ -247,7 +399,7 @@ require 'inc/admin_header.php';
         </div>
     </div>
 
-    <div class="card">
+    <div class="card media-card">
         <div class="card-header d-flex justify-content-between align-items-center py-3 px-4">
             <div class="card-title fw-bold fs-5 mb-0">
                 <i class="fas fa-photo-video me-2"></i> Project Media Gallery
@@ -260,9 +412,12 @@ require 'inc/admin_header.php';
         </div>
         <div class="card-body p-4">
             <!-- Filter by service -->
-            <div class="row mb-4">
-                <div class="col-md-4">
-                    <form method="GET" class="d-flex gap-2">
+            <div class="media-toolbar">
+                <div>
+                    <div class="text-muted small mb-1">Library filter</div>
+                    <h6 class="fw-semibold mb-0">Browse media by service</h6>
+                </div>
+                <form method="GET" class="media-filter-form">
                         <select name="service" class="form-select" onchange="this.form.submit()">
                             <option value="">All Services</option>
                             <?php foreach ($services as $s): ?>
@@ -271,17 +426,18 @@ require 'inc/admin_header.php';
                                 </option>
                             <?php endforeach; ?>
                         </select>
+                        <button type="submit" class="btn btn-primary">Apply</button>
                         <?php if ($filterService): ?>
                             <a href="project_media.php" class="btn btn-outline-secondary">Clear</a>
                         <?php endif; ?>
-                    </form>
-                </div>
+                </form>
             </div>
 
             <?php if (empty($mediaItems)): ?>
-                <div class="text-center py-5">
+                <div class="media-empty text-center">
                     <i class="fas fa-photo-video fa-3x text-muted mb-3"></i>
-                    <p class="text-muted">No media uploaded yet. Click "Upload Media" to get started.</p>
+                    <h5 class="fw-semibold mb-2">No media uploaded yet</h5>
+                    <p class="text-muted mb-0">Upload your first project image or video to start building the service gallery.</p>
                 </div>
             <?php else: ?>
                 <div class="table-responsive">
@@ -317,9 +473,9 @@ require 'inc/admin_header.php';
                                             <br><small class="text-muted"><?php echo htmlspecialchars(substr($item['description'], 0, 80)) . (strlen($item['description']) > 80 ? '...' : ''); ?></small>
                                         <?php endif; ?>
                                     </td>
-                                    <td><span class="badge bg-light text-dark"><?php echo htmlspecialchars($item['service']); ?></span></td>
+                                    <td><span class="pm-service-badge"><?php echo htmlspecialchars($item['service']); ?></span></td>
                                     <td>
-                                        <span class="badge <?php echo $item['file_type'] === 'image' ? 'bg-success' : 'bg-info'; ?>">
+                                        <span class="pm-type-badge <?php echo $item['file_type'] === 'image' ? 'image' : 'video'; ?>">
                                             <?php echo $item['file_type']; ?>
                                         </span>
                                     </td>
@@ -337,24 +493,24 @@ require 'inc/admin_header.php';
                                     </td>
                                     <td class="text-center">
                                         <a href="?featured=<?php echo $item['id']; ?><?php echo $filterService ? '&service=' . urlencode($filterService) : ''; ?>"
-                                           class="btn btn-sm <?php echo $item['featured'] ? 'btn-warning' : 'btn-outline-secondary'; ?>"
+                                           class="btn btn-sm pm-icon-btn <?php echo $item['featured'] ? 'btn-warning' : 'btn-outline-secondary'; ?>"
                                            title="<?php echo $item['featured'] ? 'Remove featured' : 'Mark as featured'; ?>">
                                             <i class="fas fa-star"></i>
                                         </a>
                                     </td>
                                     <td><?php echo date('M j, Y', strtotime($item['created_at'])); ?></td>
                                     <td>
-                                        <div class="d-flex gap-1">
+                                        <div class="pm-action-group">
                                             <a href="<?php echo htmlspecialchars(mediaUrl($item['file_path'])); ?>"
-                                               class="btn btn-sm btn-icon-only" target="_blank" title="View">
+                                               class="btn btn-sm btn-outline-secondary pm-icon-btn" target="_blank" title="View">
                                                 <i class="fas fa-eye"></i>
                                             </a>
                                             <a href="?edit=<?php echo $item['id']; ?>"
-                                               class="btn btn-sm btn-icon-only" title="Edit">
+                                               class="btn btn-sm btn-outline-secondary pm-icon-btn" title="Edit">
                                                 <i class="fas fa-pen"></i>
                                             </a>
                                             <a href="?delete=<?php echo $item['id']; ?>"
-                                               class="btn btn-sm btn-icon-only text-danger"
+                                               class="btn btn-sm btn-outline-danger pm-icon-btn"
                                                onclick="return confirmAction(this, 'Delete this media item?')"
                                                title="Delete">
                                                 <i class="fas fa-trash"></i>
@@ -372,7 +528,7 @@ require 'inc/admin_header.php';
 </div>
 
 <!-- Edit Modal -->
-<div class="modal fade" id="editMediaModal" tabindex="-1">
+<div class="modal fade pm-modal" id="editMediaModal" tabindex="-1">
     <div class="modal-dialog modal-lg">
         <form method="POST" action="">
             <div class="modal-content">
@@ -423,7 +579,7 @@ require 'inc/admin_header.php';
 </div>
 
 <!-- Upload Modal -->
-<div class="modal fade" id="uploadModal" tabindex="-1">
+<div class="modal fade pm-modal" id="uploadModal" tabindex="-1">
     <div class="modal-dialog modal-lg">
         <form method="POST" action="" enctype="multipart/form-data">
             <div class="modal-content">
@@ -458,8 +614,7 @@ require 'inc/admin_header.php';
 
                     <div class="mb-3">
                         <label class="form-label">Files <span class="text-danger">*</span></label>
-                        <div class="border rounded-3 p-4 text-center bg-light" id="dropArea"
-                             style="cursor:pointer; border: 2px dashed #d1d9e6 !important; transition: all 0.2s;">
+                        <div class="border rounded-3 p-4 text-center bg-light pm-drop-area" id="dropArea">
                             <i class="fas fa-cloud-upload-alt fa-3x text-muted mb-3"></i>
                             <p class="mb-1"><strong>Click to upload</strong> or drag & drop</p>
                             <p class="text-muted small mb-2">
@@ -501,6 +656,10 @@ document.addEventListener('DOMContentLoaded', function() {
 <?php
 $extraScripts = <<<'SCRIPT'
 <script>
+document.querySelectorAll('.data-table').forEach(function(table) {
+    table.classList.add('align-middle');
+});
+
 document.getElementById('dropArea').addEventListener('click', function() {
     document.getElementById('mediaFileInput').click();
 });
@@ -535,11 +694,11 @@ document.addEventListener('drop', function(e) { e.preventDefault(); });
 var dropArea = document.getElementById('dropArea');
 dropArea.addEventListener('dragover', function(e) {
     e.preventDefault();
-    this.style.borderColor = '#d4a13e !important';
+    this.style.borderColor = '#d4a13e';
     this.style.background = '#fff8e1';
 });
 dropArea.addEventListener('dragleave', function() {
-    this.style.borderColor = '#d1d9e6 !important';
+    this.style.borderColor = '#d1d9e6';
     this.style.background = '#f8fafc';
 });
 dropArea.addEventListener('drop', function(e) {
@@ -556,3 +715,4 @@ dropArea.addEventListener('drop', function(e) {
 SCRIPT;
 require 'inc/admin_footer.php';
 ?>
+</div>

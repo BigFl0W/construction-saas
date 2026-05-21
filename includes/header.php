@@ -4,6 +4,20 @@ if (!function_exists('tpv_setting_asset_url')) {
 }
 
 $siteLogoUrl = tpv_setting_asset_url('site_logo', 'wp-content/uploads/2024/06/logo.png');
+$siteHomeUrl = SITE_URL;
+$siteAboutUrl = SITE_URL . 'about-us/';
+$siteContactUrl = SITE_URL . 'contact-us/';
+$siteBlogUrl = SITE_URL . 'blog/';
+$siteServicesUrl = SITE_URL . 'services/';
+$siteQuoteUrl = SITE_URL . 'quote/';
+$serviceMenuLinks = [
+    ['label' => 'Building Construction', 'href' => SITE_URL . 'services/building-construction/'],
+    ['label' => 'Architecture Design', 'href' => SITE_URL . 'services/architecture-design/'],
+    ['label' => 'Building Renovation', 'href' => SITE_URL . 'services/building-renovation/'],
+    ['label' => 'Interior / Exterior', 'href' => SITE_URL . 'services/interior-exterior/'],
+    ['label' => 'Project Management', 'href' => SITE_URL . 'services/project-management/'],
+    ['label' => 'Steel & Fabrication', 'href' => SITE_URL . 'services/steel-and-fabrication/'],
+];
 $uri = $_SERVER['REQUEST_URI'] ?? '';
 $isHome     = (preg_match('/^\/(tpv-new-website\/)?(index\.php)?$/', $uri)) ? 'current-menu-ancestor current-menu-parent' : '';
 $isAbout    = (strpos($uri, '/about-us')   !== false) ? 'current-menu-ancestor current-menu-parent' : '';
@@ -50,7 +64,7 @@ $isQuote    = (strpos($uri, '/quote')      !== false) ? 'current-menu-ancestor c
 							<div class="elementor-widget-container">
 								<div class="ata-site-logo">
 									<a data-elementor-open-lightbox="" class='elementor-clickable'
-										href="https://tpvconstruction.com.ng">
+										href="<?php echo htmlspecialchars($siteHomeUrl); ?>">
 										<div class="ata-site-logo-set">
 											<div class="ata-site-logo-container">
 												<img class="ata-site-logo-img elementor-animation-"
@@ -81,67 +95,44 @@ $isQuote    = (strpos($uri, '/quote')      !== false) ? 'current-menu-ancestor c
 											class="elementskit-navbar-nav elementskit-menu-po-center submenu-click-on-icon">
 											<li id="menu-item-5912"
 												class="menu-item menu-item-type-custom menu-item-object-custom <?php echo $isHome; ?> menu-item-has-children menu-item-5912 nav-item elementskit-dropdown-has relative_position elementskit-dropdown-menu-default_width elementskit-mobile-builder-content"
-												data-vertical-menu="750px"><a href="../"
+												data-vertical-menu="750px"><a href="<?php echo htmlspecialchars($siteHomeUrl); ?>"
 													class="ekit-menu-nav-link">Home</a>
 
 											</li>
 											<li id="menu-item-3045"
 												class="menu-item menu-item-type-post_type menu-item-object-page <?php echo $isAbout; ?> menu-item-3045 nav-item elementskit-mobile-builder-content"
-												data-vertical-menu="750px"><a href="../about-us/"
+												data-vertical-menu="750px"><a href="<?php echo htmlspecialchars($siteAboutUrl); ?>"
 													class="ekit-menu-nav-link">About Us</a></li>
 
 											<li id="menu-item-16"
 												class="menu-item menu-item-type-post_type menu-item-object-page <?php echo $isContact; ?> menu-item-16 nav-item elementskit-mobile-builder-content"
-												data-vertical-menu="750px"><a href="../contact-us/"
+												data-vertical-menu="750px"><a href="<?php echo htmlspecialchars($siteContactUrl); ?>"
 													class="ekit-menu-nav-link">Contact Us</a></li>
 
 											<li id="menu-item-16_blog"
 												class="menu-item menu-item-type-post_type menu-item-object-page <?php echo $isBlog; ?> menu-item-16 nav-item elementskit-mobile-builder-content"
-												data-vertical-menu="750px"><a href="../blog/"
+												data-vertical-menu="750px"><a href="<?php echo htmlspecialchars($siteBlogUrl); ?>"
 													class="ekit-menu-nav-link">Blog</a></li>
 											<li id="menu-item-3343"
 												class="menu-item menu-item-type-post_type menu-item-object-page menu-item-has-children <?php echo $isServices; ?> menu-item-3343 nav-item elementskit-dropdown-has relative_position elementskit-dropdown-menu-default_width elementskit-mobile-builder-content"
-												data-vertical-menu="750px"><a href="../services/"
+												data-vertical-menu="750px"><a href="<?php echo htmlspecialchars($siteServicesUrl); ?>"
 													class="ekit-menu-nav-link ekit-menu-dropdown-toggle">Services<i
 														class="icon icon-down-arrow1 elementskit-submenu-indicator"></i></a>
 												<ul class="elementskit-dropdown elementskit-submenu-panel">
-													<li id="menu-item-5670"
-														class="menu-item menu-item-type-post_type menu-item-object-page menu-item-5670 nav-item elementskit-mobile-builder-content"
+													<?php foreach ($serviceMenuLinks as $serviceMenuIndex => $serviceMenuLink): ?>
+													<li id="menu-item-service-<?php echo $serviceMenuIndex + 1; ?>"
+														class="menu-item menu-item-type-post_type menu-item-object-page nav-item elementskit-mobile-builder-content"
 														data-vertical-menu="750px"><a
-															href="../services/building-construction/"
-															class=" dropdown-item">Building Construction</a>
-													<li id="menu-item-5671"
-														class="menu-item menu-item-type-post_type menu-item-object-page menu-item-5671 nav-item elementskit-mobile-builder-content"
-														data-vertical-menu="750px"><a
-															href="../services/architecture-design/"
-															class=" dropdown-item">Architecture Design</a>
-													<li id="menu-item-5672"
-														class="menu-item menu-item-type-post_type menu-item-object-page menu-item-5672 nav-item elementskit-mobile-builder-content"
-														data-vertical-menu="750px"><a
-															href="../services/building-renovation/"
-															class=" dropdown-item">Building Renovation</a>
-													<li id="menu-item-5673"
-														class="menu-item menu-item-type-post_type menu-item-object-page menu-item-5673 nav-item elementskit-mobile-builder-content"
-														data-vertical-menu="750px"><a
-															href="../services/flooring-roofing/"
-															class=" dropdown-item">Flooring &#038; Roofing</a>
-													<li id="menu-item-5674"
-														class="menu-item menu-item-type-post_type menu-item-object-page menu-item-5674 nav-item elementskit-mobile-builder-content"
-														data-vertical-menu="750px"><a
-															href="../services/building-maintenance/"
-															class=" dropdown-item">Building Maintenance</a>
-													<li id="menu-item-5675"
-														class="menu-item menu-item-type-post_type menu-item-object-page menu-item-5675 nav-item elementskit-mobile-builder-content"
-														data-vertical-menu="750px"><a
-															href="../services/project-management/"
-															class=" dropdown-item">Project Management</a></li>
+															href="<?php echo htmlspecialchars($serviceMenuLink['href']); ?>"
+															class="dropdown-item"><?php echo htmlspecialchars($serviceMenuLink['label']); ?></a></li>
+													<?php endforeach; ?>
 												</ul>
 											</li>
 
 
 											<li id="menu-item-4598"
 												class="mobile-menu menu-item menu-item-type-post_type menu-item-object-page <?php echo $isQuote; ?> menu-item-4598 nav-item elementskit-mobile-builder-content"
-												data-vertical-menu="750px"><a href="../quote/"
+												data-vertical-menu="750px"><a href="<?php echo htmlspecialchars($siteQuoteUrl); ?>"
 													class="ekit-menu-nav-link">Get Free Quote</a></li>
 										</ul>
 										<div class="elementskit-nav-identity-panel"><button
@@ -164,7 +155,7 @@ $isQuote    = (strpos($uri, '/quote')      !== false) ? 'current-menu-ancestor c
 							<div class="elementor-widget-container">
 								<div class="elementor-button-wrapper">
 									<a class="elementor-button elementor-button-link elementor-size-sm tpv-header-cta<?php echo $isQuote ? ' tpv-quote-btn-active' : ''; ?>"
-										href="../quote/">
+										href="<?php echo htmlspecialchars($siteQuoteUrl); ?>">
 										<span class="elementor-button-content-wrapper">
 											<span class="elementor-button-text">Get Free Quote</span>
 										</span>

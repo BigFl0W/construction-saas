@@ -50,8 +50,27 @@ document.getElementById('sidebarOverlay').addEventListener('click', function() {
     this.classList.remove('show');
 });
 function toggleSubmenu(el) {
-    el.parentElement.classList.toggle('open');
+    var menuItem = el.parentElement;
+    menuItem.classList.toggle('open');
+    var menuKey = menuItem.getAttribute('data-menu-key');
+    if (menuKey) {
+        localStorage.setItem('sidebar-menu-' + menuKey, menuItem.classList.contains('open') ? 'open' : 'closed');
+    }
+    return false;
 }
+
+document.addEventListener('DOMContentLoaded', function() {
+    document.querySelectorAll('.menu-items > li[data-menu-key]').forEach(function(menuItem) {
+        var menuKey = menuItem.getAttribute('data-menu-key');
+        if (!menuKey) return;
+        var savedState = localStorage.getItem('sidebar-menu-' + menuKey);
+        if (savedState === 'closed') {
+            menuItem.classList.remove('open');
+        } else if (savedState === 'open') {
+            menuItem.classList.add('open');
+        }
+    });
+});
 
 var confirmData = null;
 

@@ -1043,7 +1043,7 @@ try {
                     <span class="details"><?php echo isset($activeProjects) ? $activeProjects : '0'; ?> active</span>
                 </a>
             </li>
-            <li class="<?php echo navOpen('project'); echo navActive('projects') ? ' active' : ''; echo navActive('project_stages') ? ' active' : ''; echo navActive('daily_reports') ? ' active' : ''; echo navActive('project_budget') ? ' active' : ''; echo navActive('project_media') ? ' active' : ''; ?>">
+            <li class="<?php echo navOpen('project'); echo navActive('projects') ? ' active' : ''; echo navActive('project_stages') ? ' active' : ''; echo navActive('daily_reports') ? ' active' : ''; echo navActive('project_budget') ? ' active' : ''; echo navActive('project_media') ? ' active' : ''; ?>" data-menu-key="project">
                 <a href="javascript:;" onclick="toggleSubmenu(this)">
                     <span class="icon-thumbnail"><i class="fas fa-helmet-safety"></i></span>
                     <span class="title">Projects</span>
@@ -1057,7 +1057,7 @@ try {
                     <li class="<?php echo navActive('project_media'); ?>"><a href="project_media.php"><span class="icon-thumbnail"><i class="fas fa-photo-video"></i></span>Project media</a></li>
                 </ul>
             </li>
-            <li class="<?php echo navOpen('financial'); echo navActive('invoices') ? ' active' : ''; echo navActive('payments') ? ' active' : ''; echo navActive('expenses') ? ' active' : ''; echo navActive('purchase_orders') ? ' active' : ''; ?>">
+            <li class="<?php echo navOpen('financial'); echo navActive('invoices') ? ' active' : ''; echo navActive('payments') ? ' active' : ''; echo navActive('expenses') ? ' active' : ''; echo navActive('purchase_orders') ? ' active' : ''; ?>" data-menu-key="financial">
                 <a href="javascript:;" onclick="toggleSubmenu(this)">
                     <span class="icon-thumbnail"><i class="fas fa-dollar-sign"></i></span>
                     <span class="title">Financial</span>
@@ -1070,7 +1070,7 @@ try {
                     <li class="<?php echo navActive('purchase_orders'); ?>"><a href="purchase_orders.php"><span class="icon-thumbnail">PO</span>Purchase orders</a></li>
                 </ul>
             </li>
-            <li class="<?php echo navOpen('resource'); echo navActive('equipment') ? ' active' : ''; echo navActive('materials') ? ' active' : ''; echo navActive('suppliers') ? ' active' : ''; echo navActive('maintenance') ? ' active' : ''; ?>">
+            <li class="<?php echo navOpen('resource'); echo navActive('equipment') ? ' active' : ''; echo navActive('materials') ? ' active' : ''; echo navActive('suppliers') ? ' active' : ''; echo navActive('maintenance') ? ' active' : ''; ?>" data-menu-key="resource">
                 <a href="javascript:;" onclick="toggleSubmenu(this)">
                     <span class="icon-thumbnail"><i class="fas fa-box"></i></span>
                     <span class="title">Resources</span>
@@ -1083,7 +1083,7 @@ try {
                     <li class="<?php echo navActive('maintenance'); ?>"><a href="maintenance.php"><span class="icon-thumbnail">MT</span>Maintenance</a></li>
                 </ul>
             </li>
-            <li class="<?php echo navOpen('workforce'); echo navActive('employees') ? ' active' : ''; echo navActive('timesheets') ? ' active' : ''; ?>">
+            <li class="<?php echo navOpen('workforce'); echo navActive('employees') ? ' active' : ''; echo navActive('timesheets') ? ' active' : ''; ?>" data-menu-key="workforce">
                 <a href="javascript:;" onclick="toggleSubmenu(this)">
                     <span class="icon-thumbnail"><i class="fas fa-users"></i></span>
                     <span class="title">Workforce</span>
@@ -1094,7 +1094,7 @@ try {
                     <li class="<?php echo navActive('timesheets'); ?>"><a href="timesheets.php"><span class="icon-thumbnail">TS</span>Timesheets</a></li>
                 </ul>
             </li>
-            <li class="<?php echo navOpen('client'); echo navActive('clients') ? ' active' : ''; echo navActive('communications') ? ' active' : ''; echo navActive('documents') ? ' active' : ''; ?>">
+            <li class="<?php echo navOpen('client'); echo navActive('clients') ? ' active' : ''; echo navActive('communications') ? ' active' : ''; echo navActive('documents') ? ' active' : ''; ?>" data-menu-key="client">
                 <a href="javascript:;" onclick="toggleSubmenu(this)">
                     <span class="icon-thumbnail"><i class="fas fa-handshake"></i></span>
                     <span class="title">Clients</span>
@@ -1106,7 +1106,7 @@ try {
                     <li class="<?php echo navActive('documents'); ?>"><a href="documents.php"><span class="icon-thumbnail">DOC</span>Documents</a></li>
                 </ul>
             </li>
-            <li class="<?php echo navOpen('blog'); echo navActive('blog_list') ? ' active' : ''; echo navActive('blog_categories') ? ' active' : ''; echo navActive('blog_comments') ? ' active' : ''; ?>">
+            <li class="<?php echo navOpen('blog'); echo navActive('blog_list') ? ' active' : ''; echo navActive('blog_categories') ? ' active' : ''; echo navActive('blog_comments') ? ' active' : ''; ?>" data-menu-key="blog">
                 <a href="javascript:;" onclick="toggleSubmenu(this)">
                     <span class="icon-thumbnail"><i class="fas fa-edit"></i></span>
                     <span class="title">Company blog</span>
@@ -1153,6 +1153,51 @@ try {
                     <span class="icon-thumbnail"><i class="fas fa-house"></i></span>
                     <span class="title">Homepage</span>
                 </a>
+            </li>
+            <li class="<?php echo navOpen('service_'); ?>" data-menu-key="services">
+                <a href="javascript:;" onclick="return toggleSubmenu(this)">
+                    <span class="icon-thumbnail"><i class="fas fa-briefcase"></i></span>
+                    <span class="title">Services</span>
+                    <span class="arrow"><i class="fas fa-chevron-down"></i></span>
+                </a>
+                <ul class="sub-menu">
+                    <li class="<?php echo navActive('service_building_construction_settings'); ?>">
+                        <a href="service_building_construction_settings.php">
+                            <span class="icon-thumbnail"><i class="fas fa-hard-hat"></i></span>
+                            <span class="title">Building Construction</span>
+                        </a>
+                    </li>
+                    <li class="<?php echo navActive('service_architecture_design_settings'); ?>">
+                        <a href="service_architecture_design_settings.php">
+                            <span class="icon-thumbnail"><i class="fas fa-drafting-compass"></i></span>
+                            <span class="title">Architecture Design</span>
+                        </a>
+                    </li>
+                    <li class="<?php echo navActive('service_building_renovation_settings'); ?>">
+                        <a href="service_building_renovation_settings.php">
+                            <span class="icon-thumbnail"><i class="fas fa-screwdriver-wrench"></i></span>
+                            <span class="title">Building Renovation</span>
+                        </a>
+                    </li>
+                    <li class="<?php echo navActive('service_interior_exterior_settings'); ?>">
+                        <a href="service_interior_exterior_settings.php">
+                            <span class="icon-thumbnail"><i class="fas fa-palette"></i></span>
+                            <span class="title">Interior / Exterior</span>
+                        </a>
+                    </li>
+                    <li class="<?php echo navActive('service_project_management_settings'); ?>">
+                        <a href="service_project_management_settings.php">
+                            <span class="icon-thumbnail"><i class="fas fa-list-check"></i></span>
+                            <span class="title">Project Management</span>
+                        </a>
+                    </li>
+                    <li class="<?php echo navActive('service_steel_and_fabrication_settings'); ?>">
+                        <a href="service_steel_and_fabrication_settings.php">
+                            <span class="icon-thumbnail"><i class="fas fa-industry"></i></span>
+                            <span class="title">Steel & Fabrication</span>
+                        </a>
+                    </li>
+                </ul>
             </li>
             <li class="<?php echo navActive('about_page_settings'); ?>">
                 <a href="about_page_settings.php">
