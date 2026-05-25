@@ -976,6 +976,28 @@ if ($metaDescription === '') {
                 padding: 0;
             }
 
+            .service-page-rebuilt .tpv-site-header__menu-button {
+                background: transparent !important;
+                border: 0 !important;
+                box-shadow: none !important;
+                border-radius: 0 !important;
+            }
+
+            .service-page-rebuilt .tpv-site-header__menu-button:hover,
+            .service-page-rebuilt .tpv-site-header__menu-button:focus-visible,
+            .service-page-rebuilt .tpv-site-header__menu-button[aria-expanded="true"] {
+                background: transparent !important;
+                border: 0 !important;
+                box-shadow: none !important;
+                opacity: 0.82;
+            }
+
+            .service-page-rebuilt .tpv-site-header__menu-icon::before,
+            .service-page-rebuilt .tpv-site-header__menu-icon::after,
+            .service-page-rebuilt .tpv-site-header__menu-icon span {
+                background: #16233f !important;
+            }
+
             .service-page-rebuilt .elementor-225 > .elementor-element-3c0e001 > .elementor-element-159e7cf {
                 width: min(100% - 18px, 100%);
                 min-height: 64px;
@@ -1021,7 +1043,7 @@ if ($metaDescription === '') {
     </style>
 </head>
 <body class="service-page-rebuilt wp-custom-logo elementor-default elementor-kit-7">
-    <?php include dirname(__DIR__) . '/includes/header.php'; ?>
+    <?php include dirname(__DIR__) . '/includes/quote_header.php'; ?>
 
     <main class="service-main">
         <section class="service-hero">

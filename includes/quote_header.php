@@ -4,11 +4,26 @@ if (!function_exists('tpv_setting_asset_url')) {
 }
 
 $siteLogoUrl = tpv_setting_asset_url('site_logo', 'wp-content/uploads/2024/06/logo.png');
+$siteHomeUrl = rtrim((string) SITE_URL, '/') . '/';
+$siteAboutUrl = $siteHomeUrl . 'about-us/';
+$siteContactUrl = $siteHomeUrl . 'contact-us/';
+$siteBlogUrl = $siteHomeUrl . 'blog/';
+$siteServicesUrl = $siteHomeUrl . 'services/';
+$siteQuoteUrl = $siteHomeUrl . 'quote/';
+$serviceMenuLinks = [
+    ['label' => 'Building Construction', 'href' => $siteHomeUrl . 'services/building-construction/'],
+    ['label' => 'Architecture Design', 'href' => $siteHomeUrl . 'services/architecture-design/'],
+    ['label' => 'Building Renovation', 'href' => $siteHomeUrl . 'services/building-renovation/'],
+    ['label' => 'Interior / Exterior', 'href' => $siteHomeUrl . 'services/interior-exterior/'],
+    ['label' => 'Project Management', 'href' => $siteHomeUrl . 'services/project-management/'],
+    ['label' => 'Steel & Fabrication', 'href' => $siteHomeUrl . 'services/steel-and-fabrication/'],
+];
+
 $uri = $_SERVER['REQUEST_URI'] ?? '';
-$isHome = preg_match('#/Archive/?$#', $uri) ? 'is-active' : '';
+$isHome = preg_match('#/Archive/?$#', $uri) || preg_match('#/Archive/index\.php$#', $uri) ? 'is-active' : '';
 $isAbout = strpos($uri, '/about-us') !== false ? 'is-active' : '';
 $isContact = strpos($uri, '/contact-us') !== false ? 'is-active' : '';
-$isBlog = strpos($uri, '/blog') !== false ? 'is-active' : '';
+$isBlog = strpos($uri, '/blog') !== false || strpos($uri, '/post.php') !== false ? 'is-active' : '';
 $isServices = strpos($uri, '/services') !== false ? 'is-active' : '';
 $isQuote = strpos($uri, '/quote') !== false ? 'is-active' : '';
 ?>
@@ -16,11 +31,11 @@ $isQuote = strpos($uri, '/quote') !== false ? 'is-active' : '';
     .tpv-site-header {
         position: sticky;
         top: 0;
-        z-index: 1000;
-        background: rgba(255, 255, 255, 0.96);
-        backdrop-filter: blur(14px);
+        z-index: 1100;
+        background: rgba(255, 255, 255, 0.94);
+        backdrop-filter: blur(16px);
         border-bottom: 1px solid rgba(15, 23, 42, 0.08);
-        box-shadow: 0 12px 34px -28px rgba(15, 23, 42, 0.4);
+        box-shadow: 0 10px 34px -28px rgba(15, 23, 42, 0.45);
     }
 
     .tpv-site-header__inner {
@@ -53,15 +68,30 @@ $isQuote = strpos($uri, '/quote') !== false ? 'is-active' : '';
         justify-content: center;
     }
 
+    .tpv-site-header__nav-list,
+    .tpv-site-header__drawer-list,
+    .tpv-site-header__submenu {
+        list-style: none;
+        margin: 0;
+        padding: 0;
+    }
+
     .tpv-site-header__nav-list {
         display: flex;
         align-items: center;
         justify-content: center;
         gap: 6px;
-        list-style: none;
-        margin: 0;
-        padding: 0;
         flex-wrap: wrap;
+    }
+
+    .tpv-site-header__nav-link,
+    .tpv-site-header__drawer-link,
+    .tpv-site-header__submenu-link,
+    .tpv-site-header__drawer-summary {
+        text-decoration: none;
+        color: #1e293b;
+        font-size: 14px;
+        font-weight: 600;
     }
 
     .tpv-site-header__nav-link {
@@ -70,10 +100,6 @@ $isQuote = strpos($uri, '/quote') !== false ? 'is-active' : '';
         justify-content: center;
         padding: 9px 14px;
         border-radius: 999px;
-        text-decoration: none;
-        color: #1e293b;
-        font-size: 14px;
-        font-weight: 600;
         transition: background-color 0.2s ease, color 0.2s ease, transform 0.2s ease;
     }
 
@@ -115,37 +141,207 @@ $isQuote = strpos($uri, '/quote') !== false ? 'is-active' : '';
         outline: none;
     }
 
-    .tpv-site-header__mobile-toggle {
-        display: none;
-    }
-
     .tpv-site-header__menu-button {
         display: none;
-        width: 46px;
-        height: 46px;
-        border: 1px solid rgba(15, 23, 42, 0.1);
-        border-radius: 14px;
-        background: #ffffff;
+        width: 48px;
+        height: 48px;
+        border: 0;
+        border-radius: 0;
+        background: transparent;
         align-items: center;
         justify-content: center;
         cursor: pointer;
-        box-shadow: 0 12px 20px -18px rgba(15, 23, 42, 0.5);
-    }
-
-    .tpv-site-header__menu-button span,
-    .tpv-site-header__menu-button::before,
-    .tpv-site-header__menu-button::after {
-        content: "";
-        display: block;
-        width: 18px;
-        height: 2px;
-        border-radius: 999px;
-        background: #0f172a;
+        box-shadow: none;
         transition: transform 0.2s ease, opacity 0.2s ease;
     }
 
-    .tpv-site-header__menu-button span {
-        margin: 5px 0;
+    .tpv-site-header__menu-button:hover,
+    .tpv-site-header__menu-button:focus-visible {
+        transform: translateY(-1px);
+        opacity: 0.82;
+        outline: none;
+    }
+
+    .tpv-site-header__menu-icon {
+        position: relative;
+        width: 20px;
+        height: 14px;
+    }
+
+    .tpv-site-header__menu-icon::before,
+    .tpv-site-header__menu-icon::after,
+    .tpv-site-header__menu-icon span {
+        position: absolute;
+        left: 0;
+        width: 20px;
+        height: 2.5px;
+        border-radius: 999px;
+        background: #16233f;
+        transition: transform 0.22s ease, opacity 0.22s ease, top 0.22s ease;
+        content: "";
+    }
+
+    .tpv-site-header__menu-icon::before { top: 0; }
+    .tpv-site-header__menu-icon span { top: 5.5px; }
+    .tpv-site-header__menu-icon::after { top: 11px; }
+
+    .tpv-site-header__menu-button[aria-expanded="true"] .tpv-site-header__menu-icon::before {
+        top: 5.5px;
+        transform: rotate(45deg);
+    }
+
+    .tpv-site-header__menu-button[aria-expanded="true"] .tpv-site-header__menu-icon span {
+        opacity: 0;
+    }
+
+    .tpv-site-header__menu-button[aria-expanded="true"] .tpv-site-header__menu-icon::after {
+        top: 5.5px;
+        transform: rotate(-45deg);
+    }
+
+    .tpv-site-header__mobile-overlay {
+        position: fixed;
+        inset: 0;
+        background: rgba(15, 23, 42, 0.45);
+        opacity: 0;
+        visibility: hidden;
+        pointer-events: none;
+        transition: opacity 0.22s ease, visibility 0.22s ease;
+        z-index: 1098;
+    }
+
+    .tpv-site-header__mobile-panel {
+        position: fixed;
+        top: 0;
+        right: 0;
+        width: min(88vw, 360px);
+        height: 100vh;
+        background: linear-gradient(180deg, #ffffff 0%, #f8fbff 100%);
+        box-shadow: -14px 0 38px rgba(15, 23, 42, 0.18);
+        transform: translateX(100%);
+        transition: transform 0.24s ease;
+        z-index: 1099;
+        display: flex;
+        flex-direction: column;
+        padding: 18px 18px 24px;
+        overflow-y: auto;
+    }
+
+    body.tpv-mobile-menu-open .tpv-site-header__mobile-overlay {
+        opacity: 1;
+        visibility: visible;
+        pointer-events: auto;
+    }
+
+    body.tpv-mobile-menu-open .tpv-site-header__mobile-panel {
+        transform: translateX(0);
+    }
+
+    body.tpv-mobile-menu-open {
+        overflow: hidden;
+    }
+
+    .tpv-site-header__drawer-head {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        margin-bottom: 20px;
+    }
+
+    .tpv-site-header__drawer-brand {
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        min-width: 0;
+    }
+
+    .tpv-site-header__drawer-brand img {
+        max-width: 74px;
+        max-height: 48px;
+        display: block;
+    }
+
+    .tpv-site-header__drawer-close {
+        border: 0;
+        background: #f3f6fb;
+        color: #0f172a;
+        width: 40px;
+        height: 40px;
+        border-radius: 12px;
+        cursor: pointer;
+        font-size: 22px;
+        line-height: 1;
+    }
+
+    .tpv-site-header__drawer-list {
+        display: grid;
+        gap: 8px;
+    }
+
+    .tpv-site-header__drawer-link,
+    .tpv-site-header__drawer-summary {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        width: 100%;
+        padding: 13px 15px;
+        border-radius: 16px;
+        background: #f8fafc;
+        border: 1px solid #ebf0f6;
+    }
+
+    .tpv-site-header__drawer-link.is-active,
+    .tpv-site-header__drawer-summary.is-active {
+        background: rgba(239, 68, 68, 0.08);
+        border-color: rgba(239, 68, 68, 0.16);
+        color: #dc2626;
+    }
+
+    .tpv-site-header__drawer-item details {
+        border-radius: 18px;
+    }
+
+    .tpv-site-header__drawer-summary {
+        cursor: pointer;
+        list-style: none;
+    }
+
+    .tpv-site-header__drawer-summary::-webkit-details-marker {
+        display: none;
+    }
+
+    .tpv-site-header__drawer-summary-icon {
+        font-size: 12px;
+        transition: transform 0.2s ease;
+    }
+
+    .tpv-site-header__drawer-item details[open] .tpv-site-header__drawer-summary-icon {
+        transform: rotate(180deg);
+    }
+
+    .tpv-site-header__submenu {
+        display: grid;
+        gap: 8px;
+        padding: 10px 8px 2px;
+    }
+
+    .tpv-site-header__submenu-link {
+        display: flex;
+        padding: 11px 14px;
+        border-radius: 14px;
+        background: #ffffff;
+        border: 1px solid #edf2f7;
+        color: #475569;
+    }
+
+    .tpv-site-header__drawer-footer {
+        margin-top: 22px;
+    }
+
+    .tpv-site-header__drawer-footer .tpv-site-header__cta {
+        width: 100%;
+        min-width: 0;
     }
 
     @media (max-width: 1080px) {
@@ -155,63 +351,20 @@ $isQuote = strpos($uri, '/quote') !== false ? 'is-active' : '';
             padding: 12px 18px;
         }
 
-        .tpv-site-header__menu-button {
-            display: inline-flex;
-        }
-
-        .tpv-site-header__nav,
-        .tpv-site-header__actions {
-            grid-column: 1 / -1;
-        }
-
         .tpv-site-header__nav,
         .tpv-site-header__actions {
             display: none;
         }
 
-        .tpv-site-header__mobile-toggle:checked ~ .tpv-site-header__nav,
-        .tpv-site-header__mobile-toggle:checked ~ .tpv-site-header__actions {
-            display: block;
+        .tpv-site-header__menu-button {
+            display: inline-flex;
         }
+    }
 
-        .tpv-site-header__mobile-toggle:checked + .tpv-site-header__menu-button::before {
-            transform: translateY(7px) rotate(45deg);
-        }
-
-        .tpv-site-header__mobile-toggle:checked + .tpv-site-header__menu-button span {
-            opacity: 0;
-        }
-
-        .tpv-site-header__mobile-toggle:checked + .tpv-site-header__menu-button::after {
-            transform: translateY(-7px) rotate(-45deg);
-        }
-
-        .tpv-site-header__nav {
-            width: 100%;
-            padding-top: 12px;
-        }
-
-        .tpv-site-header__nav-list {
-            flex-direction: column;
-            align-items: stretch;
-            gap: 6px;
-        }
-
-        .tpv-site-header__nav-link {
-            justify-content: flex-start;
-            border-radius: 16px;
-            padding: 12px 15px;
-            background: #f8fafc;
-        }
-
-        .tpv-site-header__actions {
-            width: 100%;
-            padding-top: 12px;
-        }
-
-        .tpv-site-header__cta {
-            width: 100%;
-            min-width: 0;
+    @media (min-width: 1081px) {
+        .tpv-site-header__mobile-overlay,
+        .tpv-site-header__mobile-panel {
+            display: none;
         }
     }
 
@@ -227,38 +380,118 @@ $isQuote = strpos($uri, '/quote') !== false ? 'is-active' : '';
         }
 
         .tpv-site-header__menu-button {
-            width: 42px;
-            height: 42px;
-            border-radius: 12px;
+            width: 46px;
+            height: 46px;
+        }
+
+        .tpv-site-header__mobile-panel {
+            width: min(92vw, 340px);
+            padding: 16px 14px 20px;
         }
     }
 </style>
 
 <header class="tpv-site-header">
     <div class="tpv-site-header__inner">
-        <a class="tpv-site-header__brand" href="../" aria-label="TPV Construction and Services LTD home">
+        <a class="tpv-site-header__brand" href="<?php echo htmlspecialchars($siteHomeUrl); ?>" aria-label="TPV Construction and Services LTD home">
             <img src="<?php echo htmlspecialchars($siteLogoUrl); ?>" alt="TPV Construction and Services LTD">
         </a>
 
-        <input class="tpv-site-header__mobile-toggle" type="checkbox" id="tpv-site-header-toggle">
-        <label class="tpv-site-header__menu-button" for="tpv-site-header-toggle" aria-label="Toggle navigation">
-            <span></span>
-        </label>
-
         <nav class="tpv-site-header__nav" aria-label="Primary navigation">
             <ul class="tpv-site-header__nav-list">
-                <li><a class="tpv-site-header__nav-link <?php echo $isHome; ?>" href="../">Home</a></li>
-                <li><a class="tpv-site-header__nav-link <?php echo $isAbout; ?>" href="../about-us/">About Us</a></li>
-                <li><a class="tpv-site-header__nav-link <?php echo $isContact; ?>" href="../contact-us/">Contact Us</a></li>
-                <li><a class="tpv-site-header__nav-link <?php echo $isBlog; ?>" href="../blog/">Blog</a></li>
-                <li><a class="tpv-site-header__nav-link <?php echo $isServices; ?>" href="../services/">Services</a></li>
+                <li><a class="tpv-site-header__nav-link <?php echo $isHome; ?>" href="<?php echo htmlspecialchars($siteHomeUrl); ?>">Home</a></li>
+                <li><a class="tpv-site-header__nav-link <?php echo $isAbout; ?>" href="<?php echo htmlspecialchars($siteAboutUrl); ?>">About Us</a></li>
+                <li><a class="tpv-site-header__nav-link <?php echo $isContact; ?>" href="<?php echo htmlspecialchars($siteContactUrl); ?>">Contact Us</a></li>
+                <li><a class="tpv-site-header__nav-link <?php echo $isBlog; ?>" href="<?php echo htmlspecialchars($siteBlogUrl); ?>">Blog</a></li>
+                <li><a class="tpv-site-header__nav-link <?php echo $isServices; ?>" href="<?php echo htmlspecialchars($siteServicesUrl); ?>">Services</a></li>
             </ul>
         </nav>
 
         <div class="tpv-site-header__actions">
-            <a class="tpv-site-header__cta <?php echo $isQuote; ?>" href="../quote/" aria-current="<?php echo $isQuote ? 'page' : 'false'; ?>">
+            <a class="tpv-site-header__cta <?php echo $isQuote; ?>" href="<?php echo htmlspecialchars($siteQuoteUrl); ?>" aria-current="<?php echo $isQuote ? 'page' : 'false'; ?>">
                 Get Free Quote
             </a>
         </div>
+
+        <button class="tpv-site-header__menu-button" type="button" aria-label="Open menu" aria-expanded="false" aria-controls="tpv-mobile-panel">
+            <span class="tpv-site-header__menu-icon"><span></span></span>
+        </button>
     </div>
 </header>
+
+<div class="tpv-site-header__mobile-overlay" data-mobile-overlay></div>
+
+<aside class="tpv-site-header__mobile-panel" id="tpv-mobile-panel" aria-hidden="true">
+    <div class="tpv-site-header__drawer-head">
+        <a class="tpv-site-header__drawer-brand" href="<?php echo htmlspecialchars($siteHomeUrl); ?>">
+            <img src="<?php echo htmlspecialchars($siteLogoUrl); ?>" alt="TPV Construction and Services LTD">
+        </a>
+        <button class="tpv-site-header__drawer-close" type="button" aria-label="Close menu" data-mobile-close>&times;</button>
+    </div>
+
+    <ul class="tpv-site-header__drawer-list">
+        <li class="tpv-site-header__drawer-item"><a class="tpv-site-header__drawer-link <?php echo $isHome; ?>" href="<?php echo htmlspecialchars($siteHomeUrl); ?>">Home</a></li>
+        <li class="tpv-site-header__drawer-item"><a class="tpv-site-header__drawer-link <?php echo $isAbout; ?>" href="<?php echo htmlspecialchars($siteAboutUrl); ?>">About Us</a></li>
+        <li class="tpv-site-header__drawer-item"><a class="tpv-site-header__drawer-link <?php echo $isContact; ?>" href="<?php echo htmlspecialchars($siteContactUrl); ?>">Contact Us</a></li>
+        <li class="tpv-site-header__drawer-item"><a class="tpv-site-header__drawer-link <?php echo $isBlog; ?>" href="<?php echo htmlspecialchars($siteBlogUrl); ?>">Blog</a></li>
+        <li class="tpv-site-header__drawer-item">
+            <details <?php echo $isServices ? 'open' : ''; ?>>
+                <summary class="tpv-site-header__drawer-summary <?php echo $isServices; ?>">
+                    <span>Services</span>
+                    <span class="tpv-site-header__drawer-summary-icon">&#9662;</span>
+                </summary>
+                <ul class="tpv-site-header__submenu">
+                    <li><a class="tpv-site-header__submenu-link" href="<?php echo htmlspecialchars($siteServicesUrl); ?>">All Services</a></li>
+                    <?php foreach ($serviceMenuLinks as $serviceMenuLink): ?>
+                        <li><a class="tpv-site-header__submenu-link" href="<?php echo htmlspecialchars($serviceMenuLink['href']); ?>"><?php echo htmlspecialchars($serviceMenuLink['label']); ?></a></li>
+                    <?php endforeach; ?>
+                </ul>
+            </details>
+        </li>
+    </ul>
+
+    <div class="tpv-site-header__drawer-footer">
+        <a class="tpv-site-header__cta <?php echo $isQuote; ?>" href="<?php echo htmlspecialchars($siteQuoteUrl); ?>">
+            Get Free Quote
+        </a>
+    </div>
+</aside>
+
+<script>
+(() => {
+    const menuButton = document.querySelector('.tpv-site-header__menu-button');
+    const mobilePanel = document.getElementById('tpv-mobile-panel');
+    const overlay = document.querySelector('[data-mobile-overlay]');
+    const closeButton = document.querySelector('[data-mobile-close]');
+
+    if (!menuButton || !mobilePanel || !overlay) {
+        return;
+    }
+
+    const setMenuState = (isOpen) => {
+        document.body.classList.toggle('tpv-mobile-menu-open', isOpen);
+        menuButton.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+        mobilePanel.setAttribute('aria-hidden', isOpen ? 'false' : 'true');
+    };
+
+    menuButton.addEventListener('click', () => {
+        const isOpen = menuButton.getAttribute('aria-expanded') === 'true';
+        setMenuState(!isOpen);
+    });
+
+    overlay.addEventListener('click', () => setMenuState(false));
+    if (closeButton) {
+        closeButton.addEventListener('click', () => setMenuState(false));
+    }
+
+    mobilePanel.querySelectorAll('a').forEach((link) => {
+        link.addEventListener('click', () => setMenuState(false));
+    });
+
+    document.addEventListener('keydown', (event) => {
+        if (event.key === 'Escape') {
+            setMenuState(false);
+        }
+    });
+})();
+</script>
