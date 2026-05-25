@@ -1154,47 +1154,17 @@ try {
                     <span class="title">Homepage</span>
                 </a>
             </li>
-            <li class="<?php echo navOpen('service_'); ?>" data-menu-key="services">
+            <li class="<?php echo (strpos($pageActive, 'service_') === 0 || $pageActive === 'service_manager') ? 'open' : ''; ?>" data-menu-key="services">
                 <a href="javascript:;" onclick="return toggleSubmenu(this)">
                     <span class="icon-thumbnail"><i class="fas fa-briefcase"></i></span>
                     <span class="title">Services</span>
                     <span class="arrow"><i class="fas fa-chevron-down"></i></span>
                 </a>
                 <ul class="sub-menu">
-                    <li class="<?php echo navActive('service_building_construction_settings'); ?>">
-                        <a href="service_building_construction_settings.php">
-                            <span class="icon-thumbnail"><i class="fas fa-hard-hat"></i></span>
-                            <span class="title">Building Construction</span>
-                        </a>
-                    </li>
-                    <li class="<?php echo navActive('service_architecture_design_settings'); ?>">
-                        <a href="service_architecture_design_settings.php">
-                            <span class="icon-thumbnail"><i class="fas fa-drafting-compass"></i></span>
-                            <span class="title">Architecture Design</span>
-                        </a>
-                    </li>
-                    <li class="<?php echo navActive('service_building_renovation_settings'); ?>">
-                        <a href="service_building_renovation_settings.php">
-                            <span class="icon-thumbnail"><i class="fas fa-screwdriver-wrench"></i></span>
-                            <span class="title">Building Renovation</span>
-                        </a>
-                    </li>
-                    <li class="<?php echo navActive('service_interior_exterior_settings'); ?>">
-                        <a href="service_interior_exterior_settings.php">
-                            <span class="icon-thumbnail"><i class="fas fa-palette"></i></span>
-                            <span class="title">Interior / Exterior</span>
-                        </a>
-                    </li>
-                    <li class="<?php echo navActive('service_project_management_settings'); ?>">
-                        <a href="service_project_management_settings.php">
-                            <span class="icon-thumbnail"><i class="fas fa-list-check"></i></span>
-                            <span class="title">Project Management</span>
-                        </a>
-                    </li>
-                    <li class="<?php echo navActive('service_steel_and_fabrication_settings'); ?>">
-                        <a href="service_steel_and_fabrication_settings.php">
-                            <span class="icon-thumbnail"><i class="fas fa-industry"></i></span>
-                            <span class="title">Steel & Fabrication</span>
+                    <li class="<?php echo navActive('service_manager'); ?>">
+                        <a href="service_manager.php">
+                            <span class="icon-thumbnail"><i class="fas fa-layer-group"></i></span>
+                            <span class="title">Service Manager</span>
                         </a>
                     </li>
                 </ul>

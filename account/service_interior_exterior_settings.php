@@ -8,6 +8,10 @@ $auth->requireAuth();
 $currentUser = $auth->getUserData();
 $settings = new Settings();
 
+$_SESSION['toast_success'] = 'Service settings now live in the unified Service Manager. Edit Highlight Cards 1, 2, and 3 there so changes sync to the website.';
+header('Location: service_manager.php?service=interior-exterior');
+exit;
+
 function serviceHandleAssetUpload($fileKey, $targetName, $subDirectory = 'services/interior-exterior') {
     if (!isset($_FILES[$fileKey]) || !is_array($_FILES[$fileKey]) || ($_FILES[$fileKey]['error'] ?? UPLOAD_ERR_NO_FILE) === UPLOAD_ERR_NO_FILE) {
         return null;
