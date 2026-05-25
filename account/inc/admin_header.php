@@ -1160,14 +1160,15 @@ $headerAvatarInitials = adminAvatarInitials($currentUser);
                     <li class="<?php echo navActive('documents'); ?>"><a href="documents.php"><span class="icon-thumbnail">DOC</span>Documents</a></li>
                 </ul>
             </li>
-            <li class="<?php echo navOpen('blog'); echo navActive('blog_list') ? ' active' : ''; echo navActive('blog_categories') ? ' active' : ''; echo navActive('blog_comments') ? ' active' : ''; ?>" data-menu-key="blog">
+            <li class="<?php echo navOpen('blog'); echo navActive('blog_manager') ? ' active' : ''; echo navActive('blog_page_settings') ? ' active' : ''; echo navActive('blog_categories') ? ' active' : ''; echo navActive('blog_comments') ? ' active' : ''; ?>" data-menu-key="blog">
                 <a href="javascript:;" onclick="toggleSubmenu(this)">
                     <span class="icon-thumbnail"><i class="fas fa-edit"></i></span>
                     <span class="title">Company blog</span>
                     <span class="arrow"><i class="fas fa-chevron-down"></i></span>
                 </a>
                 <ul class="sub-menu">
-                    <li class="<?php echo navActive('blog_list'); ?>"><a href="blog_list.php"><span class="icon-thumbnail">BP</span>All posts</a></li>
+                    <li class="<?php echo navActive('blog_manager'); ?>"><a href="blog_manager.php"><span class="icon-thumbnail">BS</span>Blog Studio</a></li>
+                    <li class="<?php echo navActive('blog_page_settings'); ?>"><a href="blog_page_settings.php"><span class="icon-thumbnail">PG</span>Blog Page</a></li>
                     <li class="<?php echo navActive('blog_categories'); ?>"><a href="blog_categories.php"><span class="icon-thumbnail">CAT</span>Categories</a></li>
                     <li class="<?php echo navActive('blog_comments'); ?>"><a href="blog_comments.php"><span class="icon-thumbnail">COM</span>Comments</a></li>
                 </ul>

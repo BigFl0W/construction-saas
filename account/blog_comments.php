@@ -242,6 +242,7 @@ require 'inc/admin_header.php';
                                                     <?php endif; ?>
                                                 </div>
                                             </div>
+                                            <textarea class="comment-store-<?php echo $comment['id']; ?>" style="display:none;"><?php echo htmlspecialchars($comment['content'], ENT_QUOTES, 'UTF-8'); ?></textarea>
                                         </td>
                                         <td>
                                             <div title="<?php echo htmlspecialchars($comment['content']); ?>">
@@ -293,7 +294,12 @@ require 'inc/admin_header.php';
                                                     <button type="submit" class="btn btn-sm btn-light border" title="Mark as spam"><i class="fas fa-ban text-warning"></i></button>
                                                 </form>
                                                 <?php endif; ?>
-                                                <button class="btn btn-sm btn-light border reply-btn" data-id="<?php echo $comment['id']; ?>" data-author="<?php echo htmlspecialchars($comment['author_name'] ?? 'User'); ?>" title="Reply"><i class="fas fa-reply text-info"></i></button>
+                                                <button class="btn btn-sm btn-light border reply-btn"
+                                                        data-id="<?php echo $comment['id']; ?>"
+                                                        data-author="<?php echo htmlspecialchars($comment['author_name'] ?? 'User', ENT_QUOTES, 'UTF-8'); ?>"
+                                                        data-email="<?php echo htmlspecialchars($comment['author_email'] ?? '', ENT_QUOTES, 'UTF-8'); ?>"
+                                                        data-post="<?php echo htmlspecialchars($comment['post_title'] ?? 'Blog Post', ENT_QUOTES, 'UTF-8'); ?>"
+                                                        title="Reply"><i class="fas fa-reply text-info"></i></button>
                                                 <form method="post" style="display:inline;">
                                                     <input type="hidden" name="csrf_token" value="<?php echo $csrfToken; ?>">
                                                     <input type="hidden" name="action" value="delete">
@@ -316,6 +322,99 @@ require 'inc/admin_header.php';
                 </div>
             </div>
         </div>
+
+        <div class="modal fade" id="replyModal" tabindex="-1" aria-hidden="true">
+            <div class="modal-dialog modal-lg modal-dialog-centered">
+                <div class="modal-content">
+                    <form method="post">
+                        <input type="hidden" name="csrf_token" value="<?php echo $csrfToken; ?>">
+                        <input type="hidden" name="action" value="reply">
+                        <input type="hidden" name="comment_id" id="replyCommentId" value="">
+                        <div class="modal-header bg-light">
+                            <h5 class="modal-title"><i class="fas fa-reply text-info me-2"></i>Reply to <span id="replyAuthorName"></span></h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="row">
+                                <div class="col-md-5">
+                                    <div class="original-message-card">
+                                        <h6 class="fw-semibold mb-2"><i class="fas fa-comment-dots me-1 text-muted"></i>Original Comment</h6>
+                                        <div class="original-sender mb-2">
+                                            <strong id="replyFromName"></strong>
+                                            <br><small class="text-muted" id="replyFromEmail"></small>
+                                        </div>
+                                        <div class="original-subject mb-2">
+                                            <span class="badge bg-secondary bg-opacity-10 text-secondary" id="replyPostTitle"></span>
+                                        </div>
+                                        <div class="original-body">
+                                            <p id="replyOriginalComment" style="white-space:pre-line;font-size:13px;color:#475569;"></p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-7">
+                                    <div class="form-group">
+                                        <label class="form-label fw-semibold">Your Reply <span class="text-danger">*</span></label>
+                                        <textarea class="form-control" name="reply_content" rows="10" placeholder="Type your reply here..." required></textarea>
+                                    </div>
+                                    <p class="small text-muted mt-2 mb-0">
+                                        <i class="fas fa-info-circle me-1"></i>
+                                        An email notification will be sent to <strong id="replyEmailInfo">this commenter</strong> when available.
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="modal-footer bg-light">
+                            <button type="button" class="btn btn-light" data-bs-dismiss="modal">Cancel</button>
+                            <button type="submit" class="btn btn-primary px-4"><i class="fas fa-paper-plane me-1"></i>Send Reply</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <style>
+        .original-message-card {
+            border: 1px solid #e2e8f0;
+            border-radius: 16px;
+            background: #f8fafc;
+            padding: 16px;
+            height: 100%;
+        }
+        .original-body {
+            max-height: 220px;
+            overflow-y: auto;
+            padding: 12px;
+            background: #fff;
+            border-radius: 12px;
+            border: 1px solid #e2e8f0;
+        }
+        </style>
+
+<?php
+$extraScripts = <<<'HEREDOC'
+<script>
+$(function() {
+    $(document).on('click', '.reply-btn', function() {
+        var id = $(this).data('id');
+        var author = $(this).data('author') || 'Commenter';
+        var email = $(this).data('email') || '';
+        var postTitle = $(this).data('post') || 'Blog post';
+        var originalComment = $('.comment-store-' + id).text();
+
+        $('#replyCommentId').val(id);
+        $('#replyAuthorName').text(author);
+        $('#replyFromName').text(author);
+        $('#replyFromEmail').text(email ? '<' + email + '>' : 'No email captured');
+        $('#replyPostTitle').text(postTitle);
+        $('#replyOriginalComment').text(originalComment);
+        $('#replyEmailInfo').text(email || 'this commenter');
+        $('#replyModal textarea[name="reply_content"]').val('');
+        $('#replyModal').modal('show');
+    });
+});
+</script>
+HEREDOC;
+?>
 
         <!-- FOOTER -->
 <?php require 'inc/admin_footer.php'; ?>
