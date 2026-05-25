@@ -88,6 +88,7 @@ $filterCategory = $_GET['category_id'] ?? null;
 
 $documents = $doc->getAll($filterProject, $filterClient, $filterEmployee, $filterCategory);
 $categories = $doc->getCategories();
+$hasDocuments = !empty($documents);
 
 $projects = $db->query("SELECT id, name FROM projects WHERE deleted_at IS NULL ORDER BY name")->fetchAll();
 $clients = $db->query("SELECT id, company_name FROM clients WHERE deleted_at IS NULL ORDER BY company_name")->fetchAll();
@@ -168,7 +169,7 @@ require 'inc/admin_header.php';
                                     </form>
 
                                     <div class="table-responsive">
-                                        <table class="table table-hover" data-table id="documentsTable">
+                                        <table class="table table-hover<?php echo $hasDocuments ? '' : ' no-datatable'; ?>"<?php echo $hasDocuments ? ' data-table' : ''; ?> id="documentsTable">
                                             <thead>
                                                 <tr>
                                                     <th>File</th>
@@ -183,7 +184,16 @@ require 'inc/admin_header.php';
                                             </thead>
                                             <tbody>
                                                 <?php if (empty($documents)): ?>
-                                                <tr><td colspan="8" class="text-center text-muted py-4">No documents found.</td></tr>
+                                                <tr>
+                                                    <td class="text-center text-muted py-4">No documents found.</td>
+                                                    <td></td>
+                                                    <td></td>
+                                                    <td></td>
+                                                    <td></td>
+                                                    <td></td>
+                                                    <td></td>
+                                                    <td></td>
+                                                </tr>
                                                 <?php else: ?>
                                                 <?php foreach ($documents as $d): 
                                                     $ext = strtolower(pathinfo($d['original_filename'] ?? $d['filename'], PATHINFO_EXTENSION));
