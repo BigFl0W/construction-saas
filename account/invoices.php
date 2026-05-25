@@ -82,44 +82,95 @@ function invoiceBuildEmailBody(array $invoiceData, array $items, array $company,
     $rows = '';
     foreach ($items as $item) {
         $rows .= '<tr>'
-            . '<td style="padding:12px 14px;border-bottom:1px solid #e2e8f0;color:#0f172a;">' . htmlspecialchars($item['description']) . '</td>'
-            . '<td style="padding:12px 14px;border-bottom:1px solid #e2e8f0;color:#475569;text-align:center;">' . number_format((float) $item['quantity'], 2) . '</td>'
-            . '<td style="padding:12px 14px;border-bottom:1px solid #e2e8f0;color:#475569;text-align:right;">' . htmlspecialchars($company['format_currency']((float) $item['unit_price'])) . '</td>'
-            . '<td style="padding:12px 14px;border-bottom:1px solid #e2e8f0;color:#0f172a;text-align:right;font-weight:700;">' . htmlspecialchars($company['format_currency']((float) ($item['line_total'] ?? 0))) . '</td>'
+            . '<td style="padding:14px 16px;border-bottom:1px solid #e2e8f0;color:#0f172a;font-size:14px;line-height:1.6;">' . htmlspecialchars($item['description']) . '</td>'
+            . '<td style="padding:14px 16px;border-bottom:1px solid #e2e8f0;color:#475569;text-align:center;font-size:14px;">' . number_format((float) $item['quantity'], 2) . '</td>'
+            . '<td style="padding:14px 16px;border-bottom:1px solid #e2e8f0;color:#475569;text-align:right;font-size:14px;">' . htmlspecialchars($company['format_currency']((float) $item['unit_price'])) . '</td>'
+            . '<td style="padding:14px 16px;border-bottom:1px solid #e2e8f0;color:#0f172a;text-align:right;font-size:14px;font-weight:700;">' . htmlspecialchars($company['format_currency']((float) ($item['line_total'] ?? 0))) . '</td>'
             . '</tr>';
     }
 
     if ($rows === '') {
-        $rows = '<tr><td colspan="4" style="padding:12px 14px;color:#64748b;border-bottom:1px solid #e2e8f0;">Invoice items will be available on the secure invoice page.</td></tr>';
+        $rows = '<tr><td colspan="4" style="padding:14px 16px;color:#64748b;border-bottom:1px solid #e2e8f0;font-size:14px;">Invoice items will be available on the secure invoice page.</td></tr>';
     }
 
-    $body = '<p style="margin:0 0 16px;font-size:15px;line-height:1.7;color:#334155;">' . nl2br(htmlspecialchars($customMessage)) . '</p>';
-    $body .= '<div style="margin:24px 0;padding:18px 20px;border:1px solid #e2e8f0;border-radius:18px;background:#f8fafc;">';
-    $body .= '<div style="display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;">';
-    $body .= '<div><div style="font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:#94a3b8;">Invoice Number</div><div style="font-size:22px;font-weight:800;color:#0f172a;">' . htmlspecialchars($invoiceData['invoice_number']) . '</div></div>';
-    $body .= '<div><div style="font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:#94a3b8;">Due Date</div><div style="font-size:18px;font-weight:700;color:#0f172a;">' . htmlspecialchars(date('M j, Y', strtotime($invoiceData['due_date']))) . '</div></div>';
-    $body .= '<div><div style="font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:#94a3b8;">Total Due</div><div style="font-size:22px;font-weight:800;color:#dc2626;">' . htmlspecialchars($company['format_currency']((float) $invoiceData['total'])) . '</div></div>';
+    $recipientName = trim((string) ($invoiceData['recipient_name'] ?? $invoiceData['client_name'] ?? ''));
+    $recipientEmail = trim((string) ($invoiceData['recipient_email'] ?? $invoiceData['client_email'] ?? ''));
+    $projectName = trim((string) ($invoiceData['project_name'] ?? ''));
+    $balance = (float) $invoiceData['total'] - (float) $invoiceData['amount_paid'];
+
+    $body = '<div style="margin:0 0 24px;padding:0 0 22px;border-bottom:1px solid #e2e8f0;">';
+    $body .= '<div style="font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:#94a3b8;font-weight:700;margin:0 0 10px;">Invoice Notice</div>';
+    $body .= '<div style="font-size:32px;line-height:1.02;font-weight:800;color:#0f172a;letter-spacing:-0.04em;margin:0 0 10px;">' . htmlspecialchars($invoiceData['invoice_number']) . '</div>';
+    $body .= '<div style="font-size:15px;line-height:1.8;color:#475569;">' . nl2br(htmlspecialchars($customMessage)) . '</div>';
     $body .= '</div>';
-    $body .= '</div>';
-    $body .= '<table width="100%" cellpadding="0" cellspacing="0" style="border-collapse:collapse;margin:0 0 18px;background:#ffffff;border:1px solid #e2e8f0;border-radius:18px;overflow:hidden;">';
+
+    $body .= '<table width="100%" cellpadding="0" cellspacing="0" style="border-collapse:separate;border-spacing:0;margin:0 0 22px;background:#f8fafc;border:1px solid #e2e8f0;border-radius:20px;overflow:hidden;">';
+    $body .= '<tr>';
+    $body .= '<td style="padding:18px 20px;border-right:1px solid #e2e8f0;vertical-align:top;">'
+        . '<div style="font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:#94a3b8;font-weight:700;margin-bottom:8px;">Billed To</div>'
+        . '<div style="font-size:16px;font-weight:700;color:#0f172a;margin-bottom:4px;">' . htmlspecialchars($recipientName !== '' ? $recipientName : 'Invoice Recipient') . '</div>'
+        . ($recipientEmail !== '' ? '<div style="font-size:14px;color:#475569;">' . htmlspecialchars($recipientEmail) . '</div>' : '')
+        . ($projectName !== '' ? '<div style="font-size:13px;color:#64748b;margin-top:8px;">Project: ' . htmlspecialchars($projectName) . '</div>' : '')
+        . '</td>';
+    $body .= '<td style="padding:18px 20px;vertical-align:top;">'
+        . '<div style="font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:#94a3b8;font-weight:700;margin-bottom:8px;">Issued By</div>'
+        . '<div style="font-size:16px;font-weight:700;color:#0f172a;margin-bottom:4px;">' . htmlspecialchars($company['name']) . '</div>'
+        . '<div style="font-size:14px;color:#475569;">' . htmlspecialchars($company['email']) . '</div>'
+        . '<div style="font-size:14px;color:#475569;">' . htmlspecialchars($company['phone']) . '</div>'
+        . '<div style="font-size:13px;color:#64748b;margin-top:8px;line-height:1.6;">' . nl2br(htmlspecialchars($company['address'])) . '</div>'
+        . '</td>';
+    $body .= '</tr>';
+    $body .= '</table>';
+
+    $body .= '<table width="100%" cellpadding="0" cellspacing="0" style="border-collapse:separate;border-spacing:0;margin:0 0 22px;background:#ffffff;border:1px solid #e2e8f0;border-radius:20px;overflow:hidden;">';
+    $body .= '<tr>'
+        . '<td style="padding:18px 14px;text-align:center;border-right:1px solid #e2e8f0;">'
+        . '<div style="font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:#94a3b8;font-weight:700;margin-bottom:8px;">Invoice Date</div>'
+        . '<div style="font-size:18px;font-weight:700;color:#0f172a;">' . htmlspecialchars(date('M j, Y', strtotime($invoiceData['invoice_date']))) . '</div>'
+        . '</td>'
+        . '<td style="padding:18px 14px;text-align:center;border-right:1px solid #e2e8f0;">'
+        . '<div style="font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:#94a3b8;font-weight:700;margin-bottom:8px;">Due Date</div>'
+        . '<div style="font-size:18px;font-weight:700;color:#0f172a;">' . htmlspecialchars(date('M j, Y', strtotime($invoiceData['due_date']))) . '</div>'
+        . '</td>'
+        . '<td style="padding:18px 14px;text-align:center;border-right:1px solid #e2e8f0;">'
+        . '<div style="font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:#94a3b8;font-weight:700;margin-bottom:8px;">Total Invoice</div>'
+        . '<div style="font-size:22px;font-weight:800;color:#0f172a;">' . htmlspecialchars($company['format_currency']((float) $invoiceData['total'])) . '</div>'
+        . '</td>'
+        . '<td style="padding:18px 14px;text-align:center;">'
+        . '<div style="font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:#94a3b8;font-weight:700;margin-bottom:8px;">Balance Due</div>'
+        . '<div style="font-size:22px;font-weight:800;color:#dc2626;">' . htmlspecialchars($company['format_currency']($balance)) . '</div>'
+        . '</td>'
+        . '</tr>';
+    $body .= '</table>';
+
+    $body .= '<table width="100%" cellpadding="0" cellspacing="0" style="border-collapse:collapse;margin:0 0 20px;background:#ffffff;border:1px solid #e2e8f0;border-radius:20px;overflow:hidden;">';
     $body .= '<thead><tr style="background:#0f172a;">'
-        . '<th style="padding:12px 14px;text-align:left;color:#ffffff;font-size:12px;letter-spacing:.08em;text-transform:uppercase;">Description</th>'
-        . '<th style="padding:12px 14px;text-align:center;color:#ffffff;font-size:12px;letter-spacing:.08em;text-transform:uppercase;">Qty</th>'
-        . '<th style="padding:12px 14px;text-align:right;color:#ffffff;font-size:12px;letter-spacing:.08em;text-transform:uppercase;">Unit Price</th>'
-        . '<th style="padding:12px 14px;text-align:right;color:#ffffff;font-size:12px;letter-spacing:.08em;text-transform:uppercase;">Line Total</th>'
+        . '<th style="padding:13px 16px;text-align:left;color:#ffffff;font-size:11px;letter-spacing:.08em;text-transform:uppercase;">Description</th>'
+        . '<th style="padding:13px 16px;text-align:center;color:#ffffff;font-size:11px;letter-spacing:.08em;text-transform:uppercase;">Qty</th>'
+        . '<th style="padding:13px 16px;text-align:right;color:#ffffff;font-size:11px;letter-spacing:.08em;text-transform:uppercase;">Unit Price</th>'
+        . '<th style="padding:13px 16px;text-align:right;color:#ffffff;font-size:11px;letter-spacing:.08em;text-transform:uppercase;">Line Total</th>'
         . '</tr></thead><tbody>' . $rows . '</tbody></table>';
-    $body .= '<p style="margin:0 0 18px;font-size:14px;color:#475569;">'
-        . 'Subtotal: <strong>' . htmlspecialchars($company['format_currency']((float) $invoiceData['subtotal'])) . '</strong><br>'
-        . 'Tax: <strong>' . htmlspecialchars($company['format_currency']((float) $invoiceData['tax'])) . '</strong><br>'
-        . 'Amount Paid: <strong>' . htmlspecialchars($company['format_currency']((float) $invoiceData['amount_paid'])) . '</strong><br>'
-        . 'Balance: <strong>' . htmlspecialchars($company['format_currency']((float) $invoiceData['total'] - (float) $invoiceData['amount_paid'])) . '</strong>'
-        . '</p>';
-    $body .= '<p style="margin:0 0 24px;"><a href="' . htmlspecialchars($publicUrl) . '" style="display:inline-block;padding:14px 22px;border-radius:999px;background:#ef4444;color:#ffffff;text-decoration:none;font-weight:700;">View Secure Invoice</a></p>';
+
+    $body .= '<table width="100%" cellpadding="0" cellspacing="0" style="border-collapse:separate;border-spacing:0;margin:0 0 24px;background:#fbfdff;border:1px solid #e2e8f0;border-radius:18px;overflow:hidden;">';
+    $body .= '<tr><td style="padding:12px 18px;color:#64748b;font-size:14px;">Subtotal</td><td style="padding:12px 18px;color:#0f172a;font-size:14px;font-weight:700;text-align:right;">' . htmlspecialchars($company['format_currency']((float) $invoiceData['subtotal'])) . '</td></tr>';
+    $body .= '<tr><td style="padding:12px 18px;color:#64748b;font-size:14px;border-top:1px solid #e2e8f0;">Tax</td><td style="padding:12px 18px;color:#0f172a;font-size:14px;font-weight:700;text-align:right;border-top:1px solid #e2e8f0;">' . htmlspecialchars($company['format_currency']((float) $invoiceData['tax'])) . '</td></tr>';
+    $body .= '<tr><td style="padding:12px 18px;color:#64748b;font-size:14px;border-top:1px solid #e2e8f0;">Amount Paid</td><td style="padding:12px 18px;color:#0f172a;font-size:14px;font-weight:700;text-align:right;border-top:1px solid #e2e8f0;">' . htmlspecialchars($company['format_currency']((float) $invoiceData['amount_paid'])) . '</td></tr>';
+    $body .= '<tr><td style="padding:14px 18px;color:#0f172a;font-size:14px;font-weight:800;border-top:1px solid #e2e8f0;">Outstanding Balance</td><td style="padding:14px 18px;color:#dc2626;font-size:16px;font-weight:800;text-align:right;border-top:1px solid #e2e8f0;">' . htmlspecialchars($company['format_currency']($balance)) . '</td></tr>';
+    $body .= '</table>';
+
+    $body .= '<div style="margin:0 0 10px;text-align:center;">'
+        . '<a href="' . htmlspecialchars($publicUrl) . '" style="display:inline-block;padding:15px 24px;border-radius:999px;background:#ef4444;color:#ffffff;text-decoration:none;font-weight:800;font-size:14px;letter-spacing:.01em;">Review Invoice Securely</a>'
+        . '</div>';
+    $body .= '<div style="margin:0 0 24px;text-align:center;font-size:13px;line-height:1.8;color:#64748b;">If the button does not open, copy and paste this link into your browser:<br><a href="' . htmlspecialchars($publicUrl) . '" style="color:#2563eb;text-decoration:none;">' . htmlspecialchars($publicUrl) . '</a></div>';
+
     if ($terms !== '') {
-        $body .= '<p style="margin:0 0 14px;font-size:14px;line-height:1.7;color:#475569;"><strong>Invoice Terms</strong><br>' . nl2br(htmlspecialchars($terms)) . '</p>';
+        $body .= '<div style="margin:0 0 16px;padding:18px 20px;border:1px solid #e2e8f0;border-radius:18px;background:#ffffff;">'
+            . '<div style="font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:#94a3b8;font-weight:700;margin-bottom:10px;">Invoice Terms</div>'
+            . '<div style="font-size:14px;line-height:1.8;color:#475569;">' . nl2br(htmlspecialchars($terms)) . '</div>'
+            . '</div>';
     }
     if ($footer !== '') {
-        $body .= '<p style="margin:0;font-size:13px;line-height:1.7;color:#64748b;">' . nl2br(htmlspecialchars($footer)) . '</p>';
+        $body .= '<div style="font-size:13px;line-height:1.8;color:#64748b;">' . nl2br(htmlspecialchars($footer)) . '</div>';
     }
 
     return $body;
