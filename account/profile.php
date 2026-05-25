@@ -11,6 +11,87 @@ $db = Database::getInstance();
 $accountTable = $auth->isAdminAuth() ? 'admins' : 'users';
 $accountLabel = $auth->isAdminAuth() ? 'Administrator' : 'User';
 
+function profileAvatarInitials(array $user): string {
+    $first = trim((string) ($user['first_name'] ?? ''));
+    $last = trim((string) ($user['last_name'] ?? ''));
+    $username = trim((string) ($user['username'] ?? 'U'));
+    $initials = '';
+
+    if ($first !== '') {
+        $initials .= mb_substr($first, 0, 1);
+    }
+    if ($last !== '') {
+        $initials .= mb_substr($last, 0, 1);
+    }
+    if ($initials === '') {
+        $initials = mb_substr($username, 0, 2);
+    }
+
+    return strtoupper($initials);
+}
+
+function deleteProfileAvatarFile(?string $relativePath): void {
+    $relativePath = trim((string) $relativePath);
+    if ($relativePath === '' || strpos(str_replace('\\', '/', $relativePath), 'uploads/profiles/') !== 0) {
+        return;
+    }
+
+    $absolutePath = dirname(__DIR__) . '/' . $relativePath;
+    if (is_file($absolutePath)) {
+        @unlink($absolutePath);
+    }
+}
+
+function handleProfileAvatarUpload(array $user, bool $isAdminAuth): string {
+    $file = $_FILES['profile_image'] ?? null;
+    if (!is_array($file)) {
+        throw new RuntimeException('No avatar upload data was received.');
+    }
+
+    if (($file['error'] ?? UPLOAD_ERR_NO_FILE) === UPLOAD_ERR_NO_FILE) {
+        throw new RuntimeException('Please choose an image to upload.');
+    }
+    if (($file['error'] ?? UPLOAD_ERR_OK) !== UPLOAD_ERR_OK) {
+        throw new RuntimeException('Failed to upload avatar image.');
+    }
+    if (($file['size'] ?? 0) > MAX_FILE_SIZE) {
+        throw new RuntimeException('Avatar image exceeds the 5MB size limit.');
+    }
+
+    $extension = strtolower(pathinfo((string) ($file['name'] ?? ''), PATHINFO_EXTENSION));
+    $allowedExtensions = ['jpg', 'jpeg', 'png', 'webp', 'gif'];
+    if (!in_array($extension, $allowedExtensions, true)) {
+        throw new RuntimeException('Avatar must be a JPG, PNG, WEBP, or GIF image.');
+    }
+
+    $tmpPath = (string) ($file['tmp_name'] ?? '');
+    if (@getimagesize($tmpPath) === false) {
+        throw new RuntimeException('Uploaded avatar file is not a valid image.');
+    }
+
+    $subDirectory = 'profiles/' . ($isAdminAuth ? 'admins' : 'users');
+    $targetDirectory = rtrim(UPLOAD_PATH, '/\\') . '/' . $subDirectory . '/';
+    if (!is_dir($targetDirectory)) {
+        mkdir($targetDirectory, 0755, true);
+    }
+
+    $targetBaseName = ($isAdminAuth ? 'admin' : 'user') . '-' . (int) ($user['id'] ?? 0) . '-avatar';
+    foreach (glob($targetDirectory . $targetBaseName . '.*') ?: [] as $existingFile) {
+        if (is_file($existingFile)) {
+            @unlink($existingFile);
+        }
+    }
+
+    $relativePath = 'uploads/' . $subDirectory . '/' . $targetBaseName . '.' . $extension;
+    $absolutePath = dirname(__DIR__) . '/' . $relativePath;
+
+    if (!move_uploaded_file($tmpPath, $absolutePath)) {
+        throw new RuntimeException('Unable to save avatar image.');
+    }
+
+    return $relativePath;
+}
+
 $message = '';
 $messageType = '';
 
@@ -26,16 +107,42 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $lastName = trim($_POST['last_name'] ?? '');
             $email = trim($_POST['email'] ?? '');
             $username = trim($_POST['username'] ?? '');
+            $removeProfileImage = isset($_POST['remove_profile_image']) && $_POST['remove_profile_image'] === '1';
 
             if ($firstName && $lastName && $email && $username) {
+                $profileImagePath = $currentUser['profile_image'] ?? null;
+
+                if ($removeProfileImage) {
+                    deleteProfileAvatarFile($profileImagePath);
+                    $profileImagePath = null;
+                }
+
+                if (isset($_FILES['profile_image']) && is_array($_FILES['profile_image']) && ($_FILES['profile_image']['error'] ?? UPLOAD_ERR_NO_FILE) !== UPLOAD_ERR_NO_FILE) {
+                    $profileImagePath = handleProfileAvatarUpload($currentUser, $auth->isAdminAuth());
+                }
+
                 $db->query(
-                    "UPDATE {$accountTable} SET first_name = :fn, last_name = :ln, email = :email, username = :username WHERE id = :id",
-                    ['fn' => $firstName, 'ln' => $lastName, 'email' => $email, 'username' => $username, 'id' => $currentUser['id']]
+                    "UPDATE {$accountTable}
+                     SET first_name = :fn,
+                         last_name = :ln,
+                         email = :email,
+                         username = :username,
+                         profile_image = :profile_image
+                     WHERE id = :id",
+                    [
+                        'fn' => $firstName,
+                        'ln' => $lastName,
+                        'email' => $email,
+                        'username' => $username,
+                        'profile_image' => $profileImagePath,
+                        'id' => $currentUser['id']
+                    ]
                 );
                 $currentUser['first_name'] = $firstName;
                 $currentUser['last_name'] = $lastName;
                 $currentUser['email'] = $email;
                 $currentUser['username'] = $username;
+                $currentUser['profile_image'] = $profileImagePath;
                 $message = 'Profile updated successfully.';
                 $messageType = 'success';
             } else {
@@ -70,10 +177,83 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 }
 
 $userName = $currentUser['first_name'] ?? $currentUser['username'] ?? 'User';
+$profileAvatarUrl = !empty($currentUser['profile_image']) ? tpv_asset_url($currentUser['profile_image']) : '';
+$profileAvatarInitials = profileAvatarInitials($currentUser);
 $pageActive = 'profile';
 $pageTitle = 'TPV Construction and Services LTD · Profile';
 require 'inc/admin_header.php';
 ?>
+                <style>
+                    .profile-avatar-wrap {
+                        width: 104px;
+                        height: 104px;
+                        border-radius: 24px;
+                        overflow: hidden;
+                        flex-shrink: 0;
+                        border: 1px solid rgba(255,255,255,0.18);
+                        background: rgba(255,255,255,0.08);
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                    }
+                    .profile-avatar {
+                        width: 100%;
+                        height: 100%;
+                        object-fit: cover;
+                        display: block;
+                    }
+                    .profile-avatar-fallback {
+                        width: 100%;
+                        height: 100%;
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                        color: #fff;
+                        font-size: 2rem;
+                        font-weight: 700;
+                        letter-spacing: 0.04em;
+                        background: linear-gradient(135deg, #d4a13e 0%, #ef3d43 100%);
+                    }
+                    .profile-avatar-upload {
+                        position: relative;
+                        display: inline-flex;
+                        cursor: pointer;
+                    }
+                    .profile-avatar-upload input[type="file"] {
+                        position: absolute;
+                        inset: 0;
+                        opacity: 0;
+                        cursor: pointer;
+                    }
+                    .profile-avatar-upload-badge {
+                        position: absolute;
+                        right: 8px;
+                        bottom: 8px;
+                        width: 32px;
+                        height: 32px;
+                        border-radius: 50%;
+                        display: inline-flex;
+                        align-items: center;
+                        justify-content: center;
+                        background: #fff;
+                        color: #1a2332;
+                        box-shadow: 0 8px 18px rgba(15, 23, 42, 0.18);
+                        border: 1px solid rgba(228, 233, 240, 0.95);
+                    }
+                    .profile-header-copy h3 {
+                        color: #1a2332;
+                    }
+                    .profile-header-copy p {
+                        color: #4f5d73;
+                    }
+                    .profile-header-copy small {
+                        color: #7b889c;
+                    }
+                    .profile-avatar-note {
+                        font-size: 0.78rem;
+                        color: #6b7a8f;
+                    }
+                </style>
 
                 <div data-pages="parallax">
                     <div class="container-fluid p-l-25 p-r-25 sm-p-l-0 sm-p-r-0">
@@ -95,11 +275,20 @@ require 'inc/admin_header.php';
                     <?php endif; ?>
 
                     <div class="profile-header d-flex align-items-center gap-3">
-                        <img src="assets/img/profiles/avatar.jpg" class="profile-avatar" alt="Avatar">
-                        <div>
-                            <h3 class="text-white mb-1"><?php echo htmlspecialchars($currentUser['first_name'] . ' ' . $currentUser['last_name']); ?></h3>
-                            <p class="mb-0 opacity-75"><?php echo htmlspecialchars($currentUser['user_type'] ?? 'User'); ?> &middot; <?php echo htmlspecialchars($currentUser['email'] ?? ''); ?></p>
-                            <small class="opacity-50">Member since <?php echo htmlspecialchars($functions->formatDate($currentUser['created_at'] ?? '', 'M j, Y')); ?></small>
+                        <label class="profile-avatar-upload" for="profileImageInput">
+                            <div class="profile-avatar-wrap">
+                                <?php if ($profileAvatarUrl !== ''): ?>
+                                    <img src="<?php echo htmlspecialchars($profileAvatarUrl); ?>" class="profile-avatar" alt="Avatar">
+                                <?php else: ?>
+                                    <div class="profile-avatar-fallback"><?php echo htmlspecialchars($profileAvatarInitials); ?></div>
+                                <?php endif; ?>
+                            </div>
+                            <span class="profile-avatar-upload-badge"><i class="fas fa-camera"></i></span>
+                        </label>
+                        <div class="profile-header-copy">
+                            <h3 class="mb-1"><?php echo htmlspecialchars($currentUser['first_name'] . ' ' . $currentUser['last_name']); ?></h3>
+                            <p class="mb-0"><?php echo htmlspecialchars($currentUser['user_type'] ?? 'User'); ?> &middot; <?php echo htmlspecialchars($currentUser['email'] ?? ''); ?></p>
+                            <small>Member since <?php echo htmlspecialchars($functions->formatDate($currentUser['created_at'] ?? '', 'M j, Y')); ?></small>
                         </div>
                     </div>
 
@@ -110,10 +299,21 @@ require 'inc/admin_header.php';
                                     <h5 class="card-title m-0"><i class="fas fa-user me-2"></i> Profile Information</h5>
                                 </div>
                                 <div class="card-body">
-                                    <form method="POST">
+                                    <form method="POST" enctype="multipart/form-data">
                                         <input type="hidden" name="action" value="update_profile">
                                         <?php echo $auth->csrfField(); ?>
                                         <div class="row g-3">
+                                            <div class="col-12">
+                                                <label class="form-label">Avatar</label>
+                                                <input type="file" id="profileImageInput" name="profile_image" class="form-control" accept=".jpg,.jpeg,.png,.webp,.gif">
+                                                <div class="profile-avatar-note mt-2">Optional. Leave empty to keep the current avatar, upload a new one to replace it, or remove it to use your initials instead.</div>
+                                                <?php if ($profileAvatarUrl !== ''): ?>
+                                                    <div class="form-check mt-2">
+                                                        <input class="form-check-input" type="checkbox" name="remove_profile_image" value="1" id="removeProfileImage">
+                                                        <label class="form-check-label" for="removeProfileImage">Remove current avatar</label>
+                                                    </div>
+                                                <?php endif; ?>
+                                            </div>
                                             <div class="col-md-6">
                                                 <label class="form-label">First Name</label>
                                                 <input type="text" name="first_name" class="form-control" value="<?php echo htmlspecialchars($currentUser['first_name'] ?? ''); ?>" required>

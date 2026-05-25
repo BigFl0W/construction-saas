@@ -1,12 +1,6 @@
         </div>
     </div>
 
-    <div class="container-fluid container-fixed-lg footer">
-        <div class="copyright sm-text-center">
-            <p class="small-text pull-left">&copy;2025 TPV Construction and Services LTD &middot; Construction Management System</p>
-            <p class="small pull-right"><i class="fas fa-user me-1"></i><?php echo htmlspecialchars($userName ?? 'User'); ?></p>
-        </div>
-    </div>
 </div>
 
 <!-- ===== CONFIRMATION MODAL ===== -->

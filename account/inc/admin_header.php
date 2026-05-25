@@ -2,6 +2,24 @@
 if (!isset($pageActive)) $pageActive = '';
 if (!isset($pageTitle)) $pageTitle = 'TPV Construction and Services LTD';
 $userName = $currentUser['first_name'] ?? $currentUser['username'] ?? 'User';
+if (!function_exists('adminAvatarInitials')) {
+    function adminAvatarInitials(array $user): string {
+        $first = trim((string) ($user['first_name'] ?? ''));
+        $last = trim((string) ($user['last_name'] ?? ''));
+        $username = trim((string) ($user['username'] ?? 'U'));
+        $initials = '';
+        if ($first !== '') {
+            $initials .= mb_substr($first, 0, 1);
+        }
+        if ($last !== '') {
+            $initials .= mb_substr($last, 0, 1);
+        }
+        if ($initials === '') {
+            $initials = mb_substr($username, 0, 2);
+        }
+        return strtoupper($initials);
+    }
+}
 function navActive($key) { global $pageActive; return $pageActive === $key ? 'active' : ''; }
 function navOpen($key) { global $pageActive; return strpos($pageActive, $key) === 0 ? 'open' : ''; }
 // Collect toast + legacy flash messages
@@ -90,6 +108,8 @@ try {
     $recentEnquiryNotifications = [];
     $totalEnquiryNotifications = 0;
 }
+$headerAvatarUrl = !empty($currentUser['profile_image']) ? tpv_asset_url($currentUser['profile_image']) : '';
+$headerAvatarInitials = adminAvatarInitials($currentUser);
 ?>
 <!doctype html>
 <html lang="en">
@@ -267,6 +287,19 @@ try {
         }
         .header .thumbnail-wrapper { display: inline-block; overflow: hidden; border-radius: 50%; }
         .header .thumbnail-wrapper img { display: block; }
+        .admin-avatar-fallback {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #d4a13e 0%, #ef3d43 100%);
+            color: #fff;
+            font-size: 0.72rem;
+            font-weight: 700;
+            letter-spacing: 0.03em;
+        }
         .notification-bell {
             position: relative;
             width: 40px;
@@ -454,6 +487,23 @@ try {
             font-size: 0.75rem;
             color: #6c757d;
             background: #fff;
+        }
+        .footer .copyright {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+        .footer .copyright p {
+            margin: 0;
+        }
+        .footer .footer-meta {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            color: #6b7280;
+            font-weight: 500;
         }
 
         /* ===== CARDS ===== */
@@ -720,6 +770,10 @@ try {
             .btn-sm { font-size: 0.65rem; padding: 0.2rem 0.45rem; }
             .breadcrumb { font-size: 0.7rem; margin-bottom: 10px; }
             .footer { padding: 8px 12px; font-size: 0.65rem; }
+            .footer .copyright {
+                flex-direction: column;
+                align-items: flex-start;
+            }
             h1 { font-size: 1.25rem; }
             h2 { font-size: 1.1rem; }
             .toast-container-custom { max-width: calc(100% - 16px); right: 8px; top: 8px; }
@@ -1257,7 +1311,13 @@ try {
             </span>
             <div class="dropdown">
                 <button class="profile-dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                    <span class="thumbnail-wrapper d32 circular"><img src="assets/img/profiles/avatar.jpg" width="32" /></span>
+                    <span class="thumbnail-wrapper d32 circular">
+                        <?php if ($headerAvatarUrl !== ''): ?>
+                            <img src="<?php echo htmlspecialchars($headerAvatarUrl); ?>" width="32" height="32" style="width:32px;height:32px;object-fit:cover;" alt="Avatar" />
+                        <?php else: ?>
+                            <span class="admin-avatar-fallback"><?php echo htmlspecialchars($headerAvatarInitials); ?></span>
+                        <?php endif; ?>
+                    </span>
                 </button>
                 <ul class="dropdown-menu dropdown-menu-end shadow-sm">
                     <li><a class="dropdown-item" href="#"><small class="text-muted">Signed in as</small><br><b><?php echo htmlspecialchars($currentUser['first_name'] . ' ' . $currentUser['last_name']); ?></b></a></li>
