@@ -1196,6 +1196,12 @@ $headerAvatarInitials = adminAvatarInitials($currentUser);
                     <?php endif; ?>
                 </a>
             </li>
+            <li class="<?php echo navActive('quote_page_settings'); ?>">
+                <a href="quote_page_settings.php">
+                    <span class="icon-thumbnail"><i class="fas fa-file-signature"></i></span>
+                    <span class="title">Quote Page</span>
+                </a>
+            </li>
             <li class="<?php echo navActive('admin_users'); ?>">
                 <a href="admin_users.php">
                     <span class="icon-thumbnail"><i class="fas fa-user-shield"></i></span>

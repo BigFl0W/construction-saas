@@ -3,10 +3,12 @@ require_once '../config/config.php';
 require_once '../classes/Mailer.php';
 require_once '../classes/Functions.php';
 require_once '../classes/QuoteRequest.php';
+require_once '../classes/Settings.php';
 
 $db = Database::getInstance();
 $functions = Functions::getInstance();
 $quoteRequests = new QuoteRequest();
+$settings = new Settings();
 $quoteSuccess = isset($_GET['quote_sent']);
 $quoteError = '';
 
@@ -22,6 +24,78 @@ function quoteMoney($value) {
     return '₦' . number_format((float)$value, 2);
 }
 
+function quoteSetting(Settings $settings, $key, $default) {
+    return (string) $settings->get($key, $default);
+}
+
+function quoteMultilineItems($value) {
+    return array_values(array_filter(array_map('trim', preg_split('/\r\n|\r|\n/', (string) $value))));
+}
+
+function quoteSteps($value) {
+    $steps = [];
+    foreach (quoteMultilineItems($value) as $line) {
+        $parts = array_map('trim', explode('|', $line, 2));
+        $steps[] = [
+            'title' => $parts[0] ?? '',
+            'body' => $parts[1] ?? '',
+        ];
+    }
+    return array_values(array_filter($steps, fn($step) => ($step['title'] !== '' || $step['body'] !== '')));
+}
+
+function quoteContacts($value) {
+    $contacts = [];
+    foreach (quoteMultilineItems($value) as $line) {
+        $parts = array_map('trim', explode('|', $line, 3));
+        $type = strtolower($parts[0] ?? 'phone');
+        $valuePart = $parts[1] ?? '';
+        $labelPart = $parts[2] ?? '';
+        if ($valuePart === '') {
+            continue;
+        }
+        $contacts[] = [
+            'type' => in_array($type, ['phone', 'email'], true) ? $type : 'phone',
+            'value' => $valuePart,
+            'label' => $labelPart,
+        ];
+    }
+    return $contacts;
+}
+
+$quoteResponseTimeLong = quoteSetting($settings, 'quote_page_response_time_long', '24 hours');
+$quoteResponseTimeShort = quoteSetting($settings, 'quote_page_response_time_short', '24h');
+$quoteMetaDescription = quoteSetting($settings, 'quote_page_meta_description', "Request a free, no-obligation construction quote from TPV Construction and Services LTD. Tell us about your project and we'll respond within {$quoteResponseTimeLong}.");
+$quoteHeroBadge = quoteSetting($settings, 'quote_page_hero_badge', 'Free No-Obligation Estimate');
+$quoteHeroTitleBefore = quoteSetting($settings, 'quote_page_hero_title_before', 'Start Your');
+$quoteHeroTitleEmphasis = quoteSetting($settings, 'quote_page_hero_title_emphasis', 'Dream Project');
+$quoteHeroTitleAfter = quoteSetting($settings, 'quote_page_hero_title_after', 'With a Free Quote');
+$quoteHeroDescription = quoteSetting($settings, 'quote_page_hero_description', "Fill in the form and our expert team will prepare a tailored cost estimate for your construction project within {$quoteResponseTimeLong}.");
+$quoteHeroStat1Value = quoteSetting($settings, 'quote_page_hero_stat_1_value', $quoteResponseTimeShort);
+$quoteHeroStat1Label = quoteSetting($settings, 'quote_page_hero_stat_1_label', 'Response Time');
+$quoteHeroStat2Value = quoteSetting($settings, 'quote_page_hero_stat_2_value', '500+');
+$quoteHeroStat2Label = quoteSetting($settings, 'quote_page_hero_stat_2_label', 'Projects Delivered');
+$quoteHeroStat3Value = quoteSetting($settings, 'quote_page_hero_stat_3_value', '100%');
+$quoteHeroStat3Label = quoteSetting($settings, 'quote_page_hero_stat_3_label', 'Free & No Obligation');
+$quoteBreadcrumbLabel = quoteSetting($settings, 'quote_page_breadcrumb_label', 'Get a Free Quote');
+$quoteFormTitle = quoteSetting($settings, 'quote_page_form_title', 'Tell Us About Your Project');
+$quoteFormIntro = quoteSetting($settings, 'quote_page_form_intro', 'The more detail you provide, the more accurate your estimate will be. Fields marked * are required.');
+$quoteSubmitNote = quoteSetting($settings, 'quote_page_submit_note', "Your information is secure and will never be shared. We respond within {$quoteResponseTimeLong}.");
+$quoteSuccessTitle = quoteSetting($settings, 'quote_page_success_title', 'Quote Request Sent!');
+$quoteSuccessBody = quoteSetting($settings, 'quote_page_success_body', "Thank you! Our team has received your project details and will prepare a tailored estimate within {$quoteResponseTimeLong}.");
+$quoteSuccessButtonText = quoteSetting($settings, 'quote_page_success_button_text', 'Back to Home');
+$quoteSuccessButtonLink = quoteSetting($settings, 'quote_page_success_button_link', '../');
+$quoteWhyHeading = quoteSetting($settings, 'quote_page_why_heading', 'Why Choose TPV?');
+$quoteWhyItems = quoteMultilineItems(quoteSetting($settings, 'quote_page_why_items', "Over 10 years of proven construction expertise across Nigeria\nTransparent pricing — no hidden fees or surprise charges\nCertified engineers, architects & project managers on every job\nOn-time delivery with stringent quality assurance\n12-month post-construction workmanship guarantee"));
+$quoteStepsHeading = quoteSetting($settings, 'quote_page_steps_heading', 'How It Works');
+$quoteStepItems = quoteSteps(quoteSetting($settings, 'quote_page_steps', "Submit Your Request|Fill in this form with your project details.\nExpert Review|Our team analyses your requirements within 24h.\nReceive Your Estimate|We send a detailed, itemised cost estimate.\nConsultation Call|Our PM calls to discuss and refine details.\nBreak Ground!|We mobilise and your project begins."));
+$quoteDirectHeading = quoteSetting($settings, 'quote_page_direct_heading', 'Prefer to Talk Directly?');
+$quoteDirectContacts = quoteContacts(quoteSetting($settings, 'quote_page_contacts', "phone|09097128241|Abuja / Ogun offices\nphone|08069418816|Nasarawa office\nphone|08104830712|Lagos office\nemail|info@tpvconstruction.com.ng|Email us anytime"));
+$quoteTestimonialQuote = quoteSetting($settings, 'quote_page_testimonial_quote', '"TPV Construction and Services LTD delivered our three-storey commercial complex on time and within budget. The quality surpassed expectations — highly recommended!"');
+$quoteTestimonialName = quoteSetting($settings, 'quote_page_testimonial_name', 'Alhaji Abubakar O.');
+$quoteTestimonialRole = quoteSetting($settings, 'quote_page_testimonial_role', 'Real Estate Developer, Abuja');
+$quoteTestimonialParts = preg_split('/\s+/', trim($quoteTestimonialName));
+$quoteTestimonialInitials = strtoupper(mb_substr($quoteTestimonialParts[0] ?? 'A', 0, 1) . mb_substr($quoteTestimonialParts[count($quoteTestimonialParts) - 1] ?? 'O', 0, 1));
 function saveQuoteAttachments($files) {
     $saved = [];
     if (empty($files['name']) || !is_array($files['name'])) {
@@ -594,19 +668,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['quote_submit'])) {
     <!-- Hero -->
     <section class="tpv-quote-hero" id="content">
         <div class="tpv-quote-hero-inner">
-            <div class="tpv-quote-badge">⭐ Free No-Obligation Estimate</div>
-            <h1>Start Your <em>Dream Project</em><br>With a Free Quote</h1>
-            <p>Fill in the form and our expert team will prepare a tailored cost estimate for your construction project within 24 hours.</p>
+            <div class="tpv-quote-badge">⭐ <?php echo quoteHtml($quoteHeroBadge); ?></div>
+            <h1><?php echo quoteHtml($quoteHeroTitleBefore); ?> <em><?php echo quoteHtml($quoteHeroTitleEmphasis); ?></em><br><?php echo quoteHtml($quoteHeroTitleAfter); ?></h1>
+            <p><?php echo quoteHtml($quoteHeroDescription); ?></p>
             <div class="tpv-hero-stats">
-                <div><div class="tpv-hero-stat-num">24h</div><div class="tpv-hero-stat-lbl">Response Time</div></div>
-                <div><div class="tpv-hero-stat-num">500+</div><div class="tpv-hero-stat-lbl">Projects Delivered</div></div>
-                <div><div class="tpv-hero-stat-num">100%</div><div class="tpv-hero-stat-lbl">Free & No Obligation</div></div>
+                <div><div class="tpv-hero-stat-num"><?php echo quoteHtml($quoteHeroStat1Value); ?></div><div class="tpv-hero-stat-lbl"><?php echo quoteHtml($quoteHeroStat1Label); ?></div></div>
+                <div><div class="tpv-hero-stat-num"><?php echo quoteHtml($quoteHeroStat2Value); ?></div><div class="tpv-hero-stat-lbl"><?php echo quoteHtml($quoteHeroStat2Label); ?></div></div>
+                <div><div class="tpv-hero-stat-num"><?php echo quoteHtml($quoteHeroStat3Value); ?></div><div class="tpv-hero-stat-lbl"><?php echo quoteHtml($quoteHeroStat3Label); ?></div></div>
             </div>
             <nav class="tpv-breadcrumb" aria-label="Breadcrumb">
                 <ol>
                     <li><a href="../">Home</a></li>
                     <li>›</li>
-                    <li>Get a Free Quote</li>
+                    <li><?php echo quoteHtml($quoteBreadcrumbLabel); ?></li>
                 </ol>
             </nav>
         </div>
@@ -618,8 +692,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['quote_submit'])) {
         <!-- FORM -->
         <div class="tpv-form-card">
             <div id="tpvQuoteFormWrap" <?php echo $quoteSuccess ? 'style="display:none;"' : ''; ?>>
-                <h2>Tell Us About Your Project</h2>
-                <p>The more detail you provide, the more accurate your estimate will be. Fields marked <span style="color:#E5363D">*</span> are required.</p>
+                <h2><?php echo quoteHtml($quoteFormTitle); ?></h2>
+                <p><?php echo quoteHtml($quoteFormIntro); ?></p>
 
                 <?php if ($quoteError): ?>
                     <div class="tpv-alert tpv-alert-error"><?php echo quoteHtml($quoteError); ?></div>
@@ -765,62 +839,61 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['quote_submit'])) {
                     </div>
 
                     <button type="submit" class="tpv-submit-btn" id="tpvSubmitBtn">🚀 &nbsp; Submit Quote Request</button>
-                    <p class="tpv-submit-note">🔒 Your information is secure and will never be shared. We respond within 24 hours.</p>
+                    <p class="tpv-submit-note">🔒 <?php echo quoteHtml($quoteSubmitNote); ?></p>
                 </form>
             </div>
 
-            <!-- Success state -->
+                        <!-- Success state -->
             <div class="tpv-success" id="tpvSuccess" <?php echo $quoteSuccess ? 'style="display:block;"' : ''; ?>>
                 <div class="tpv-success-ico">✓</div>
-                <h3>Quote Request Sent!</h3>
-                <p>Thank you! Our team has received your project details and will prepare a tailored estimate within <strong>24 hours</strong>.</p>
-                <a href="../" class="tpv-back-btn">← Back to Home</a>
+                <h3><?php echo quoteHtml($quoteSuccessTitle); ?></h3>
+                <p><?php echo quoteHtml($quoteSuccessBody); ?></p>
+                <a href="<?php echo quoteHtml($quoteSuccessButtonLink); ?>" class="tpv-back-btn">← <?php echo quoteHtml($quoteSuccessButtonText); ?></a>
             </div>
         </div>
 
         <!-- SIDEBAR -->
         <aside class="tpv-sidebar">
             <div class="tpv-card">
-                <h3 class="tpv-card-title"><div class="tpv-card-ico">⭐</div>Why Choose TPV?</h3>
+                <h3 class="tpv-card-title"><div class="tpv-card-ico">⭐</div><?php echo quoteHtml($quoteWhyHeading); ?></h3>
                 <ul class="tpv-why-list">
-                    <li class="tpv-why-item"><div class="tpv-check">✓</div><span>Over 10 years of proven construction expertise across Nigeria</span></li>
-                    <li class="tpv-why-item"><div class="tpv-check">✓</div><span>Transparent pricing — no hidden fees or surprise charges</span></li>
-                    <li class="tpv-why-item"><div class="tpv-check">✓</div><span>Certified engineers, architects & project managers on every job</span></li>
-                    <li class="tpv-why-item"><div class="tpv-check">✓</div><span>On-time delivery with stringent quality assurance</span></li>
-                    <li class="tpv-why-item"><div class="tpv-check">✓</div><span>12-month post-construction workmanship guarantee</span></li>
+                    <?php foreach ($quoteWhyItems as $item): ?>
+                        <li class="tpv-why-item"><div class="tpv-check">✓</div><span><?php echo quoteHtml($item); ?></span></li>
+                    <?php endforeach; ?>
                 </ul>
             </div>
 
             <div class="tpv-card">
-                <h3 class="tpv-card-title"><div class="tpv-card-ico">🗂️</div>How It Works</h3>
+                <h3 class="tpv-card-title"><div class="tpv-card-ico">🗂️</div><?php echo quoteHtml($quoteStepsHeading); ?></h3>
                 <ol class="tpv-steps">
-                    <li class="tpv-step"><div class="tpv-step-n">1</div><div class="tpv-step-txt"><strong>Submit Your Request</strong><span>Fill in this form with your project details.</span></div></li>
-                    <li class="tpv-step"><div class="tpv-step-n">2</div><div class="tpv-step-txt"><strong>Expert Review</strong><span>Our team analyses your requirements within 24h.</span></div></li>
-                    <li class="tpv-step"><div class="tpv-step-n">3</div><div class="tpv-step-txt"><strong>Receive Your Estimate</strong><span>We send a detailed, itemised cost estimate.</span></div></li>
-                    <li class="tpv-step"><div class="tpv-step-n">4</div><div class="tpv-step-txt"><strong>Consultation Call</strong><span>Our PM calls to discuss and refine details.</span></div></li>
-                    <li class="tpv-step"><div class="tpv-step-n">5</div><div class="tpv-step-txt"><strong>Break Ground!</strong><span>We mobilise and your project begins.</span></div></li>
+                    <?php foreach ($quoteStepItems as $index => $step): ?>
+                        <li class="tpv-step"><div class="tpv-step-n"><?php echo $index + 1; ?></div><div class="tpv-step-txt"><strong><?php echo quoteHtml($step['title']); ?></strong><span><?php echo quoteHtml($step['body']); ?></span></div></li>
+                    <?php endforeach; ?>
                 </ol>
             </div>
 
             <div class="tpv-contact-card">
-                <h4>Prefer to Talk Directly?</h4>
-                <div class="tpv-contact-item"><div class="tpv-contact-item-ico">📞</div><div><a href="tel:09097128241">09097128241</a><p>Abuja / Ogun offices</p></div></div>
-                <div class="tpv-contact-item"><div class="tpv-contact-item-ico">📞</div><div><a href="tel:08069418816">08069418816</a><p>Nasarawa office</p></div></div>
-                <div class="tpv-contact-item"><div class="tpv-contact-item-ico">📞</div><div><a href="tel:08104830712">08104830712</a><p>Lagos office</p></div></div>
-                <div class="tpv-contact-item"><div class="tpv-contact-item-ico">✉️</div><div><a href="mailto:info@tpvconstruction.com.ng">info@tpvconstruction.com.ng</a><p>Email us anytime</p></div></div>
+                <h4><?php echo quoteHtml($quoteDirectHeading); ?></h4>
+                <?php foreach ($quoteDirectContacts as $contact): ?>
+                    <?php
+                    $isEmail = $contact['type'] === 'email';
+                    $href = $isEmail ? 'mailto:' . $contact['value'] : 'tel:' . $contact['value'];
+                    $icon = $isEmail ? '✉️' : '📞';
+                    ?>
+                    <div class="tpv-contact-item"><div class="tpv-contact-item-ico"><?php echo $icon; ?></div><div><a href="<?php echo quoteHtml($href); ?>"><?php echo quoteHtml($contact['value']); ?></a><p><?php echo quoteHtml($contact['label']); ?></p></div></div>
+                <?php endforeach; ?>
             </div>
 
             <div class="tpv-testimonial">
-                <blockquote>"TPV Construction and Services LTD delivered our three-storey commercial complex on time and within budget. The quality surpassed expectations — highly recommended!"</blockquote>
+                <blockquote><?php echo quoteHtml($quoteTestimonialQuote); ?></blockquote>
                 <div class="tpv-t-author">
-                    <div class="tpv-avatar">AO</div>
-                    <div><div class="tpv-author-name">Alhaji Abubakar O.</div><div class="tpv-author-role">Real Estate Developer, Abuja</div></div>
+                    <div class="tpv-avatar"><?php echo quoteHtml($quoteTestimonialInitials); ?></div>
+                    <div><div class="tpv-author-name"><?php echo quoteHtml($quoteTestimonialName); ?></div><div class="tpv-author-role"><?php echo quoteHtml($quoteTestimonialRole); ?></div></div>
                 </div>
             </div>
         </aside>
     </div>
-
-    <!-- Same script stack as contact-us -->
+<!-- Same script stack as contact-us -->
     <script>
         const lazyloadRunObserver = () => {
             const lazyloadBackgrounds = document.querySelectorAll(`.e-con.e-parent:not(.e-lazyloaded)`);
@@ -851,7 +924,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['quote_submit'])) {
     <script>
     jQuery(document).ready(function($) {
         'use strict';
-
         /* Budget slider */
         var $sl = $('#tpvBudget'), $dv = $('#tpvBudgetVal');
         function fmtBudget(v) {
