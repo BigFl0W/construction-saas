@@ -1,6 +1,33 @@
 <?php
 require_once dirname(__DIR__) . '/config/config.php';
 $db = Database::getInstance();
+if (!function_exists('galMediaUrl')) {
+    function galMediaUrl($path) {
+        if (!$path) return '';
+        if (strpos($path, '/') === 0) $path = preg_replace('#^.*?uploads/#', '', $path);
+        return UPLOAD_URL . $path;
+    }
+}
+if (!function_exists('galInitials')) {
+    function galInitials($label) {
+        $label = trim((string) $label);
+        if ($label === '') {
+            return 'PM';
+        }
+        $parts = preg_split('/\s+/', $label);
+        $initials = '';
+        foreach ($parts as $part) {
+            if ($part === '') {
+                continue;
+            }
+            $initials .= strtoupper(substr($part, 0, 1));
+            if (strlen($initials) >= 2) {
+                break;
+            }
+        }
+        return $initials ?: 'PM';
+    }
+}
 $allMedia = $db->query(
     "SELECT * FROM project_media ORDER BY service, file_type, featured DESC, created_at DESC"
 )->fetchAll();
@@ -8,12 +35,18 @@ $grouped = [];
 foreach ($allMedia as $item) {
     $grouped[$item['service']][] = $item;
 }
-if (!function_exists('galMediaUrl')) {
-    function galMediaUrl($path) {
-        if (!$path) return '';
-        if (strpos($path, '/') === 0) $path = preg_replace('#^.*?uploads/#', '', $path);
-        return UPLOAD_URL . $path;
-    }
+$requestedGalleryService = trim($_GET['service'] ?? '');
+$galleryPayload = [];
+foreach ($grouped as $serviceName => $items) {
+    $galleryPayload[$serviceName] = array_map(function ($mediaItem) {
+        return [
+            'type' => $mediaItem['file_type'] === 'video' ? 'video' : 'image',
+            'url' => galMediaUrl($mediaItem['file_path'] ?? ''),
+            'title' => $mediaItem['title'] ?? '',
+            'description' => $mediaItem['description'] ?? '',
+            'service' => $mediaItem['service'] ?? '',
+        ];
+    }, $items);
 }
 ?>
 <!DOCTYPE html>
@@ -548,16 +581,40 @@ if (!function_exists('galMediaUrl')) {
 					$total    = count($items);
 					$imgCount = count(array_filter($items, fn($m) => $m['file_type'] === 'image'));
 					$vidCount = $total - $imgCount;
-					$galleryUrl = 'gallery.php?service=' . urlencode($service);
+					$cardMeta = null;
+					foreach ($items as $_m) {
+						if (trim((string) ($_m['title'] ?? '')) !== '' || trim((string) ($_m['description'] ?? '')) !== '') {
+							$cardMeta = $_m;
+							break;
+						}
+					}
+					if (!$cardMeta) {
+						$cardMeta = $cover;
+					}
+					$cardMediaTitle = trim((string) ($cardMeta['title'] ?? ''));
+					$cardMediaDescription = trim((string) ($cardMeta['description'] ?? ''));
 					$preview = array_filter($items, fn($m) => $m['file_type'] === 'image');
 					$preview = array_slice($preview, 0, 3);
 					if (count($preview) < 3) $preview = array_slice($items, 0, 3);
 					?>
-					<a href="<?php echo htmlspecialchars($galleryUrl); ?>" class="gallery-card-link">
+					<button type="button"
+					        class="gallery-card-link js-gallery-open"
+					        data-gallery-service="<?php echo htmlspecialchars($service); ?>"
+					        aria-label="Open <?php echo htmlspecialchars($service); ?> media gallery">
 						<div class="gallery-card">
 							<div class="gallery-card-image">
+								<?php if (($cover['file_type'] ?? 'image') === 'image'): ?>
 								<img src="<?php echo htmlspecialchars(galMediaUrl($cover['file_path'])); ?>"
 								     alt="<?php echo htmlspecialchars($service); ?>" loading="lazy">
+								<?php else: ?>
+								<div class="gallery-card-video-fallback" aria-hidden="true">
+									<div class="gallery-card-video-icon"><i class="fas fa-play"></i></div>
+									<div class="gallery-card-video-copy">
+										<span class="gallery-card-video-label">Video preview</span>
+										<strong><?php echo htmlspecialchars(galInitials($service)); ?></strong>
+									</div>
+								</div>
+								<?php endif; ?>
 								<div class="gallery-card-view-overlay">
 									<span class="gallery-view-btn"><i class="fas fa-images me-2"></i>View Gallery</span>
 								</div>
@@ -588,6 +645,12 @@ if (!function_exists('galMediaUrl')) {
 							<div class="gallery-card-body">
 								<div>
 									<h3 class="gallery-card-title"><?php echo htmlspecialchars($service); ?></h3>
+									<?php if ($cardMediaTitle !== ''): ?>
+									<p class="gallery-card-media-title"><?php echo htmlspecialchars($cardMediaTitle); ?></p>
+									<?php endif; ?>
+									<?php if ($cardMediaDescription !== ''): ?>
+									<p class="gallery-card-media-desc"><?php echo htmlspecialchars($cardMediaDescription); ?></p>
+									<?php endif; ?>
 									<span class="gallery-card-count">
 										<i class="fas fa-image me-1"></i><?php echo $imgCount; ?> photo<?php echo $imgCount != 1 ? 's' : ''; ?>
 										<?php if ($vidCount): ?>&nbsp;&bull;&nbsp;<i class="fas fa-video me-1"></i><?php echo $vidCount; ?> video<?php echo $vidCount != 1 ? 's' : ''; ?><?php endif; ?>
@@ -596,14 +659,44 @@ if (!function_exists('galMediaUrl')) {
 								<span class="gallery-card-arrow"><i class="fas fa-arrow-right"></i></span>
 							</div>
 						</div>
-					</a>
+					</button>
 					<?php endforeach; ?>
 				</div>
 			</div>
 		</section>
 
+		<div class="gallery-lightbox" id="projectGalleryLightbox" hidden>
+			<div class="gallery-lightbox__backdrop" data-gallery-close></div>
+			<div class="gallery-lightbox__dialog" role="dialog" aria-modal="true" aria-labelledby="projectGalleryTitle">
+				<button type="button" class="gallery-lightbox__close" data-gallery-close aria-label="Close project gallery">
+					<i class="fas fa-times"></i>
+				</button>
+				<div class="gallery-lightbox__header">
+					<div>
+						<span class="gallery-lightbox__eyebrow">Project Gallery</span>
+						<h3 class="gallery-lightbox__title" id="projectGalleryTitle">Project Media</h3>
+					</div>
+					<div class="gallery-lightbox__counter" id="projectGalleryCounter">1 / 1</div>
+				</div>
+				<div class="gallery-lightbox__stage">
+					<button type="button" class="gallery-lightbox__nav gallery-lightbox__nav--prev" id="galleryPrevBtn" aria-label="Previous media">
+						<i class="fas fa-chevron-left"></i>
+					</button>
+					<div class="gallery-lightbox__media" id="projectGalleryMedia"></div>
+					<button type="button" class="gallery-lightbox__nav gallery-lightbox__nav--next" id="galleryNextBtn" aria-label="Next media">
+						<i class="fas fa-chevron-right"></i>
+					</button>
+				</div>
+				<div class="gallery-lightbox__meta">
+					<h4 class="gallery-lightbox__media-title" id="projectGalleryMediaTitle"></h4>
+					<p class="gallery-lightbox__media-desc" id="projectGalleryMediaDesc" hidden></p>
+				</div>
+				<div class="gallery-lightbox__thumbs" id="projectGalleryThumbs"></div>
+			</div>
+		</div>
+
 		<style>
-		.gallery-section { padding:100px 0;background:#f8fafc; }
+		.gallery-section { padding:100px 0; }
 		.section-heading { margin-bottom:56px; }
 		.section-subtitle {
 			display:inline-block;font-size:13px;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;
@@ -619,9 +712,13 @@ if (!function_exists('galMediaUrl')) {
 		.gallery-grid {
 			display:grid;grid-template-columns:repeat(auto-fill,minmax(330px,1fr));gap:28px;
 		}
-		.gallery-card-link { text-decoration:none;display:block; }
+		.gallery-card-link {
+			text-decoration:none;display:block;width:100%;
+			padding:0 !important;border:0 !important;background:none !important;text-align:left;cursor:pointer;
+			box-shadow:none !important;appearance:none;-webkit-appearance:none;border-radius:0;
+		}
 		.gallery-card {
-			background:#fff;border-radius:18px;overflow:hidden;
+			background:none;border-radius:18px;overflow:hidden;
 			box-shadow:0 4px 20px rgba(0,0,0,0.06);
 			transition:transform 0.32s,box-shadow 0.32s;
 		}
@@ -630,11 +727,37 @@ if (!function_exists('galMediaUrl')) {
 		}
 		/* Cover image */
 		.gallery-card-image {
-			position:relative;aspect-ratio:16/11;overflow:hidden;background:#e2e8f0;
+			position:relative;aspect-ratio:16/11;overflow:hidden;
 		}
 		.gallery-card-image img {
 			width:100%;height:100%;object-fit:cover;display:block;
 			transition:transform 0.55s cubic-bezier(0.25,0.46,0.45,0.94);
+		}
+		.gallery-card-video-fallback {
+			width:100%;height:100%;
+			display:flex;flex-direction:column;align-items:center;justify-content:center;
+			gap:14px;padding:24px;text-align:center;color:#0f172a;
+			background:none;
+		}
+		.gallery-card-video-icon {
+			width:76px;height:76px;border-radius:50%;
+			display:inline-flex;align-items:center;justify-content:center;
+			background:rgba(255,255,255,0.92);
+			border:1px solid #e2e8f0;
+			font-size:20px;
+			box-shadow:0 18px 34px rgba(15,23,42,0.08);
+		}
+		.gallery-card-video-copy {
+			display:flex;flex-direction:column;align-items:center;gap:5px;
+		}
+		.gallery-card-video-copy strong {
+			font-size:34px;font-weight:800;line-height:1;letter-spacing:0.08em;
+		}
+		.gallery-card-video-label {
+			display:inline-flex;align-items:center;justify-content:center;
+			padding:6px 12px;border-radius:999px;
+			background:#f8fafc;
+			font-size:11px;text-transform:uppercase;letter-spacing:0.14em;font-weight:700;
 		}
 		.gallery-card-link:hover .gallery-card-image img { transform:scale(1.07); }
 		.gallery-card-view-overlay {
@@ -662,7 +785,7 @@ if (!function_exists('galMediaUrl')) {
 			display:grid;grid-template-columns:1fr 1fr 1fr;gap:3px;height:78px;
 		}
 		.gallery-strip-thumb {
-			position:relative;overflow:hidden;background:#cbd5e1;
+			position:relative;overflow:hidden;
 		}
 		.gallery-strip-thumb img,.gallery-strip-thumb video {
 			width:100%;height:100%;object-fit:cover;display:block;
@@ -673,14 +796,19 @@ if (!function_exists('galMediaUrl')) {
 		}
 		.gallery-strip-more {
 			display:flex;align-items:center;justify-content:center;
-			background:#1e293b;color:#fff;font-size:18px;font-weight:800;
+			color:#0f172a;font-size:18px;font-weight:800;
 		}
 		/* Info row */
 		.gallery-card-body {
 			padding:16px 20px;display:flex;align-items:center;justify-content:space-between;
-			border-top:1px solid #f1f5f9;
+			border-top:1px solid #f1f5f9;background:#fff;
 		}
 		.gallery-card-title { font-size:16px;font-weight:700;color:#0f172a;margin:0 0 2px; }
+		.gallery-card-media-title { font-size:13px;font-weight:700;color:#334155;margin:0 0 4px; }
+		.gallery-card-media-desc {
+			font-size:13px;line-height:1.55;color:#64748b;margin:0 0 8px;
+			display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;overflow:hidden;
+		}
 		.gallery-card-count { font-size:12px;color:#94a3b8;font-weight:500;margin:0; }
 		.gallery-card-arrow {
 			width:36px;height:36px;border-radius:50%;
@@ -690,13 +818,234 @@ if (!function_exists('galMediaUrl')) {
 			transition:background 0.2s,color 0.2s;
 		}
 		.gallery-card-link:hover .gallery-card-arrow { background:#E5363D;color:#fff; }
+		.gallery-lightbox {
+			position:fixed;inset:0;z-index:9999;display:flex;align-items:center;justify-content:center;
+			padding:28px;
+		}
+		.gallery-lightbox[hidden] { display:none !important; }
+		.gallery-lightbox__backdrop {
+			position:absolute;inset:0;background:rgba(6,14,28,0.78);backdrop-filter:blur(6px);
+		}
+		.gallery-lightbox__dialog {
+			position:relative;z-index:2;width:min(1120px,100%);max-height:min(90vh,920px);
+			background:#fff;border-radius:28px;overflow:hidden;
+			box-shadow:0 34px 90px rgba(15,23,42,0.35);
+			display:flex;flex-direction:column;
+		}
+		.gallery-lightbox__close {
+			position:absolute;top:18px;right:18px;z-index:3;width:46px;height:46px;border-radius:50%;
+			border:0;background:#0f172a;color:#fff;font-size:16px;
+			display:flex;align-items:center;justify-content:center;cursor:pointer;
+			box-shadow:0 12px 24px rgba(15,23,42,0.28);
+		}
+		.gallery-lightbox__header {
+			padding:28px 34px 16px;display:flex;align-items:flex-start;justify-content:space-between;gap:18px;
+			border-bottom:1px solid #e2e8f0;
+		}
+		.gallery-lightbox__eyebrow {
+			display:inline-block;font-size:12px;font-weight:800;letter-spacing:0.18em;text-transform:uppercase;color:#E5363D;
+			margin-bottom:8px;
+		}
+		.gallery-lightbox__title { margin:0;font-size:30px;line-height:1.1;font-weight:800;color:#0f172a; }
+		.gallery-lightbox__counter {
+			flex-shrink:0;padding:10px 16px;border-radius:999px;background:#f8fafc;color:#475569;
+			font-size:13px;font-weight:700;
+		}
+		.gallery-lightbox__stage {
+			padding:24px 28px 18px;display:grid;grid-template-columns:60px minmax(0,1fr) 60px;gap:16px;align-items:center;
+		}
+		.gallery-lightbox__meta {
+			padding:0 28px 18px;
+		}
+		.gallery-lightbox__media-title {
+			margin:0;
+			font-size:20px;
+			font-weight:800;
+			color:#0f172a;
+		}
+		.gallery-lightbox__media-desc {
+			margin:8px 0 0;
+			font-size:14px;
+			line-height:1.7;
+			color:#64748b;
+		}
+		.gallery-lightbox__nav {
+			width:60px;height:60px;border-radius:50%;border:1px solid #e2e8f0;background:#fff;color:#0f172a;
+			display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:18px;
+			box-shadow:0 12px 26px rgba(15,23,42,0.08);
+		}
+		.gallery-lightbox__nav[disabled] { opacity:0.35;cursor:not-allowed; }
+		.gallery-lightbox__media {
+			background:#0f172a;border-radius:24px;min-height:460px;overflow:hidden;
+			display:flex;align-items:center;justify-content:center;position:relative;
+		}
+		.gallery-lightbox__media img,
+		.gallery-lightbox__media video {
+			width:100%;height:100%;max-height:62vh;object-fit:contain;background:#0f172a;display:block;
+		}
+		.gallery-lightbox__video-badge {
+			position:absolute;top:18px;left:18px;padding:8px 14px;border-radius:999px;
+			background:rgba(255,255,255,0.12);backdrop-filter:blur(6px);color:#fff;
+			font-size:12px;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;
+		}
+		.gallery-lightbox__thumbs {
+			padding:0 28px 28px;display:flex;gap:12px;overflow:auto;
+		}
+		.gallery-lightbox__thumb {
+			flex:0 0 96px;height:76px;border-radius:16px;border:2px solid transparent;overflow:hidden;
+			background:#e2e8f0;cursor:pointer;position:relative;
+		}
+		.gallery-lightbox__thumb.is-active { border-color:#E5363D; box-shadow:0 10px 24px rgba(229,54,61,0.18); }
+		.gallery-lightbox__thumb img,
+		.gallery-lightbox__thumb video {
+			width:100%;height:100%;object-fit:cover;display:block;
+		}
+		.gallery-lightbox__thumb-icon {
+			position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
+			background:rgba(15,23,42,0.3);color:#fff;font-size:16px;
+		}
 
 		@media (max-width:768px) {
 			.gallery-grid { grid-template-columns:1fr;gap:18px; }
 			.section-title { font-size:28px; }
 			.gallery-section { padding:60px 0; }
+			.gallery-lightbox { padding:12px; }
+			.gallery-lightbox__dialog { border-radius:22px;max-height:92vh; }
+			.gallery-lightbox__header { padding:22px 18px 10px; }
+			.gallery-lightbox__title { font-size:24px; padding-right:54px; }
+			.gallery-lightbox__stage {
+				padding:18px 14px 14px;grid-template-columns:1fr;gap:12px;
+			}
+			.gallery-lightbox__media { min-height:280px; }
+			.gallery-lightbox__nav {
+				position:absolute;top:50%;transform:translateY(-50%);z-index:2;width:44px;height:44px;font-size:14px;
+				background:rgba(255,255,255,0.92);
+			}
+			.gallery-lightbox__nav--prev { left:20px; }
+			.gallery-lightbox__nav--next { right:20px; }
+			.gallery-lightbox__thumbs { padding:0 14px 18px; }
 		}
 		</style>
+		<script>
+		document.addEventListener('DOMContentLoaded', function () {
+			const galleryData = <?php echo json_encode($galleryPayload, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE); ?>;
+			const initialService = <?php echo json_encode($requestedGalleryService, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE); ?>;
+			const modal = document.getElementById('projectGalleryLightbox');
+			if (!modal) return;
+
+			const mediaHost = document.getElementById('projectGalleryMedia');
+			const thumbsHost = document.getElementById('projectGalleryThumbs');
+			const titleHost = document.getElementById('projectGalleryTitle');
+			const counterHost = document.getElementById('projectGalleryCounter');
+			const mediaTitleHost = document.getElementById('projectGalleryMediaTitle');
+			const mediaDescHost = document.getElementById('projectGalleryMediaDesc');
+			const prevBtn = document.getElementById('galleryPrevBtn');
+			const nextBtn = document.getElementById('galleryNextBtn');
+			const triggers = document.querySelectorAll('.js-gallery-open');
+			let currentItems = [];
+			let currentService = '';
+			let currentIndex = 0;
+
+			function renderMedia() {
+				const active = currentItems[currentIndex];
+				if (!active) return;
+				titleHost.textContent = currentService + ' Gallery';
+				counterHost.textContent = (currentIndex + 1) + ' / ' + currentItems.length;
+				mediaTitleHost.textContent = active.title || currentService;
+				if ((active.description || '').trim()) {
+					mediaDescHost.textContent = active.description;
+					mediaDescHost.hidden = false;
+				} else {
+					mediaDescHost.textContent = '';
+					mediaDescHost.hidden = true;
+				}
+
+				if (active.type === 'video') {
+					mediaHost.innerHTML =
+						'<span class=\"gallery-lightbox__video-badge\">Video</span>' +
+						'<video controls autoplay playsinline src=\"' + active.url.replace(/\"/g, '&quot;') + '\"></video>';
+				} else {
+					mediaHost.innerHTML =
+						'<img src=\"' + active.url.replace(/\"/g, '&quot;') + '\" alt=\"' + (active.title || currentService).replace(/\"/g, '&quot;') + '\">';
+				}
+
+				thumbsHost.innerHTML = '';
+				currentItems.forEach(function (item, index) {
+					const btn = document.createElement('button');
+					btn.type = 'button';
+					btn.className = 'gallery-lightbox__thumb' + (index === currentIndex ? ' is-active' : '');
+					btn.setAttribute('aria-label', 'View media ' + (index + 1));
+					btn.addEventListener('click', function () {
+						currentIndex = index;
+						renderMedia();
+					});
+
+					if (item.type === 'video') {
+						btn.innerHTML = '<video muted preload=\"metadata\" src=\"' + item.url.replace(/\"/g, '&quot;') + '\"></video><span class=\"gallery-lightbox__thumb-icon\"><i class=\"fas fa-play\"></i></span>';
+					} else {
+						btn.innerHTML = '<img src=\"' + item.url.replace(/\"/g, '&quot;') + '\" alt=\"\">';
+					}
+					thumbsHost.appendChild(btn);
+				});
+
+				prevBtn.disabled = currentItems.length <= 1;
+				nextBtn.disabled = currentItems.length <= 1;
+			}
+
+			function openGallery(serviceName) {
+				const items = galleryData[serviceName] || [];
+				if (!items.length) return;
+				currentItems = items;
+				currentService = serviceName;
+				currentIndex = 0;
+				renderMedia();
+				modal.hidden = false;
+				document.body.style.overflow = 'hidden';
+			}
+
+			function closeGallery() {
+				modal.hidden = true;
+				document.body.style.overflow = '';
+				mediaHost.innerHTML = '';
+				mediaTitleHost.textContent = '';
+				mediaDescHost.textContent = '';
+				mediaDescHost.hidden = true;
+			}
+
+			triggers.forEach(function (trigger) {
+				trigger.addEventListener('click', function () {
+					openGallery(trigger.getAttribute('data-gallery-service') || '');
+				});
+			});
+
+			if (initialService && galleryData[initialService] && galleryData[initialService].length) {
+				openGallery(initialService);
+				if (window.history && window.history.replaceState) {
+					window.history.replaceState({}, document.title, window.location.pathname);
+				}
+			}
+
+			prevBtn.addEventListener('click', function () {
+				if (currentItems.length <= 1) return;
+				currentIndex = (currentIndex - 1 + currentItems.length) % currentItems.length;
+				renderMedia();
+			});
+			nextBtn.addEventListener('click', function () {
+				if (currentItems.length <= 1) return;
+				currentIndex = (currentIndex + 1) % currentItems.length;
+				renderMedia();
+			});
+			modal.querySelectorAll('[data-gallery-close]').forEach(function (node) {
+				node.addEventListener('click', closeGallery);
+			});
+			document.addEventListener('keydown', function (event) {
+				if (modal.hidden) return;
+				if (event.key === 'Escape') closeGallery();
+				if (event.key === 'ArrowLeft') prevBtn.click();
+				if (event.key === 'ArrowRight') nextBtn.click();
+			});
+		});
+		</script>
 		<?php else: ?>
 		<section class="gallery-section">
 			<div class="container">

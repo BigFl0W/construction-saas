@@ -302,6 +302,51 @@ require 'inc/admin_header.php';
     display: flex;
     gap: 0.4rem;
 }
+.project-media-page .pm-preview-tile {
+    width: 56px;
+    height: 56px;
+    border-radius: 16px;
+    background: linear-gradient(180deg, #f8fafc 0%, #eef3f8 100%);
+    border: 1px solid #e2e8f0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.6);
+}
+.project-media-page .pm-preview-tile img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+.project-media-page .video-stack {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.18rem;
+    color: #d4a13e;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    font-size: 0.54rem;
+}
+.project-media-page .video-stack i {
+    font-size: 1rem;
+}
+.project-media-page .pm-title {
+    display: block;
+    font-size: 0.92rem;
+    font-weight: 700;
+    color: #0f172a;
+}
+.project-media-page .pm-subcopy {
+    display: block;
+    margin-top: 0.18rem;
+    font-size: 0.74rem;
+    color: #6b7a90;
+    line-height: 1.45;
+}
 .project-media-page .pm-drop-area {
     cursor: pointer;
     border: 2px dashed #d1d9e6 !important;
@@ -459,18 +504,22 @@ require 'inc/admin_header.php';
                                 <tr>
                                     <td>
                                         <?php if ($item['file_type'] === 'image'): ?>
-                                            <img src="<?php echo htmlspecialchars(mediaUrl($item['file_path'])); ?>" alt=""
-                                                 style="width:50px;height:50px;object-fit:cover;border-radius:8px;">
+                                            <div class="pm-preview-tile">
+                                                <img src="<?php echo htmlspecialchars(mediaUrl($item['file_path'])); ?>" alt="">
+                                            </div>
                                         <?php else: ?>
-                                            <div style="width:50px;height:50px;border-radius:8px;background:#f1f5f9;display:flex;align-items:center;justify-content:center;">
-                                                <i class="fas fa-video" style="color:#d4a13e;"></i>
+                                            <div class="pm-preview-tile">
+                                                <div class="video-stack">
+                                                    <i class="fas fa-video"></i>
+                                                    <span>VIDEO</span>
+                                                </div>
                                             </div>
                                         <?php endif; ?>
                                     </td>
                                     <td>
-                                        <strong><?php echo htmlspecialchars($item['title'] ?: '(untitled)'); ?></strong>
+                                        <span class="pm-title"><?php echo htmlspecialchars($item['title'] ?: ($item['service'] . ' media')); ?></span>
                                         <?php if ($item['description']): ?>
-                                            <br><small class="text-muted"><?php echo htmlspecialchars(substr($item['description'], 0, 80)) . (strlen($item['description']) > 80 ? '...' : ''); ?></small>
+                                            <span class="pm-subcopy"><?php echo htmlspecialchars(substr($item['description'], 0, 80)) . (strlen($item['description']) > 80 ? '...' : ''); ?></span>
                                         <?php endif; ?>
                                     </td>
                                     <td><span class="pm-service-badge"><?php echo htmlspecialchars($item['service']); ?></span></td>

@@ -80,6 +80,171 @@ $pageActive = 'project_stages';
 $pageTitle = 'TPV Construction and Services LTD · Project Stages';
 require 'inc/admin_header.php';
 ?>
+<style>
+.project-stages-page .filter-chip {
+    background: #fff;
+    color: #526277;
+    border-color: #d8e0eb !important;
+    padding: 0.42rem 0.9rem;
+    font-size: 0.76rem;
+    font-weight: 700;
+    letter-spacing: 0.01em;
+    box-shadow: 0 6px 14px rgba(15, 23, 42, 0.03);
+}
+.project-stages-page .filter-chip.active,
+.project-stages-page .filter-chip:hover {
+    background: #14213d;
+    color: #fff;
+    border-color: #14213d !important;
+}
+.project-stages-page .metric-tile {
+    background: linear-gradient(180deg, #ffffff 0%, #fbfcfe 100%);
+    border: 1px solid #e6ecf3;
+    border-radius: 22px;
+    padding: 1.15rem 1.15rem 1rem;
+    min-height: 116px;
+    box-shadow: 0 14px 30px rgba(15, 23, 42, 0.05);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+.project-stages-page .metric-tile .value {
+    font-size: 1.75rem;
+    line-height: 1;
+    font-weight: 800;
+    color: #0f172a;
+    letter-spacing: -0.02em;
+}
+.project-stages-page .metric-tile .label {
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    font-weight: 700;
+    color: #6b7a90;
+}
+.project-stages-page .stages-card {
+    border: 1px solid #e6ecf3;
+    border-radius: 26px;
+    overflow: hidden;
+    box-shadow: 0 18px 40px rgba(15, 23, 42, 0.05);
+}
+.project-stages-page .stages-card .card-header {
+    background: linear-gradient(180deg, #ffffff 0%, #fbfcfe 100%);
+    border-bottom: 1px solid #edf2f7;
+}
+.project-stages-page .table-toolbar {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 1rem;
+    align-items: center;
+}
+.project-stages-page .table-search {
+    max-width: 440px;
+}
+.project-stages-page .table-responsive-wrapper {
+    border: 1px solid #edf2f7;
+    border-radius: 22px;
+    overflow: hidden;
+}
+.project-stages-page table.table {
+    margin-bottom: 0;
+}
+.project-stages-page table.table thead th {
+    background: #f8fafc;
+    border-bottom: 1px solid #e8eef5;
+    color: #64748b;
+    font-size: 0.76rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    padding: 1rem 0.9rem;
+}
+.project-stages-page table.table tbody td {
+    padding: 1rem 0.9rem;
+    vertical-align: middle;
+    border-color: #edf2f7;
+    color: #213046;
+}
+.project-stages-page table.table tbody tr:hover {
+    background: #fbfdff;
+}
+.project-stages-page table.table tbody tr {
+    background: #ffffff;
+}
+.project-stages-page .stage-project-cell {
+    display: flex;
+    flex-direction: column;
+    gap: 0.18rem;
+    min-width: 0;
+}
+.project-stages-page .stage-project-name {
+    color: #0f172a;
+    font-size: 0.95rem;
+    line-height: 1.38;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+}
+.project-stages-page .stage-project-meta {
+    color: #7b8aa0;
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+}
+.project-stages-page .status-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.16rem 0.48rem;
+    border-radius: 12px;
+    font-size: 0.56rem;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+    border: 1px solid transparent;
+    text-transform: none;
+    min-width: 0;
+    white-space: nowrap;
+    line-height: 1.2;
+}
+.project-stages-page .status-pending { background: #fff8e1; border-color: #f7df9a; color: #9a6700; }
+.project-stages-page .status-in_progress { background: #edf4ff; border-color: #cad9ff; color: #1d4ed8; }
+.project-stages-page .status-completed { background: #ebf8ef; border-color: #cbe8d2; color: #15803d; }
+.project-stages-page .status-delayed { background: #fef0f0; border-color: #f6cccc; color: #b91c1c; }
+.project-stages-page .progress.progress-thin {
+    height: 6px;
+    border-radius: 999px;
+    background: #eaf0f6;
+}
+.project-stages-page .progress.progress-thin .progress-bar {
+    border-radius: 999px;
+}
+@media (max-width: 991.98px) {
+    .project-stages-page .table-toolbar {
+        grid-template-columns: 1fr;
+    }
+    .project-stages-page .table-search {
+        max-width: none;
+    }
+}
+@media (max-width: 767.98px) {
+    .project-stages-page .metric-tile {
+        min-height: 102px;
+        border-radius: 18px;
+        padding: 1rem;
+    }
+    .project-stages-page .metric-tile .value {
+        font-size: 1.45rem;
+    }
+    .project-stages-page .stages-card {
+        border-radius: 20px;
+    }
+    .project-stages-page .filter-chip {
+        width: calc(50% - 0.3rem);
+        justify-content: center;
+    }
+}
+</style>
+<div class="project-stages-page">
 
                 <div data-pages="parallax">
                     <div class="container-fluid p-l-25 p-r-25 sm-p-l-0 sm-p-r-0">
@@ -136,15 +301,15 @@ require 'inc/admin_header.php';
                 </div>
 
                 <div class="container-fluid p-l-25 p-r-25 p-t-0 p-b-25">
-                    <div class="card">
+                    <div class="card stages-card">
                         <div class="card-header d-flex flex-wrap justify-content-between align-items-center py-3 px-4">
                             <div class="card-title fw-bold fs-5 mb-0">
                                 <i class="fas fa-layer-group me-2" style="width:20px;height:20px"></i> Project stages
                             </div>
                         </div>
                         <div class="card-body p-4">
-                            <div class="row mb-3">
-                                <div class="col-md-5">
+                            <div class="table-toolbar mb-3">
+                                <div class="table-search">
                                     <input type="text" class="form-control rounded-pill" id="searchStages" placeholder="Search stage name, project...">
                                 </div>
                             </div>
@@ -172,7 +337,14 @@ require 'inc/admin_header.php';
                                         ?>
                                         <tr data-stage-id="<?php echo $s['id']; ?>" data-project="<?php echo $s['project_id']; ?>" data-status="<?php echo $s['status']; ?>">
                                             <td><?php echo $s['id']; ?></td>
-                                            <td><span class="badge bg-light text-dark p-2"><?php echo htmlspecialchars($s['project_name']); ?></span></td>
+                                            <td>
+                                                <div class="stage-project-cell">
+                                                    <span class="stage-project-name"><?php echo htmlspecialchars($s['project_name']); ?></span>
+                                                    <?php if (!empty($s['project_number'])): ?>
+                                                        <span class="stage-project-meta"><?php echo htmlspecialchars($s['project_number']); ?></span>
+                                                    <?php endif; ?>
+                                                </div>
+                                            </td>
                                             <td><strong><?php echo htmlspecialchars($s['name']); ?></strong></td>
                                             <td><?php echo $s['planned_start'] ?: '—'; ?></td>
                                             <td><?php echo $s['planned_end'] ?: '—'; ?></td>
@@ -286,4 +458,5 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 </script>
 <?php endif; ?>
+</div>
 <?php require 'inc/admin_footer.php'; ?>

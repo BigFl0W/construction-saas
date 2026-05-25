@@ -105,13 +105,13 @@ try {
     <link href="https://cdn.datatables.net/responsive/2.5.0/css/responsive.bootstrap5.min.css" rel="stylesheet" />
     <style>
         :root {
-            --sidebar-width: 260px;
+            --sidebar-width: 238px;
             --sidebar-bg: #1a2332;
             --sidebar-hover: #232f41;
             --sidebar-active: #2a3a52;
             --accent: #d4a13e;
             --accent-rgb: 212, 161, 62;
-            --topbar-height: 60px;
+            --topbar-height: 56px;
             --font: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
             --text-primary: #1a2332;
             --text-muted: #6b7a8f;
@@ -124,7 +124,7 @@ try {
             font-family: var(--font);
             background: #f0f2f5;
             overflow-x: hidden;
-            font-size: 0.875rem;
+            font-size: 0.84rem;
             line-height: 1.6;
             color: var(--text-primary);
         }
@@ -153,14 +153,14 @@ try {
             transition: transform 0.3s ease;
         }
         .sidebar-header {
-            padding: 16px 20px;
+            padding: 12px 16px;
             border-bottom: 1px solid rgba(255,255,255,0.06);
             flex-shrink: 0;
         }
         .sidebar-header .brand {
             width: auto;
-            max-width: 170px;
-            max-height: 56px;
+            max-width: 156px;
+            max-height: 48px;
             object-fit: contain;
             object-position: left center;
         }
@@ -171,10 +171,10 @@ try {
         .menu-items > li > a {
             display: flex;
             align-items: center;
-            padding: 10px 20px;
+            padding: 9px 16px;
             color: rgba(255,255,255,0.55);
             text-decoration: none;
-            font-size: 0.813rem;
+            font-size: 0.79rem;
             transition: all 0.15s;
             gap: 10px;
         }
@@ -185,7 +185,7 @@ try {
         .menu-items > li > a .arrow { margin-left: auto; font-size: 0.65rem; transition: transform 0.2s; }
         .menu-items > li.open > a .arrow { transform: rotate(180deg); }
         .icon-thumbnail {
-            width: 30px; height: 30px;
+            width: 28px; height: 28px;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -204,10 +204,10 @@ try {
         .sub-menu li a {
             display: flex;
             align-items: center;
-            padding: 8px 20px 8px 54px;
+            padding: 7px 16px 7px 46px;
             color: rgba(255,255,255,0.45);
             text-decoration: none;
-            font-size: 0.8rem;
+            font-size: 0.77rem;
             transition: all 0.15s;
             gap: 8px;
         }
@@ -240,7 +240,7 @@ try {
             border-bottom: 1px solid var(--border-color);
             display: flex;
             align-items: center;
-            padding: 0 20px;
+            padding: 0 16px;
             position: sticky;
             top: 0;
             z-index: 1025;
@@ -435,8 +435,8 @@ try {
         }
 
         /* ===== PAGE CONTENT ===== */
-        .page-content-wrapper { flex: 1; padding: 20px; }
-        .content { max-width: 1600px; }
+        .page-content-wrapper { flex: 1; padding: 16px; }
+        .content { max-width: 1480px; }
         .breadcrumb {
             background: none; padding: 0; margin-bottom: 16px; font-size: 0.8rem;
         }
@@ -461,18 +461,18 @@ try {
             border: none;
             border-radius: 10px;
             box-shadow: var(--card-shadow);
-            margin-bottom: 16px;
+            margin-bottom: 14px;
         }
         .card-header {
             background: #fff;
             border-bottom: 1px solid #edf2f7;
-            padding: 14px 18px;
+            padding: 12px 16px;
             font-weight: 600;
             font-size: 0.875rem;
             border-radius: 10px 10px 0 0 !important;
         }
-        .card-body { padding: 18px; }
-        .card-title { font-size: 0.938rem; font-weight: 600; margin: 0; }
+        .card-body { padding: 16px; }
+        .card-title { font-size: 0.9rem; font-weight: 600; margin: 0; }
 
         /* ===== TABLES ===== */
         .table { margin-bottom: 0; }
@@ -748,7 +748,7 @@ try {
         body {
             font-family: 'Outfit', sans-serif !important;
             background-color: #f4f7fb !important;
-            font-size: 0.875rem;
+            font-size: 0.84rem;
         }
 
         /* Sidebar Enchancements */
@@ -757,7 +757,7 @@ try {
             border-right: 1px solid rgba(255,255,255,0.05);
         }
         .menu-items > li > a {
-            font-size: 0.84rem !important;
+            font-size: 0.79rem !important;
             font-weight: 500;
         }
         .menu-items > li > a:hover, .menu-items > li.active > a, .menu-items > li.open > a {
@@ -769,10 +769,10 @@ try {
         /* Modern Cards */
         .card {
             background: #ffffff !important;
-            border-radius: 16px !important;
+            border-radius: 14px !important;
             border: 1px solid rgba(226, 232, 240, 0.8) !important;
             box-shadow: 0 4px 6px -1px rgba(0,0,0,0.03), 0 2px 4px -2px rgba(0,0,0,0.02) !important;
-            margin-bottom: 24px !important;
+            margin-bottom: 18px !important;
             transition: transform 0.2s ease, box-shadow 0.2s ease !important;
             overflow: hidden; 
         }
@@ -782,16 +782,16 @@ try {
         .card-header {
             background: rgba(248, 250, 252, 0.5) !important;
             border-bottom: 1px dashed #e2e8f0 !important;
-            border-radius: 16px 16px 0 0 !important;
-            padding: 20px 24px !important;
+            border-radius: 14px 14px 0 0 !important;
+            padding: 14px 18px !important;
         }
         .card-title {
             font-weight: 700 !important;
-            font-size: 1rem !important;
+            font-size: 0.93rem !important;
             color: #0f172a !important;
         }
         .card-body {
-            padding: 20px !important;
+            padding: 16px !important;
         }
 
         /* Modern Tables */
@@ -814,13 +814,13 @@ try {
             font-size: 0.75rem !important;
             text-transform: uppercase !important;
             letter-spacing: 0.5px !important;
-            padding: 12px 16px !important;
+            padding: 10px 14px !important;
         }
         .table tbody td {
             background: #f8fafc !important;
             border: none !important;
-            padding: 14px !important;
-            font-size: 0.86rem !important;
+            padding: 12px !important;
+            font-size: 0.82rem !important;
             font-weight: 500 !important;
             color: #334155 !important;
             vertical-align: middle !important;
@@ -836,11 +836,11 @@ try {
         .btn {
             border-radius: 8px !important;
             font-weight: 600 !important;
-            padding: 0.48rem 1rem !important;
-            font-size: 0.8rem !important;
+            padding: 0.42rem 0.88rem !important;
+            font-size: 0.76rem !important;
             transition: all 0.2s ease !important;
         }
-        .btn-sm { padding: 0.34rem 0.72rem !important; font-size: 0.76rem !important; }
+        .btn-sm { padding: 0.3rem 0.62rem !important; font-size: 0.72rem !important; }
         .btn-primary {
             background: var(--accent) !important;
             border: none !important;
@@ -863,19 +863,19 @@ try {
         .modal-header {
             background: #fff !important;
             border-bottom: 1px dashed #e2e8f0 !important;
-            padding: 24px !important;
+            padding: 18px !important;
         }
-        .modal-title { font-weight: 700 !important; font-size: 1.25rem !important; }
+        .modal-title { font-weight: 700 !important; font-size: 1.08rem !important; }
         .modal-body {
             background: #f8fafc !important;
-            padding: 24px !important;
+            padding: 18px !important;
         }
         .form-label { font-weight: 600 !important; color: #334155 !important; }
         .form-control, .form-select, .select2-selection {
             border-radius: 10px !important;
             border: 1px solid #cbd5e1 !important;
-            padding: 0.62rem 0.9rem !important;
-            font-size: 0.86rem !important;
+            padding: 0.54rem 0.82rem !important;
+            font-size: 0.82rem !important;
         }
         .form-control:focus, .form-select:focus {
             border-color: var(--accent) !important;
@@ -885,10 +885,10 @@ try {
 
         /* Page Headers */
         .breadcrumb {
-            font-size: 0.78rem !important;
+            font-size: 0.74rem !important;
             font-weight: 500 !important;
             background: #e2e8f0;
-            padding: 7px 14px;
+            padding: 6px 12px;
             border-radius: 20px;
             display: inline-flex;
         }

@@ -83,45 +83,53 @@ require 'inc/admin_header.php';
 .projects-page .metric-tile {
     background: #fff;
     border: 1px solid #e4e9f0;
-    border-radius: 22px;
-    padding: 1.1rem 1.2rem;
+    border-radius: 18px;
+    padding: 0.9rem 1rem;
     box-shadow: 0 10px 24px rgba(15, 23, 42, 0.04);
 }
 .projects-page .metric-tile .value {
-    font-size: 1.7rem;
+    font-size: clamp(1.2rem, 0.9vw + 0.9rem, 1.45rem);
     font-weight: 700;
     line-height: 1;
     color: #0f172a;
+    white-space: nowrap;
+    letter-spacing: -0.03em;
 }
 .projects-page .metric-tile .label {
     margin-top: 0.25rem;
-    font-size: 0.82rem;
+    font-size: 0.76rem;
     color: #6b7a8f;
     text-transform: uppercase;
     letter-spacing: 0.03em;
 }
+.projects-page .metric-tile .text-end {
+    min-width: 0;
+}
+.projects-page .budget-metric .value {
+    font-size: clamp(0.95rem, 0.85vw + 0.7rem, 1.2rem);
+}
 .projects-page .budget-icon {
-    width: 32px;
-    height: 32px;
+    width: 28px;
+    height: 28px;
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    border-radius: 10px;
+    border-radius: 8px;
     background: rgba(212, 161, 62, 0.12);
     color: #d4a13e;
-    font-size: 1.1rem;
+    font-size: 0.95rem;
     font-weight: 800;
 }
 .projects-page .projects-toolbar {
     display: grid;
-    grid-template-columns: minmax(0, 1.25fr) minmax(220px, 0.6fr);
-    gap: 1rem;
+    grid-template-columns: minmax(0, 1.1fr) minmax(220px, 0.5fr);
+    gap: 0.75rem;
     align-items: center;
     margin-bottom: 1rem;
 }
 .projects-page .projects-toolbar .form-control,
 .projects-page .projects-toolbar .form-select {
-    height: 48px;
+    height: 44px;
 }
 .projects-page .table-controls-row {
     display: flex;
@@ -143,10 +151,11 @@ require 'inc/admin_header.php';
 }
 .projects-page .table-controls-row select,
 .projects-page .table-controls-row input {
-    border-radius: 14px !important;
-    min-height: 44px;
+    border-radius: 12px !important;
+    min-height: 40px;
     border-color: #d8e0ea;
     box-shadow: none !important;
+    font-size: 0.8rem;
 }
 .projects-page .table-responsive-wrapper {
     overflow-x: auto;
@@ -165,11 +174,11 @@ require 'inc/admin_header.php';
 }
 @media (max-width: 767.98px) {
     .projects-page .metric-tile {
-        padding: 1rem;
-        border-radius: 18px;
+        padding: 0.85rem;
+        border-radius: 16px;
     }
     .projects-page .metric-tile .value {
-        font-size: 1.4rem;
+        font-size: 1.15rem;
     }
     .projects-page .projects-card {
         border-radius: 20px;
@@ -181,7 +190,7 @@ require 'inc/admin_header.php';
     }
     .projects-page .projects-toolbar .form-control,
     .projects-page .projects-toolbar .form-select {
-        height: 44px;
+        height: 42px;
     }
     .projects-page .table-controls-row {
         flex-direction: column;
@@ -232,7 +241,7 @@ require 'inc/admin_header.php';
                             </div>
                         </div>
                         <div class="col-md-3 col-sm-6">
-                            <div class="metric-tile d-flex align-items-center justify-content-between">
+                            <div class="metric-tile budget-metric d-flex align-items-center justify-content-between">
                                 <div><span class="budget-icon">&#8358;</span></div>
                                 <div class="text-end">
                                     <div class="value"><?php echo $functions->formatCurrency($totalBudget); ?></div>
