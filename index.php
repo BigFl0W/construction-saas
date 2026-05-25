@@ -720,7 +720,7 @@ $latestPosts = $stmt->fetchAll();
 							<div class="elementor-widget-container">
 								<div class="ata-site-logo">
 									<a data-elementor-open-lightbox="" class='elementor-clickable'
-										href="https://tpvconstruction.com.ng">
+										href="<?php echo htmlspecialchars(SITE_URL); ?>">
 										<div class="ata-site-logo-set">
 											<div class="ata-site-logo-container">
 												<img class="ata-site-logo-img elementor-animation-"
