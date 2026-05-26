@@ -1,4 +1,5 @@
--- Contact Submissions table
+-- Adds public contact submissions and admin replies for older installs.
+
 CREATE TABLE IF NOT EXISTS `contact_submissions` (
     `id` INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     `name` VARCHAR(255) NOT NULL,
@@ -13,7 +14,6 @@ CREATE TABLE IF NOT EXISTS `contact_submissions` (
     `updated_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
--- Contact Replies table (admin replies to submissions)
 CREATE TABLE IF NOT EXISTS `contact_replies` (
     `id` INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     `submission_id` INT UNSIGNED NOT NULL,

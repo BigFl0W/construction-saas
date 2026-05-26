@@ -1,4 +1,5 @@
--- Migration: create services_content table for unified service page management
+-- Adds unified admin-managed service page content storage.
+
 CREATE TABLE IF NOT EXISTS services_content (
     id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     slug VARCHAR(120) NOT NULL UNIQUE,

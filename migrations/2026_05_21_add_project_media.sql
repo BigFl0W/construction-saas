@@ -1,5 +1,4 @@
--- Migration: Create project_media table for admin media management
--- This table stores project pictures and videos organized by service category
+-- Adds the project media library used by the project gallery manager.
 
 CREATE TABLE IF NOT EXISTS project_media (
     id INT PRIMARY KEY AUTO_INCREMENT,

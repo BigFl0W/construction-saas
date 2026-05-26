@@ -37,6 +37,30 @@ function ensureContactMessageTables($db) {
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci");
 }
 
+function sanitizeRedirectTarget(string $target, string $fallback): string {
+    $target = trim($target);
+    if ($target === '' || preg_match('/[\r\n]/', $target)) {
+        return $fallback;
+    }
+
+    if (preg_match('#^https?://#i', $target)) {
+        $siteHost = (string) parse_url((string) SITE_URL, PHP_URL_HOST);
+        $targetHost = (string) parse_url($target, PHP_URL_HOST);
+        if ($siteHost !== '' && $targetHost !== '' && strcasecmp($siteHost, $targetHost) === 0) {
+            $path = (string) parse_url($target, PHP_URL_PATH);
+            $query = (string) parse_url($target, PHP_URL_QUERY);
+            $fragment = (string) parse_url($target, PHP_URL_FRAGMENT);
+            return ($path !== '' ? $path : '/') .
+                ($query !== '' ? '?' . $query : '') .
+                ($fragment !== '' ? '#' . $fragment : '');
+        }
+
+        return $fallback;
+    }
+
+    return $target;
+}
+
 if ($_SERVER['REQUEST_METHOD'] !== 'POST' || !isset($_POST['contact_submit'])) {
     header('Location: contact-us/');
     exit;
@@ -51,6 +75,8 @@ $email = clean($_POST['email'] ?? '');
 $phone = clean($_POST['phone'] ?? '');
 $subject = clean($_POST['subject'] ?? '');
 $message = clean($_POST['message'] ?? '');
+$redirectError = sanitizeRedirectTarget((string) ($_POST['redirect_error'] ?? 'contact-us/'), 'contact-us/');
+$redirectSuccess = sanitizeRedirectTarget((string) ($_POST['redirect_success'] ?? 'contact-us/?sent=1'), 'contact-us/?sent=1');
 
 $errors = [];
 if ($name === '') $errors[] = 'Name is required.';
@@ -62,7 +88,7 @@ if ($message === '') $errors[] = 'Message is required.';
 if (!empty($errors)) {
     $_SESSION['contact_errors'] = $errors;
     $_SESSION['contact_old'] = $_POST;
-    header('Location: contact-us/');
+    header('Location: ' . $redirectError);
     exit;
 }
 
@@ -144,13 +170,13 @@ try {
         error_log('Contact form email warning. Company sent: ' . ($companySent ? 'yes' : 'no') . '; auto reply sent: ' . ($autoReplySent ? 'yes' : 'no'));
     }
 
-    header('Location: contact-us/?sent=1');
+    header('Location: ' . $redirectSuccess);
     exit;
 
 } catch (Exception $e) {
     error_log('Contact form error: ' . $e->getMessage());
     $_SESSION['contact_errors'] = ['We could not submit your message. Please try again.'];
     $_SESSION['contact_old'] = $_POST;
-    header('Location: contact-us/');
+    header('Location: ' . $redirectError);
     exit;
 }
