@@ -588,9 +588,7 @@ function aboutRenderSocialIcon($href, $label, $iconClass) {
 		Skip to content </a>
 
 
-	<?php
-	include '../includes/header.php';
-	?>
+	<?php include '../includes/quote_header.php'; ?>
 
 	<div data-elementor-type="wp-page" data-elementor-id="723" class="elementor elementor-723">
 		<div class="elementor-element elementor-element-16d5d11 e-con-full e-flex e-con e-parent" data-id="16d5d11"
@@ -618,7 +616,7 @@ function aboutRenderSocialIcon($href, $label, $iconClass) {
 								<div class="ekit-wid-con">
 									<ol class="ekit-breadcrumb">
 										<li class="ekit_breadcrumbs_start"><a
-												href="https://tpvconstruction.com.ng">Home</a></li>
+												href="<?php echo htmlspecialchars(rtrim((string) SITE_URL, '/') . '/'); ?>">Home</a></li>
 										<li class="brd_sep"><span class="separate_icon"><svg
 													xmlns="http://www.w3.org/2000/svg" width="7" height="12"
 													viewbox="0 0 7 12">

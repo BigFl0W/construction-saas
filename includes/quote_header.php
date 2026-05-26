@@ -145,13 +145,16 @@ $isQuote = strpos($uri, '/quote') !== false ? 'is-active' : '';
         display: none;
         width: 48px;
         height: 48px;
-        border: 0;
-        border-radius: 0;
-        background: transparent;
+        padding: 0 !important;
+        border: 0 !important;
+        border-radius: 0 !important;
+        background: transparent !important;
+        box-shadow: none !important;
+        appearance: none;
+        -webkit-appearance: none;
         align-items: center;
         justify-content: center;
         cursor: pointer;
-        box-shadow: none;
         transition: transform 0.2s ease, opacity 0.2s ease;
     }
 
@@ -160,6 +163,8 @@ $isQuote = strpos($uri, '/quote') !== false ? 'is-active' : '';
         transform: translateY(-1px);
         opacity: 0.82;
         outline: none;
+        background: transparent !important;
+        box-shadow: none !important;
     }
 
     .tpv-site-header__menu-icon {
@@ -176,7 +181,7 @@ $isQuote = strpos($uri, '/quote') !== false ? 'is-active' : '';
         width: 20px;
         height: 2.5px;
         border-radius: 999px;
-        background: #16233f;
+        background: #16233f !important;
         transition: transform 0.22s ease, opacity 0.22s ease, top 0.22s ease;
         content: "";
     }

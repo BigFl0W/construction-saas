@@ -580,7 +580,7 @@ if ($primaryMapQuery === '') {
     </div>
     <a class="skip-link screen-reader-text" href="#content">Skip to content</a>
 
-    <?php include('../includes/header.php'); ?>
+    <?php include('../includes/quote_header.php'); ?>
 
     <div data-elementor-type="wp-page" data-elementor-id="3084" class="elementor elementor-3084">
         <!-- Hero section -->
@@ -597,7 +597,7 @@ if ($primaryMapQuery === '') {
                             <div class="elementor-widget-container">
                                 <div class="ekit-wid-con">
                                     <ol class="ekit-breadcrumb">
-                                        <li class="ekit_breadcrumbs_start"><a href="https://tpvconstruction.com.ng">Home</a></li>
+                                        <li class="ekit_breadcrumbs_start"><a href="<?php echo htmlspecialchars(rtrim((string) SITE_URL, '/') . '/'); ?>">Home</a></li>
                                         <li class="brd_sep"><span class="separate_icon"><svg width="7" height="12" viewBox="0 0 7 12"><path d="M0.283883 11.68L4.95988 0.129999H6.70988L2.03388 11.68H0.283883Z" fill="white"></path></svg></span></li>
                                         <li>Contact Us</li>
                                     </ol>
