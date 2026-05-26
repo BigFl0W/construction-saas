@@ -659,7 +659,6 @@ unset($_SESSION['contact_errors'], $_SESSION['contact_old']);
 
         .home-services__grid,
         .home-projects__grid,
-        .home-testimonials__grid,
         .home-blog__grid {
             display: grid;
             grid-template-columns: repeat(12, minmax(0, 1fr));
@@ -805,11 +804,50 @@ unset($_SESSION['contact_errors'], $_SESSION['contact_old']);
             object-fit: cover;
         }
 
-        .home-testimonial-card {
-            grid-column: span 3;
-            padding: 24px;
+        .home-testimonials__slider {
             display: grid;
+            gap: 1.25rem;
+        }
+
+        .home-testimonials__viewport {
+            overflow-x: auto;
+            overflow-y: hidden;
+            scroll-snap-type: x mandatory;
+            scroll-behavior: smooth;
+            cursor: grab;
+            touch-action: pan-y;
+            user-select: none;
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+
+        .home-testimonials__viewport::-webkit-scrollbar {
+            display: none;
+        }
+
+        .home-testimonials__track {
+            display: flex;
             gap: 1rem;
+            width: max-content;
+            padding: 4px 12px 8px 0;
+        }
+
+        .home-testimonials__viewport.is-dragging {
+            cursor: grabbing;
+        }
+
+        .home-testimonials__slide {
+            flex: 0 0 min(760px, 72vw);
+            min-width: min(760px, 72vw);
+            scroll-snap-align: start;
+        }
+
+        .home-testimonial-card {
+            padding: 28px;
+            display: grid;
+            gap: 1.25rem;
+            height: 100%;
+            box-shadow: 0 20px 40px rgba(15, 36, 72, 0.06);
         }
 
         .home-testimonial-card__person {
@@ -834,6 +872,36 @@ unset($_SESSION['contact_errors'], $_SESSION['contact_old']);
             margin-top: 0.2rem;
             color: #7f8ca6;
             font-size: 0.88rem;
+        }
+
+        .home-testimonials__controls {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 1rem;
+        }
+
+        .home-testimonials__dots {
+            display: flex;
+            align-items: center;
+            gap: 0.55rem;
+            flex-wrap: wrap;
+        }
+
+        .home-testimonials__dot {
+            width: 10px;
+            height: 10px;
+            border: 0;
+            border-radius: 999px;
+            background: rgba(18, 34, 67, 0.18);
+            padding: 0;
+            cursor: pointer;
+            transition: width 0.2s ease, background-color 0.2s ease;
+        }
+
+        .home-testimonials__dot.is-active {
+            width: 30px;
+            background: var(--home-danger);
         }
 
         .home-faq {
@@ -1065,9 +1133,13 @@ unset($_SESSION['contact_errors'], $_SESSION['contact_old']);
 
             .home-services__grid .home-service-card,
             .home-projects__grid .home-project-card,
-            .home-testimonials__grid .home-testimonial-card,
             .home-blog__grid .home-blog-card {
                 grid-column: span 6;
+            }
+
+            .home-testimonials__slide {
+                flex-basis: min(640px, 82vw);
+                min-width: min(640px, 82vw);
             }
         }
 
@@ -1107,9 +1179,13 @@ unset($_SESSION['contact_errors'], $_SESSION['contact_old']);
 
             .home-service-card,
             .home-project-card,
-            .home-testimonial-card,
             .home-blog-card {
                 grid-column: 1 / -1 !important;
+            }
+
+            .home-testimonials__slide {
+                flex-basis: min(92vw, 100%);
+                min-width: min(92vw, 100%);
             }
 
             .home-service-card {
@@ -1171,6 +1247,10 @@ unset($_SESSION['contact_errors'], $_SESSION['contact_old']);
 
             .home-support-badge a {
                 font-size: 1rem;
+            }
+
+            .home-testimonials__dots {
+                justify-content: center;
             }
         }
     </style>
@@ -1389,19 +1469,28 @@ unset($_SESSION['contact_errors'], $_SESSION['contact_old']);
                 <h2><?php echo htmlspecialchars($homeTestimonialsTitle); ?></h2>
                 <p><?php echo nl2br(htmlspecialchars($homeTestimonialsBody)); ?></p>
             </div>
-            <div class="home-testimonials__grid">
-                <?php foreach ($homeTestimonials as $item): ?>
-                    <article class="home-testimonial-card home-card">
-                        <div class="home-testimonial-card__person">
-                            <img src="<?php echo htmlspecialchars($item['image']); ?>" alt="<?php echo htmlspecialchars($item['name']); ?>">
-                            <div>
-                                <strong><?php echo htmlspecialchars($item['name']); ?></strong>
-                                <span><?php echo htmlspecialchars($item['role']); ?></span>
+            <div class="home-testimonials__slider" data-testimonial-slider>
+                <div class="home-testimonials__viewport">
+                    <div class="home-testimonials__track">
+                        <?php foreach ($homeTestimonials as $item): ?>
+                            <div class="home-testimonials__slide">
+                                <article class="home-testimonial-card home-card">
+                                    <div class="home-testimonial-card__person">
+                                        <img src="<?php echo htmlspecialchars($item['image']); ?>" alt="<?php echo htmlspecialchars($item['name']); ?>">
+                                        <div>
+                                            <strong><?php echo htmlspecialchars($item['name']); ?></strong>
+                                            <span><?php echo htmlspecialchars($item['role']); ?></span>
+                                        </div>
+                                    </div>
+                                    <p><?php echo nl2br(htmlspecialchars($item['body'])); ?></p>
+                                </article>
                             </div>
-                        </div>
-                        <p><?php echo nl2br(htmlspecialchars($item['body'])); ?></p>
-                    </article>
-                <?php endforeach; ?>
+                        <?php endforeach; ?>
+                    </div>
+                </div>
+                <div class="home-testimonials__controls">
+                    <div class="home-testimonials__dots" aria-label="Testimonial slides"></div>
+                </div>
             </div>
         </section>
 
@@ -1539,6 +1628,184 @@ unset($_SESSION['contact_errors'], $_SESSION['contact_old']);
         </section>
     </div>
 </main>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    document.querySelectorAll('[data-testimonial-slider]').forEach(function (slider) {
+        const viewport = slider.querySelector('.home-testimonials__viewport');
+        const track = slider.querySelector('.home-testimonials__track');
+        const slides = Array.from(slider.querySelectorAll('.home-testimonials__slide'));
+        const dotsWrap = slider.querySelector('.home-testimonials__dots');
+
+        if (!viewport || !track || slides.length === 0 || !dotsWrap) {
+            return;
+        }
+
+        let currentIndex = 0;
+        let autoAdvanceId = null;
+        let dragStartX = 0;
+        let dragStartScrollLeft = 0;
+        let dragDeltaX = 0;
+        let isDragging = false;
+
+        const getPageCount = function () {
+            return Math.max(1, slides.length);
+        };
+
+        const renderDots = function () {
+            dotsWrap.innerHTML = '';
+            for (let i = 0; i < getPageCount(); i += 1) {
+                const dot = document.createElement('button');
+                dot.type = 'button';
+                dot.className = 'home-testimonials__dot';
+                dot.setAttribute('aria-label', 'Go to testimonial slide ' + (i + 1));
+                dot.addEventListener('click', function () {
+                    currentIndex = i;
+                    updateSlider();
+                });
+                dotsWrap.appendChild(dot);
+            }
+        };
+
+        const getSlideMetrics = function () {
+            const slideWidth = slides[0].getBoundingClientRect().width;
+            const gap = 16;
+            return {
+                slideWidth: slideWidth,
+                gap: gap,
+                pageWidth: slideWidth + gap
+            };
+        };
+
+        const updateSlider = function (skipAnimation) {
+            const pageCount = getPageCount();
+            if (pageCount > 0) {
+                if (currentIndex < 0) {
+                    currentIndex = pageCount - 1;
+                } else if (currentIndex >= pageCount) {
+                    currentIndex = 0;
+                }
+            }
+
+            const metrics = getSlideMetrics();
+            const targetLeft = currentIndex * metrics.pageWidth;
+            if (skipAnimation) {
+                viewport.scrollLeft = targetLeft;
+            } else {
+                viewport.scrollTo({ left: targetLeft, behavior: 'smooth' });
+            }
+
+            Array.from(dotsWrap.children).forEach(function (dot, index) {
+                dot.classList.toggle('is-active', index === currentIndex);
+            });
+        };
+
+        const startAutoAdvance = function () {
+            if (autoAdvanceId || getPageCount() <= 1) {
+                return;
+            }
+
+            autoAdvanceId = window.setInterval(function () {
+                currentIndex += 1;
+                updateSlider();
+            }, 5000);
+        };
+
+        const stopAutoAdvance = function () {
+            if (!autoAdvanceId) {
+                return;
+            }
+
+            window.clearInterval(autoAdvanceId);
+            autoAdvanceId = null;
+        };
+
+        const handleDragStart = function (clientX) {
+            isDragging = true;
+            dragStartX = clientX;
+            dragStartScrollLeft = viewport.scrollLeft;
+            dragDeltaX = 0;
+            viewport.classList.add('is-dragging');
+            stopAutoAdvance();
+        };
+
+        const handleDragMove = function (clientX) {
+            if (!isDragging) {
+                return;
+            }
+
+            dragDeltaX = clientX - dragStartX;
+            viewport.scrollLeft = dragStartScrollLeft - dragDeltaX;
+        };
+
+        const handleDragEnd = function () {
+            if (!isDragging) {
+                return;
+            }
+
+            const metrics = getSlideMetrics();
+            currentIndex = Math.round(viewport.scrollLeft / metrics.pageWidth);
+
+            isDragging = false;
+            dragDeltaX = 0;
+            viewport.classList.remove('is-dragging');
+            updateSlider();
+            startAutoAdvance();
+        };
+
+        window.addEventListener('resize', function () {
+            stopAutoAdvance();
+            renderDots();
+            updateSlider(true);
+            startAutoAdvance();
+        });
+
+        slider.addEventListener('mouseenter', stopAutoAdvance);
+        slider.addEventListener('mouseleave', startAutoAdvance);
+        slider.addEventListener('focusin', stopAutoAdvance);
+        slider.addEventListener('focusout', startAutoAdvance);
+
+        viewport.addEventListener('pointerdown', function (event) {
+            if (event.pointerType === 'mouse' && event.button !== 0) {
+                return;
+            }
+            handleDragStart(event.clientX);
+            viewport.setPointerCapture(event.pointerId);
+        });
+
+        viewport.addEventListener('pointermove', function (event) {
+            handleDragMove(event.clientX);
+        });
+
+        viewport.addEventListener('pointerup', handleDragEnd);
+        viewport.addEventListener('pointercancel', handleDragEnd);
+        viewport.addEventListener('lostpointercapture', handleDragEnd);
+        viewport.addEventListener('scroll', function () {
+            if (isDragging) {
+                return;
+            }
+
+            const metrics = getSlideMetrics();
+            currentIndex = Math.round(viewport.scrollLeft / metrics.pageWidth);
+            Array.from(dotsWrap.children).forEach(function (dot, index) {
+                dot.classList.toggle('is-active', index === currentIndex);
+            });
+        }, { passive: true });
+
+        document.addEventListener('visibilitychange', function () {
+            if (document.hidden) {
+                stopAutoAdvance();
+            } else {
+                startAutoAdvance();
+            }
+        });
+
+        renderDots();
+        updateSlider(true);
+        startAutoAdvance();
+    });
+});
+</script>
 
 <?php include __DIR__ . '/includes/footer.php'; ?>
 </body>

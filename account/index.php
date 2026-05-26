@@ -4,6 +4,7 @@ require_once '../config/config.php';
 require_once '../classes/Auth.php';
 require_once '../classes/Functions.php';
 require_once '../classes/QuoteRequest.php';
+require_once '../classes/Settings.php';
 
 // Initialize authentication
 $auth = new Auth();
@@ -15,9 +16,57 @@ $currentUser = $auth->getUserData();
 // Initialize functions class
 $functions = Functions::getInstance();
 $quoteRequests = new QuoteRequest();
+$settings = new Settings();
 
 // Get database connection
 $db = Database::getInstance();
+$companyAddress = trim((string) $settings->get('company_address', '2nd Floor, Right Wing, APDC Building, Area 11, Abuja, Nigeria'));
+$contactMapApiKey = trim((string) $settings->get('contact_map_api_key', ''));
+$contactMapDefaultQuery = trim((string) $settings->get('contact_map_default_query', 'Port+Harcourt+Rivers+Nigeria'));
+$contactLocationsData = trim((string) $settings->get('contact_locations_data', "Abuja Office|Area 11, Abuja|2nd Floor, Right Wing, APDC Building, Area 11, Abuja|09097128241|abuja@tpvconstruction.com.ng|APDC+Building+Area+11+Abuja+Nigeria"));
+
+$dashboardLocations = [];
+foreach (preg_split('/\r\n|\r|\n/', $contactLocationsData) as $line) {
+    $line = trim($line);
+    if ($line === '') {
+        continue;
+    }
+
+    $parts = array_map('trim', explode('|', $line));
+    $dashboardLocations[] = [
+        'name' => $parts[0] ?? 'Head Office',
+        'city' => $parts[1] ?? '',
+        'address' => $parts[2] ?? $companyAddress,
+        'map_query' => $parts[5] ?? $contactMapDefaultQuery,
+    ];
+}
+
+if (empty($dashboardLocations)) {
+    $dashboardLocations[] = [
+        'name' => 'Head Office',
+        'city' => '',
+        'address' => $companyAddress,
+        'map_query' => $contactMapDefaultQuery,
+    ];
+}
+
+$dashboardPrimaryLocation = $dashboardLocations[0];
+$dashboardMapQuery = trim((string) ($dashboardPrimaryLocation['map_query'] ?? ''));
+if ($dashboardMapQuery === '') {
+    $dashboardMapQuery = $contactMapDefaultQuery;
+}
+$dashboardMapEmbedSrc = 'https://www.google.com/maps/embed/v1/place?key=' .
+    rawurlencode($contactMapApiKey) .
+    '&q=' .
+    rawurlencode($dashboardMapQuery);
+$dashboardLocationLabel = trim(implode(' · ', array_filter([
+    $dashboardPrimaryLocation['name'] ?? '',
+    $dashboardPrimaryLocation['city'] ?? ''
+])));
+if ($dashboardLocationLabel === '') {
+    $dashboardLocationLabel = 'Primary office location';
+}
+$dashboardLocationAddress = trim((string) ($dashboardPrimaryLocation['address'] ?? $companyAddress));
 
 // Fetch dashboard statistics
 try {
@@ -866,7 +915,7 @@ body {
                 </div>
                 <div class="modern-card-body p-2">
                     <iframe style="width: 100%; height: 350px; border: 0; border-radius: 12px;"
-                        src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d127223.16264394466!2d7.00479655!3d4.81741045!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x1069cea39f2c48e3%3A0x53562bdd7d8832db!2sPort%20Harcourt%2C%20Rivers!5e0!3m2!1sen!2sng!4v1726019643240!5m2!1sen!2sng"
+                        src="<?php echo htmlspecialchars($dashboardMapEmbedSrc); ?>"
                         allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade">
                     </iframe>
                     <div class="text-center text-muted small mt-2 fw-medium">

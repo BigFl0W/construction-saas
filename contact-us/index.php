@@ -56,6 +56,12 @@ if (empty($contactLocations)) {
         'map_query' => $contactMapDefaultQuery,
     ];
 }
+
+$primaryContactLocation = $contactLocations[0];
+$primaryMapQuery = trim((string) ($primaryContactLocation['map_query'] ?? ''));
+if ($primaryMapQuery === '') {
+    $primaryMapQuery = $contactMapDefaultQuery;
+}
 ?>
 <!DOCTYPE html>
 <html lang="en-US">
@@ -657,7 +663,7 @@ if (empty($contactLocations)) {
                         <iframe id="locationMap"
                             class="w-100 mb-n2"
                             style="height: 450px; width: 100%; border: 0;"
-                            src="https://www.google.com/maps/embed/v1/place?key=<?php echo htmlspecialchars(rawurlencode($contactMapApiKey)); ?>&q=<?php echo htmlspecialchars($contactMapDefaultQuery); ?>"
+                            src="https://www.google.com/maps/embed/v1/place?key=<?php echo htmlspecialchars(rawurlencode($contactMapApiKey)); ?>&q=<?php echo htmlspecialchars($primaryMapQuery); ?>"
                             frameborder="0"
                             allowfullscreen=""
                             aria-hidden="false"
