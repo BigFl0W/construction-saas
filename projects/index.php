@@ -28,6 +28,17 @@ if (!function_exists('galInitials')) {
         return $initials ?: 'PM';
     }
 }
+if (!function_exists('galSortMediaItems')) {
+    function galSortMediaItems(array $items): array {
+        usort($items, function ($a, $b) {
+            $scoreA = (!empty($a['featured']) ? 100 : 0) + (($a['file_type'] ?? '') === 'image' ? 10 : 0) + (int) strtotime((string) ($a['created_at'] ?? ''));
+            $scoreB = (!empty($b['featured']) ? 100 : 0) + (($b['file_type'] ?? '') === 'image' ? 10 : 0) + (int) strtotime((string) ($b['created_at'] ?? ''));
+            return $scoreB <=> $scoreA;
+        });
+
+        return $items;
+    }
+}
 $allMedia = $db->query(
     "SELECT * FROM project_media ORDER BY service, file_type, featured DESC, created_at DESC"
 )->fetchAll();
@@ -36,8 +47,42 @@ foreach ($allMedia as $item) {
     $grouped[$item['service']][] = $item;
 }
 $requestedGalleryService = trim($_GET['service'] ?? '');
+$selectedCollection = trim($_GET['collection'] ?? '');
+$serviceCollections = [];
 $galleryPayload = [];
 foreach ($grouped as $serviceName => $items) {
+    $orderedItems = galSortMediaItems($items);
+    $previewItems = array_values(array_filter($orderedItems, function ($mediaItem) {
+        return ($mediaItem['file_type'] ?? 'image') === 'image';
+    }));
+    $previewItems = array_slice($previewItems, 0, 3);
+    if (count($previewItems) < 3) {
+        $previewItems = array_slice($orderedItems, 0, 3);
+    }
+    $cover = $previewItems[0] ?? ($orderedItems[0] ?? null);
+    $cardMeta = null;
+    foreach ($orderedItems as $_mediaItem) {
+        if (trim((string) ($_mediaItem['title'] ?? '')) !== '' || trim((string) ($_mediaItem['description'] ?? '')) !== '') {
+            $cardMeta = $_mediaItem;
+            break;
+        }
+    }
+    if (!$cardMeta) {
+        $cardMeta = $cover ?: ($orderedItems[0] ?? null);
+    }
+    $serviceCollections[$serviceName] = [
+        'items' => $orderedItems,
+        'preview' => $previewItems,
+        'cover' => $cover,
+        'meta' => $cardMeta,
+        'count' => count($orderedItems),
+        'images' => count(array_filter($orderedItems, function ($mediaItem) {
+            return ($mediaItem['file_type'] ?? 'image') === 'image';
+        })),
+        'videos' => count(array_filter($orderedItems, function ($mediaItem) {
+            return ($mediaItem['file_type'] ?? 'image') === 'video';
+        })),
+    ];
     $galleryPayload[$serviceName] = array_map(function ($mediaItem) {
         return [
             'type' => $mediaItem['file_type'] === 'video' ? 'video' : 'image',
@@ -46,8 +91,9 @@ foreach ($grouped as $serviceName => $items) {
             'description' => $mediaItem['description'] ?? '',
             'service' => $mediaItem['service'] ?? '',
         ];
-    }, $items);
+    }, $orderedItems);
 }
+$selectedCollection = ($selectedCollection !== '' && isset($serviceCollections[$selectedCollection])) ? $selectedCollection : '';
 ?>
 <!DOCTYPE html>
 <html lang="en-US">
@@ -542,7 +588,7 @@ foreach ($grouped as $serviceName => $items) {
 
 	<a class="skip-link screen-reader-text" href="#content">Skip to content</a>
 
-	<?php include '../includes/header.php'; ?>
+	<?php include '../includes/quote_header.php'; ?>
 
 	<main id="content" class="site-main">
 		<div class="page-header" style="background-image: url('../wp-content/uploads/2024/06/page-header-bg.jpg')">
@@ -572,79 +618,78 @@ foreach ($grouped as $serviceName => $items) {
 					<p class="section-desc">Browse our completed projects and see the quality of our work firsthand. Hover over any project to explore all associated images and videos.</p>
 				</div>
 
+				<div class="gallery-toolbar">
+					<div class="gallery-filter-chips" role="tablist" aria-label="Filter project collections">
+						<a class="gallery-filter-chip <?php echo $selectedCollection === '' ? 'is-active' : ''; ?>" href="index.php">All Services</a>
+						<?php foreach ($serviceCollections as $serviceName => $collection): ?>
+						<a class="gallery-filter-chip <?php echo $selectedCollection === $serviceName ? 'is-active' : ''; ?>" href="?collection=<?php echo urlencode($serviceName); ?>">
+							<?php echo htmlspecialchars($serviceName); ?>
+							<span><?php echo (int) $collection['count']; ?></span>
+						</a>
+						<?php endforeach; ?>
+					</div>
+					<p class="gallery-toolbar-note">Each service is presented as a complete collection. Open any card to browse every image and video related to that service.</p>
+				</div>
+
 				<div class="gallery-grid">
-					<?php foreach ($grouped as $service => $items): ?>
+					<?php foreach ($serviceCollections as $service => $collection): ?>
+					<?php if ($selectedCollection !== '' && $selectedCollection !== $service) continue; ?>
 					<?php
-					$cover = null;
-					foreach ($items as $_m) { if ($_m['file_type'] === 'image') { $cover = $_m; break; } }
-					if (!$cover) $cover = $items[0];
-					$total    = count($items);
-					$imgCount = count(array_filter($items, fn($m) => $m['file_type'] === 'image'));
-					$vidCount = $total - $imgCount;
-					$cardMeta = null;
-					foreach ($items as $_m) {
-						if (trim((string) ($_m['title'] ?? '')) !== '' || trim((string) ($_m['description'] ?? '')) !== '') {
-							$cardMeta = $_m;
-							break;
-						}
-					}
-					if (!$cardMeta) {
-						$cardMeta = $cover;
-					}
-					$cardMediaTitle = trim((string) ($cardMeta['title'] ?? ''));
-					$cardMediaDescription = trim((string) ($cardMeta['description'] ?? ''));
-					$preview = array_filter($items, fn($m) => $m['file_type'] === 'image');
-					$preview = array_slice($preview, 0, 3);
-					if (count($preview) < 3) $preview = array_slice($items, 0, 3);
+					$total    = (int) $collection['count'];
+					$imgCount = (int) $collection['images'];
+					$vidCount = (int) $collection['videos'];
+					$cover    = $collection['cover'] ?? null;
+					$meta     = $collection['meta'] ?? null;
+					$cardMediaTitle = trim((string) ($meta['title'] ?? ''));
+					$cardMediaDescription = trim((string) ($meta['description'] ?? ''));
+					$preview = $collection['preview'] ?? [];
 					?>
 					<button type="button"
 					        class="gallery-card-link js-gallery-open"
 					        data-gallery-service="<?php echo htmlspecialchars($service); ?>"
-					        aria-label="Open <?php echo htmlspecialchars($service); ?> media gallery">
+					        aria-label="Open <?php echo htmlspecialchars($service); ?> media collection">
 						<div class="gallery-card">
-							<div class="gallery-card-image">
-								<?php if (($cover['file_type'] ?? 'image') === 'image'): ?>
-								<img src="<?php echo htmlspecialchars(galMediaUrl($cover['file_path'])); ?>"
-								     alt="<?php echo htmlspecialchars($service); ?>" loading="lazy">
-								<?php else: ?>
-								<div class="gallery-card-video-fallback" aria-hidden="true">
-									<div class="gallery-card-video-icon"><i class="fas fa-play"></i></div>
-									<div class="gallery-card-video-copy">
-										<span class="gallery-card-video-label">Video preview</span>
-										<strong><?php echo htmlspecialchars(galInitials($service)); ?></strong>
-									</div>
-								</div>
-								<?php endif; ?>
-								<div class="gallery-card-view-overlay">
-									<span class="gallery-view-btn"><i class="fas fa-images me-2"></i>View Gallery</span>
-								</div>
-								<div class="gallery-card-stats">
-									<span><i class="fas fa-image"></i> <?php echo $imgCount; ?></span>
-									<?php if ($vidCount > 0): ?>
-									<span><i class="fas fa-video"></i> <?php echo $vidCount; ?></span>
-									<?php endif; ?>
-								</div>
-							</div>
-							<?php if (count($preview) > 1): ?>
-							<div class="gallery-card-strip">
-								<?php foreach (array_slice($preview, 1, 2) as $_p): ?>
-								<div class="gallery-strip-thumb">
-									<?php if ($_p['file_type'] === 'image'): ?>
-									<img src="<?php echo htmlspecialchars(galMediaUrl($_p['file_path'])); ?>" alt="" loading="lazy">
-									<?php else: ?>
-									<video src="<?php echo htmlspecialchars(galMediaUrl($_p['file_path'])); ?>" muted preload="metadata"></video>
-									<span class="gallery-strip-play"><i class="fas fa-play"></i></span>
-									<?php endif; ?>
-								</div>
-								<?php endforeach; ?>
-								<?php if ($total > 3): ?>
-								<div class="gallery-strip-more">+<?php echo $total - 3; ?></div>
-								<?php endif; ?>
-							</div>
-							<?php endif; ?>
-							<div class="gallery-card-body">
-								<div>
+							<div class="gallery-card-head">
+								<div class="gallery-card-head__copy">
+									<span class="gallery-card-eyebrow">Service collection</span>
 									<h3 class="gallery-card-title"><?php echo htmlspecialchars($service); ?></h3>
+									<p class="gallery-card-summary">
+										<?php echo htmlspecialchars($cardMediaDescription !== '' ? $cardMediaDescription : 'Browse curated images and videos from this service portfolio.'); ?>
+									</p>
+								</div>
+								<span class="gallery-card-pill"><?php echo $total; ?> media</span>
+							</div>
+							<div class="gallery-card-visual gallery-card-visual--<?php echo max(1, min(3, count($preview))); ?>">
+								<?php if (!empty($preview)): ?>
+									<?php foreach (array_slice($preview, 0, 3) as $index => $_p): ?>
+									<div class="gallery-card-visual__tile gallery-card-visual__tile--<?php echo (int) $index; ?>">
+										<?php if (($_p['file_type'] ?? 'image') === 'image'): ?>
+										<img src="<?php echo htmlspecialchars(galMediaUrl($_p['file_path'])); ?>" alt="<?php echo htmlspecialchars($_p['title'] ?: $service); ?>" loading="lazy">
+										<?php else: ?>
+										<video src="<?php echo htmlspecialchars(galMediaUrl($_p['file_path'])); ?>" muted preload="metadata"></video>
+										<span class="gallery-card-visual__play"><i class="fas fa-play"></i></span>
+										<?php endif; ?>
+										<?php if ($index === 0 && $cardMediaTitle !== ''): ?>
+										<div class="gallery-card-visual__caption">
+											<strong><?php echo htmlspecialchars($cardMediaTitle); ?></strong>
+											<span><?php echo $imgCount; ?> photo<?php echo $imgCount !== 1 ? 's' : ''; ?><?php echo $vidCount ? ' • ' . $vidCount . ' video' . ($vidCount !== 1 ? 's' : '') : ''; ?></span>
+										</div>
+										<?php endif; ?>
+										<?php if ($index === 2 && $total > 3): ?>
+										<div class="gallery-card-visual__more">+<?php echo $total - 3; ?> more</div>
+										<?php endif; ?>
+									</div>
+									<?php endforeach; ?>
+								<?php else: ?>
+									<div class="gallery-card-visual__empty">
+										<i class="fas fa-image"></i>
+										<span>No preview available</span>
+									</div>
+								<?php endif; ?>
+							</div>
+							<div class="gallery-card-body">
+								<div class="gallery-card-body__copy">
+									<span class="gallery-card-body__label">Featured project</span>
 									<?php if ($cardMediaTitle !== ''): ?>
 									<p class="gallery-card-media-title"><?php echo htmlspecialchars($cardMediaTitle); ?></p>
 									<?php endif; ?>
@@ -652,11 +697,11 @@ foreach ($grouped as $serviceName => $items) {
 									<p class="gallery-card-media-desc"><?php echo htmlspecialchars($cardMediaDescription); ?></p>
 									<?php endif; ?>
 									<span class="gallery-card-count">
-										<i class="fas fa-image me-1"></i><?php echo $imgCount; ?> photo<?php echo $imgCount != 1 ? 's' : ''; ?>
-										<?php if ($vidCount): ?>&nbsp;&bull;&nbsp;<i class="fas fa-video me-1"></i><?php echo $vidCount; ?> video<?php echo $vidCount != 1 ? 's' : ''; ?><?php endif; ?>
+										<i class="fas fa-image me-1"></i><?php echo $imgCount; ?> photo<?php echo $imgCount !== 1 ? 's' : ''; ?>
+										<?php if ($vidCount): ?>&nbsp;&bull;&nbsp;<i class="fas fa-video me-1"></i><?php echo $vidCount; ?> video<?php echo $vidCount !== 1 ? 's' : ''; ?><?php endif; ?>
 									</span>
 								</div>
-								<span class="gallery-card-arrow"><i class="fas fa-arrow-right"></i></span>
+								<span class="gallery-card-arrow" aria-hidden="true"><i class="fas fa-arrow-right"></i></span>
 							</div>
 						</div>
 					</button>
@@ -709,8 +754,35 @@ foreach ($grouped as $serviceName => $items) {
 		.section-title { font-size:38px;font-weight:800;color:#0f172a;margin:0 0 14px; }
 		.section-desc { max-width:580px;margin:0 auto;color:#64748b;font-size:16px;line-height:1.7; }
 
+		.gallery-toolbar {
+			display:flex;align-items:flex-start;justify-content:space-between;gap:20px;flex-wrap:wrap;margin:0 0 28px;
+		}
+		.gallery-filter-chips {
+			display:flex;flex-wrap:wrap;gap:10px;
+		}
+		.gallery-filter-chip {
+			display:inline-flex;align-items:center;gap:10px;
+			padding:10px 16px;border-radius:999px;border:1px solid #dbe4f0;
+			background:#fff;color:#0f172a;text-decoration:none;font-weight:700;
+			font-size:13px;box-shadow:0 8px 18px rgba(15,23,42,0.04);
+			transition:transform .2s ease,border-color .2s ease,box-shadow .2s ease,background .2s ease,color .2s ease;
+		}
+		.gallery-filter-chip span {
+			display:inline-flex;align-items:center;justify-content:center;
+			min-width:24px;height:24px;padding:0 7px;border-radius:999px;
+			background:#f8fafc;color:#64748b;font-size:11px;font-weight:800;
+		}
+		.gallery-filter-chip:hover,
+		.gallery-filter-chip.is-active {
+			transform:translateY(-1px);border-color:#E5363D;background:#fff5f5;color:#E5363D;
+			box-shadow:0 16px 28px rgba(229,54,61,0.10);
+		}
+		.gallery-filter-chip.is-active span { background:#fff; color:#E5363D; }
+		.gallery-toolbar-note {
+			margin:0;max-width:430px;font-size:14px;line-height:1.7;color:#64748b;
+		}
 		.gallery-grid {
-			display:grid;grid-template-columns:repeat(auto-fill,minmax(330px,1fr));gap:28px;
+			display:grid;grid-template-columns:repeat(auto-fill,minmax(360px,1fr));gap:28px;
 		}
 		.gallery-card-link {
 			text-decoration:none;display:block;width:100%;
@@ -718,103 +790,110 @@ foreach ($grouped as $serviceName => $items) {
 			box-shadow:none !important;appearance:none;-webkit-appearance:none;border-radius:0;
 		}
 		.gallery-card {
-			background:none;border-radius:18px;overflow:hidden;
-			box-shadow:0 4px 20px rgba(0,0,0,0.06);
-			transition:transform 0.32s,box-shadow 0.32s;
+			background:#fff;border:1px solid #e2e8f0;border-radius:28px;overflow:hidden;
+			box-shadow:0 20px 44px rgba(15,23,42,0.07);
+			transition:transform 0.32s,box-shadow 0.32s,border-color 0.32s;
 		}
 		.gallery-card-link:hover .gallery-card {
-			transform:translateY(-6px);box-shadow:0 16px 48px rgba(0,0,0,0.13);
+			transform:translateY(-6px);box-shadow:0 26px 64px rgba(15,23,42,0.12);border-color:#d8e0ea;
 		}
-		/* Cover image */
-		.gallery-card-image {
-			position:relative;aspect-ratio:16/11;overflow:hidden;
+		.gallery-card-head {
+			padding:22px 22px 0;display:flex;align-items:flex-start;justify-content:space-between;gap:16px;
 		}
-		.gallery-card-image img {
-			width:100%;height:100%;object-fit:cover;display:block;
-			transition:transform 0.55s cubic-bezier(0.25,0.46,0.45,0.94);
+		.gallery-card-head__copy { min-width:0; }
+		.gallery-card-eyebrow {
+			display:inline-flex;align-items:center;gap:8px;
+			padding:6px 12px;border-radius:999px;background:#f8fafc;
+			color:#E5363D;font-size:11px;letter-spacing:0.14em;font-weight:800;text-transform:uppercase;
 		}
-		.gallery-card-video-fallback {
-			width:100%;height:100%;
-			display:flex;flex-direction:column;align-items:center;justify-content:center;
-			gap:14px;padding:24px;text-align:center;color:#0f172a;
-			background:none;
+		.gallery-card-head .gallery-card-title {
+			margin:12px 0 8px;font-size:22px;font-weight:800;line-height:1.15;color:#0f172a;
 		}
-		.gallery-card-video-icon {
-			width:76px;height:76px;border-radius:50%;
-			display:inline-flex;align-items:center;justify-content:center;
-			background:rgba(255,255,255,0.92);
-			border:1px solid #e2e8f0;
-			font-size:20px;
-			box-shadow:0 18px 34px rgba(15,23,42,0.08);
-		}
-		.gallery-card-video-copy {
-			display:flex;flex-direction:column;align-items:center;gap:5px;
-		}
-		.gallery-card-video-copy strong {
-			font-size:34px;font-weight:800;line-height:1;letter-spacing:0.08em;
-		}
-		.gallery-card-video-label {
-			display:inline-flex;align-items:center;justify-content:center;
-			padding:6px 12px;border-radius:999px;
-			background:#f8fafc;
-			font-size:11px;text-transform:uppercase;letter-spacing:0.14em;font-weight:700;
-		}
-		.gallery-card-link:hover .gallery-card-image img { transform:scale(1.07); }
-		.gallery-card-view-overlay {
-			position:absolute;inset:0;
-			background:rgba(10,16,30,0.42);
-			display:flex;align-items:center;justify-content:center;
-			opacity:0;transition:opacity 0.3s;
-		}
-		.gallery-card-link:hover .gallery-card-view-overlay { opacity:1; }
-		.gallery-view-btn {
-			background:#E5363D;color:#fff;font-size:14px;font-weight:700;
-			padding:11px 24px;border-radius:50px;letter-spacing:0.3px;
-			box-shadow:0 4px 16px rgba(229,54,61,0.45);
-		}
-		.gallery-card-stats {
-			position:absolute;top:13px;right:13px;display:flex;gap:6px;z-index:3;
-		}
-		.gallery-card-stats span {
-			background:rgba(0,0,0,0.52);backdrop-filter:blur(4px);
-			color:#fff;font-size:12px;font-weight:600;padding:4px 10px;
-			border-radius:20px;display:flex;align-items:center;gap:5px;
-		}
-		/* Thumbnail strip */
-		.gallery-card-strip {
-			display:grid;grid-template-columns:1fr 1fr 1fr;gap:3px;height:78px;
-		}
-		.gallery-strip-thumb {
-			position:relative;overflow:hidden;
-		}
-		.gallery-strip-thumb img,.gallery-strip-thumb video {
-			width:100%;height:100%;object-fit:cover;display:block;
-		}
-		.gallery-strip-play {
-			position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
-			background:rgba(0,0,0,0.35);color:#fff;font-size:11px;
-		}
-		.gallery-strip-more {
-			display:flex;align-items:center;justify-content:center;
-			color:#0f172a;font-size:18px;font-weight:800;
-		}
-		/* Info row */
-		.gallery-card-body {
-			padding:16px 20px;display:flex;align-items:center;justify-content:space-between;
-			border-top:1px solid #f1f5f9;background:#fff;
-		}
-		.gallery-card-title { font-size:16px;font-weight:700;color:#0f172a;margin:0 0 2px; }
-		.gallery-card-media-title { font-size:13px;font-weight:700;color:#334155;margin:0 0 4px; }
-		.gallery-card-media-desc {
-			font-size:13px;line-height:1.55;color:#64748b;margin:0 0 8px;
+		.gallery-card-summary {
+			margin:0;font-size:14px;line-height:1.7;color:#64748b;
 			display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;overflow:hidden;
 		}
-		.gallery-card-count { font-size:12px;color:#94a3b8;font-weight:500;margin:0; }
+		.gallery-card-pill {
+			flex-shrink:0;padding:10px 14px;border-radius:999px;background:#fef2f2;color:#E5363D;
+			font-size:12px;font-weight:800;letter-spacing:0.03em;
+		}
+		.gallery-card-visual {
+			margin:20px 22px 0;padding:8px;background:#f8fafc;border-radius:24px;
+			display:grid;gap:8px;min-height:280px;overflow:hidden;
+		}
+		.gallery-card-visual--1 { grid-template-columns:1fr; }
+		.gallery-card-visual--2 { grid-template-columns:1fr 1fr; }
+		.gallery-card-visual--3 {
+			grid-template-columns:1.2fr 1fr;grid-template-rows:repeat(2,1fr);
+		}
+		.gallery-card-visual__tile {
+			position:relative;overflow:hidden;border-radius:18px;background:#e2e8f0;min-height:120px;
+		}
+		.gallery-card-visual__tile img,
+		.gallery-card-visual__tile video {
+			width:100%;height:100%;object-fit:cover;display:block;
+		}
+		.gallery-card-visual--1 .gallery-card-visual__tile { min-height:280px; }
+		.gallery-card-visual--2 .gallery-card-visual__tile { min-height:260px; }
+		.gallery-card-visual--3 .gallery-card-visual__tile--0 {
+			grid-column:1;grid-row:1 / span 2;min-height:280px;
+		}
+		.gallery-card-visual--3 .gallery-card-visual__tile--1 {
+			grid-column:2;grid-row:1;
+		}
+		.gallery-card-visual--3 .gallery-card-visual__tile--2 {
+			grid-column:2;grid-row:2;
+		}
+		.gallery-card-visual__play {
+			position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
+			color:#fff;font-size:14px;background:linear-gradient(180deg, rgba(15,23,42,0.08), rgba(15,23,42,0.22));
+		}
+		.gallery-card-visual__play i {
+			display:inline-flex;align-items:center;justify-content:center;
+			width:56px;height:56px;border-radius:50%;background:rgba(255,255,255,0.92);color:#E5363D;
+			box-shadow:0 18px 36px rgba(15,23,42,0.16);
+		}
+		.gallery-card-visual__caption {
+			position:absolute;left:12px;right:12px;bottom:12px;
+			padding:12px 14px;border-radius:18px;background:rgba(15,23,42,0.42);backdrop-filter:blur(8px);
+			color:#fff;
+		}
+		.gallery-card-visual__caption strong {
+			display:block;font-size:13px;line-height:1.35;margin-bottom:4px;font-weight:800;
+		}
+		.gallery-card-visual__caption span {
+			display:block;font-size:11px;opacity:0.88;font-weight:600;
+		}
+		.gallery-card-visual__more {
+			position:absolute;right:12px;top:12px;padding:8px 12px;border-radius:999px;
+			background:rgba(15,23,42,0.72);color:#fff;font-size:12px;font-weight:800;
+		}
+		.gallery-card-visual__empty {
+			min-height:280px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;
+			color:#94a3b8;font-weight:700;
+		}
+		.gallery-card-visual__empty i { font-size:42px;color:#cbd5e1; }
+		.gallery-card-body {
+			padding:18px 22px 22px;display:flex;align-items:flex-end;justify-content:space-between;gap:16px;
+		}
+		.gallery-card-body__copy { min-width:0; }
+		.gallery-card-body__label {
+			display:inline-block;margin-bottom:8px;font-size:12px;font-weight:800;letter-spacing:0.12em;
+			text-transform:uppercase;color:#E5363D;
+		}
+		.gallery-card-media-title {
+			font-size:16px;font-weight:800;color:#0f172a;margin:0 0 6px;
+		}
+		.gallery-card-media-desc {
+			font-size:14px;line-height:1.7;color:#64748b;margin:0 0 10px;
+			display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;overflow:hidden;
+		}
+		.gallery-card-count { font-size:12px;color:#94a3b8;font-weight:600;margin:0; }
 		.gallery-card-arrow {
-			width:36px;height:36px;border-radius:50%;
+			width:44px;height:44px;border-radius:50%;
 			background:#fef2f2;color:#E5363D;
 			display:flex;align-items:center;justify-content:center;
-			flex-shrink:0;font-size:14px;
+			flex-shrink:0;font-size:15px;
 			transition:background 0.2s,color 0.2s;
 		}
 		.gallery-card-link:hover .gallery-card-arrow { background:#E5363D;color:#fff; }
@@ -909,6 +988,21 @@ foreach ($grouped as $serviceName => $items) {
 			.gallery-grid { grid-template-columns:1fr;gap:18px; }
 			.section-title { font-size:28px; }
 			.gallery-section { padding:60px 0; }
+			.gallery-card-head { padding:18px 18px 0; }
+			.gallery-card-head .gallery-card-title { font-size:20px; }
+			.gallery-card-visual { margin:16px 18px 0; min-height:240px; }
+			.gallery-card-visual--1 .gallery-card-visual__tile,
+			.gallery-card-visual--2 .gallery-card-visual__tile,
+			.gallery-card-visual--3 .gallery-card-visual__tile { min-height:110px; }
+			.gallery-card-visual--3 { grid-template-columns:1fr 1fr; }
+			.gallery-card-visual--3 .gallery-card-visual__tile--0 { grid-column:1 / -1; grid-row:auto; min-height:190px; }
+			.gallery-card-visual--3 .gallery-card-visual__tile--1,
+			.gallery-card-visual--3 .gallery-card-visual__tile--2 { grid-column:auto; grid-row:auto; }
+			.gallery-card-body { padding:16px 18px 18px; }
+			.gallery-card-arrow { width:40px;height:40px; }
+			.gallery-toolbar { margin-bottom:22px; }
+			.gallery-toolbar-note { max-width:none; }
+			.gallery-filter-chip { padding:9px 14px; font-size:12px; }
 			.gallery-lightbox { padding:12px; }
 			.gallery-lightbox__dialog { border-radius:22px;max-height:92vh; }
 			.gallery-lightbox__header { padding:22px 18px 10px; }

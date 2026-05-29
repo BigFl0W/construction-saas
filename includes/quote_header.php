@@ -25,7 +25,15 @@ $isAbout = strpos($uri, '/about-us') !== false ? 'is-active' : '';
 $isContact = strpos($uri, '/contact-us') !== false ? 'is-active' : '';
 $isBlog = strpos($uri, '/blog') !== false || strpos($uri, '/post.php') !== false ? 'is-active' : '';
 $isServices = strpos($uri, '/services') !== false ? 'is-active' : '';
+$isServicesLanding = preg_match('#/services/?$#', $uri) ? 'is-active' : '';
 $isQuote = strpos($uri, '/quote') !== false ? 'is-active' : '';
+
+$serviceMenuLinks = array_map(static function (array $serviceMenuLink) use ($uri) {
+    $currentPath = rtrim((string) (parse_url($uri, PHP_URL_PATH) ?: $uri), '/');
+    $linkPath = rtrim((string) (parse_url($serviceMenuLink['href'] ?? '', PHP_URL_PATH) ?: ''), '/');
+    $serviceMenuLink['is_active'] = $currentPath !== '' && $currentPath === $linkPath;
+    return $serviceMenuLink;
+}, $serviceMenuLinks);
 ?>
 <style>
     .tpv-site-header {
@@ -84,6 +92,12 @@ $isQuote = strpos($uri, '/quote') !== false ? 'is-active' : '';
         flex-wrap: wrap;
     }
 
+    .tpv-site-header__nav-item {
+        position: relative;
+        display: flex;
+        align-items: center;
+    }
+
     .tpv-site-header__nav-link,
     .tpv-site-header__drawer-link,
     .tpv-site-header__submenu-link,
@@ -101,6 +115,94 @@ $isQuote = strpos($uri, '/quote') !== false ? 'is-active' : '';
         padding: 9px 14px;
         border-radius: 999px;
         transition: background-color 0.2s ease, color 0.2s ease, transform 0.2s ease;
+    }
+
+    .tpv-site-header__nav-dropdown {
+        position: relative;
+    }
+
+    .tpv-site-header__nav-summary {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        padding: 9px 14px;
+        border-radius: 999px;
+        cursor: pointer;
+        user-select: none;
+        list-style: none;
+        transition: background-color 0.2s ease, color 0.2s ease, transform 0.2s ease;
+    }
+
+    .tpv-site-header__nav-summary::-webkit-details-marker {
+        display: none;
+    }
+
+    .tpv-site-header__nav-summary-icon {
+        margin-left: 6px;
+        font-size: 11px;
+        line-height: 1;
+        transition: transform 0.2s ease;
+    }
+
+    .tpv-site-header__nav-dropdown[open] > .tpv-site-header__nav-summary .tpv-site-header__nav-summary-icon {
+        transform: rotate(180deg);
+    }
+
+    .tpv-site-header__nav-dropdown-menu {
+        position: absolute;
+        top: calc(100% + 14px);
+        left: 50%;
+        transform: translate(-50%, 10px);
+        min-width: 290px;
+        padding: 10px;
+        border-radius: 22px;
+        background: rgba(255, 255, 255, 0.98);
+        border: 1px solid rgba(15, 23, 42, 0.08);
+        box-shadow: 0 22px 48px -24px rgba(15, 23, 42, 0.35);
+        opacity: 0;
+        visibility: hidden;
+        pointer-events: none;
+        transition: opacity 0.2s ease, transform 0.2s ease, visibility 0.2s ease;
+        z-index: 30;
+    }
+
+    .tpv-site-header__nav-dropdown[open] > .tpv-site-header__nav-dropdown-menu {
+        opacity: 1;
+        visibility: visible;
+        pointer-events: auto;
+        transform: translate(-50%, 0);
+    }
+
+    .tpv-site-header__nav-dropdown-link {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 12px 14px;
+        border-radius: 14px;
+        background: #f8fafc;
+        border: 1px solid #edf2f7;
+        color: #334155;
+        text-decoration: none;
+        font-size: 13px;
+        font-weight: 600;
+        transition: background-color 0.18s ease, color 0.18s ease, transform 0.18s ease;
+    }
+
+    .tpv-site-header__nav-dropdown-link:hover,
+    .tpv-site-header__nav-dropdown-link:focus-visible,
+    .tpv-site-header__nav-dropdown-link.is-active {
+        background: rgba(239, 68, 68, 0.08);
+        border-color: rgba(239, 68, 68, 0.16);
+        color: #dc2626;
+        outline: none;
+        transform: translateY(-1px);
+    }
+
+    .tpv-site-header__nav-item--dropdown:hover > .tpv-site-header__nav-dropdown > .tpv-site-header__nav-summary,
+    .tpv-site-header__nav-item--dropdown:focus-within > .tpv-site-header__nav-dropdown > .tpv-site-header__nav-summary,
+    .tpv-site-header__nav-summary.is-active {
+        background: rgba(239, 68, 68, 0.1);
+        color: #dc2626;
     }
 
     .tpv-site-header__nav-link:hover,
@@ -402,15 +504,28 @@ $isQuote = strpos($uri, '/quote') !== false ? 'is-active' : '';
             <img src="<?php echo htmlspecialchars($siteLogoUrl); ?>" alt="TPV Construction and Services LTD">
         </a>
 
-        <nav class="tpv-site-header__nav" aria-label="Primary navigation">
-            <ul class="tpv-site-header__nav-list">
-                <li><a class="tpv-site-header__nav-link <?php echo $isHome; ?>" href="<?php echo htmlspecialchars($siteHomeUrl); ?>">Home</a></li>
-                <li><a class="tpv-site-header__nav-link <?php echo $isAbout; ?>" href="<?php echo htmlspecialchars($siteAboutUrl); ?>">About Us</a></li>
-                <li><a class="tpv-site-header__nav-link <?php echo $isContact; ?>" href="<?php echo htmlspecialchars($siteContactUrl); ?>">Contact Us</a></li>
-                <li><a class="tpv-site-header__nav-link <?php echo $isBlog; ?>" href="<?php echo htmlspecialchars($siteBlogUrl); ?>">Blog</a></li>
-                <li><a class="tpv-site-header__nav-link <?php echo $isServices; ?>" href="<?php echo htmlspecialchars($siteServicesUrl); ?>">Services</a></li>
-            </ul>
-        </nav>
+    <nav class="tpv-site-header__nav" aria-label="Primary navigation">
+        <ul class="tpv-site-header__nav-list">
+            <li class="tpv-site-header__nav-item"><a class="tpv-site-header__nav-link <?php echo $isHome; ?>" href="<?php echo htmlspecialchars($siteHomeUrl); ?>">Home</a></li>
+            <li class="tpv-site-header__nav-item"><a class="tpv-site-header__nav-link <?php echo $isAbout; ?>" href="<?php echo htmlspecialchars($siteAboutUrl); ?>">About Us</a></li>
+            <li class="tpv-site-header__nav-item"><a class="tpv-site-header__nav-link <?php echo $isContact; ?>" href="<?php echo htmlspecialchars($siteContactUrl); ?>">Contact Us</a></li>
+            <li class="tpv-site-header__nav-item"><a class="tpv-site-header__nav-link <?php echo $isBlog; ?>" href="<?php echo htmlspecialchars($siteBlogUrl); ?>">Blog</a></li>
+            <li class="tpv-site-header__nav-item tpv-site-header__nav-item--dropdown">
+                <details class="tpv-site-header__nav-dropdown" <?php echo $isServicesLanding ? 'open' : ''; ?>>
+                    <summary class="tpv-site-header__nav-summary <?php echo $isServices; ?>">
+                        <span>Services</span>
+                        <span class="tpv-site-header__nav-summary-icon">&#9662;</span>
+                    </summary>
+                    <div class="tpv-site-header__nav-dropdown-menu" role="menu" aria-label="Services submenu">
+                        <a class="tpv-site-header__nav-dropdown-link <?php echo $isServicesLanding; ?>" href="<?php echo htmlspecialchars($siteServicesUrl); ?>">All Services</a>
+                        <?php foreach ($serviceMenuLinks as $serviceMenuLink): ?>
+                            <a class="tpv-site-header__nav-dropdown-link <?php echo !empty($serviceMenuLink['is_active']) ? 'is-active' : ''; ?>" href="<?php echo htmlspecialchars($serviceMenuLink['href']); ?>"><?php echo htmlspecialchars($serviceMenuLink['label']); ?></a>
+                        <?php endforeach; ?>
+                    </div>
+                </details>
+            </li>
+        </ul>
+    </nav>
 
         <div class="tpv-site-header__actions">
             <a class="tpv-site-header__cta <?php echo $isQuote; ?>" href="<?php echo htmlspecialchars($siteQuoteUrl); ?>" aria-current="<?php echo $isQuote ? 'page' : 'false'; ?>">
@@ -446,9 +561,9 @@ $isQuote = strpos($uri, '/quote') !== false ? 'is-active' : '';
                     <span class="tpv-site-header__drawer-summary-icon">&#9662;</span>
                 </summary>
                 <ul class="tpv-site-header__submenu">
-                    <li><a class="tpv-site-header__submenu-link" href="<?php echo htmlspecialchars($siteServicesUrl); ?>">All Services</a></li>
+                    <li><a class="tpv-site-header__submenu-link <?php echo $isServicesLanding; ?>" href="<?php echo htmlspecialchars($siteServicesUrl); ?>">All Services</a></li>
                     <?php foreach ($serviceMenuLinks as $serviceMenuLink): ?>
-                        <li><a class="tpv-site-header__submenu-link" href="<?php echo htmlspecialchars($serviceMenuLink['href']); ?>"><?php echo htmlspecialchars($serviceMenuLink['label']); ?></a></li>
+                        <li><a class="tpv-site-header__submenu-link <?php echo !empty($serviceMenuLink['is_active']) ? 'is-active' : ''; ?>" href="<?php echo htmlspecialchars($serviceMenuLink['href']); ?>"><?php echo htmlspecialchars($serviceMenuLink['label']); ?></a></li>
                     <?php endforeach; ?>
                 </ul>
             </details>
@@ -487,6 +602,23 @@ $isQuote = strpos($uri, '/quote') !== false ? 'is-active' : '';
     overlay.addEventListener('click', () => setMenuState(false));
     if (closeButton) {
         closeButton.addEventListener('click', () => setMenuState(false));
+    }
+
+    const desktopDropdowns = Array.from(document.querySelectorAll('.tpv-site-header__nav-dropdown'));
+    if (desktopDropdowns.length) {
+        document.addEventListener('click', (event) => {
+            desktopDropdowns.forEach((dropdown) => {
+                if (!dropdown.contains(event.target)) {
+                    dropdown.removeAttribute('open');
+                }
+            });
+        });
+
+        document.addEventListener('keydown', (event) => {
+            if (event.key === 'Escape') {
+                desktopDropdowns.forEach((dropdown) => dropdown.removeAttribute('open'));
+            }
+        });
     }
 
     mobilePanel.querySelectorAll('a').forEach((link) => {
